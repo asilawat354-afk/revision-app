@@ -1,0 +1,6 @@
+{
+  "name": "Web2APK Builder",
+  "description": "Production-ready Website to Android APK Builder with full project generation, real Gradle build pipeline integration, and source export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
