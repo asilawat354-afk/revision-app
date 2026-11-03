@@ -3866,6 +3866,16 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
           </div>
           <p class="hint" id="fbHint">Login के बाद हर बदलाव कुछ सेकंड में अपने-आप Cloud पर सेव होता है। नीचे के बटन ज़रूरत पड़ने पर हाथ से Backup/Restore के लिए हैं।</p>
         </div>
+        <div class="sync-box" id="shBox" style="margin-top:10px; flex-direction:column; align-items:stretch; gap:8px;">
+          <div>
+            <div style="font-size:12.5px; font-weight:750;">📄 Google Sheet Backup</div>
+            <div style="font-size:11px; color:var(--muted);" id="shStatus">Sheet का लिंक डालें, हर बदलाव उसमें भी सेव होगा</div>
+          </div>
+          <input type="url" id="shUrl" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="Web app URL (https://script.google.com/...)" style="width:100%; box-sizing:border-box; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:12.5px;">
+          <input type="text" id="shKey" autocapitalize="off" autocomplete="off" placeholder="गुप्त शब्द (Script वाला ही)" style="width:100%; box-sizing:border-box; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:12.5px;">
+          <button type="button" class="btn btn-accent" onclick="shSaveCfg()"><span>सेव करें और Sheet में भेजें</span></button>
+          <button type="button" class="btn" onclick="shPush(true)"><span>अभी Sheet में भेजें</span></button>
+        </div>
       </div>
     </div>
     <!-- बैकग्राउंड चुनें -->
@@ -8114,12 +8124,77 @@ async function fbRestore() {
   }
 }
 
+/* ===== Google Sheet Backup (Apps Script Web App) ===== */
+const SH_URL = 'ru_sheet_url', SH_KEY = 'ru_sheet_key';
+let shTimer = null, shBusy = false, shLastHash = null;
+
+function shCfg() {
+  let u = '', k = '';
+  try { u = localStorage.getItem(SH_URL) || ''; k = localStorage.getItem(SH_KEY) || ''; } catch (e) {}
+  return { url: u, key: k };
+}
+function shStatus(t) { const e = g('shStatus'); if (e) e.textContent = t; }
+function shUI() {
+  const c = shCfg();
+  const u = g('shUrl'), k = g('shKey');
+  if (u && !u.value) u.value = c.url;
+  if (k && !k.value) k.value = c.key;
+  if (c.url) shStatus('Auto-sync चालू · हर बदलाव Sheet में भी जाएगा');
+}
+function shPayload(c) {
+  let logs = [];
+  try { logs = JSON.parse(localStorage.getItem('ru_local_history') || '[]'); } catch (e) {}
+  const hist = [['Date', 'Subject', 'Chapter', 'Lecture', 'Time (min)', 'Difficulty', 'Notes']]
+    .concat(logs.slice().reverse().map(l => [isoDate(l.date), l.sub, l.chap, l.lec, Number(l.time) || 0, l.diff, l.notes || '']));
+  const syl = [['Subject', 'Chapter', 'Lecture']].concat(sylRows());
+  return { key: c.key, history: hist, syllabus: syl };
+}
+function shSaveCfg() {
+  const u = (g('shUrl').value || '').trim(), k = (g('shKey').value || '').trim();
+  if (u.indexOf('https://script.google.com/') !== 0) return showIsland('URL गलत है, https://script.google.com/ से शुरू होना चाहिए', 'warning');
+  if (!k) return showIsland('गुप्त शब्द डालें', 'warning');
+  try { localStorage.setItem(SH_URL, u); localStorage.setItem(SH_KEY, k); } catch (e) {}
+  shLastHash = null;
+  shPush(true);
+}
+async function shPush(manual) {
+  const c = shCfg();
+  if (!c.url) { if (manual) showIsland('पहले Sheet का URL डालें', 'warning'); return; }
+  if (shBusy) return;
+  shBusy = true;
+  try {
+    const p = shPayload(c);
+    const body = JSON.stringify(p);
+    const h = body.length + ':' + body.slice(0, 200) + body.slice(-200);
+    if (!manual && h === shLastHash) return;
+    if (manual) showIsland('Google Sheet में भेज रहे हैं...', 'success');
+    const res = await fetch(c.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body });
+    const txt = await res.text();
+    let j; try { j = JSON.parse(txt); } catch (e) { throw new Error('जवाब समझ नहीं आया, URL जाँचें'); }
+    if (!j.ok) throw new Error(j.error || 'नहीं हो सका');
+    shLastHash = h;
+    shStatus('आख़िरी सेव: ' + new Date().toLocaleTimeString() + ' ✓');
+    if (manual) showIsland('📄 Google Sheet में सेव हो गया');
+  } catch (e) {
+    if (manual) showIsland('Sheet में नहीं गया: ' + ((e && e.message) || e), 'error');
+    else shStatus('Sheet में नहीं गया (इंटरनेट/URL?)');
+  } finally {
+    shBusy = false;
+  }
+}
+function shSchedule() {
+  if (fbRestoring || !shCfg().url) return;
+  clearTimeout(shTimer);
+  shTimer = setTimeout(() => shPush(false), 15000);
+}
+setTimeout(shUI, 1500);
+
 /* हर बदलाव पर अपने-आप Cloud Backup */
 (function () {
   try {
     const sp = Storage.prototype, os = sp.setItem, orm = sp.removeItem;
-    sp.setItem = function (k) { const r = os.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) fbSchedule(); return r; };
-    sp.removeItem = function (k) { const r = orm.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) fbSchedule(); return r; };
+    sp.setItem = function (k) { const r = os.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) { fbSchedule(); shSchedule(); } return r; };
+    sp.removeItem = function (k) { const r = orm.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) { fbSchedule(); shSchedule(); } return r; };
   } catch (e) {}
 })();
 document.addEventListener('visibilitychange', () => {
