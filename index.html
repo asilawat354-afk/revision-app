@@ -3841,9 +3841,13 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
           <p class="hint" id="syncHint">केवल नए सेशन क्लाउड पर भेजे जाते हैं।</p>
         </div>
         <div class="sync-box" id="fbBox" style="margin-top:10px; flex-direction:column; align-items:stretch; gap:8px;">
-          <div>
-            <div style="font-size:12.5px; font-weight:750;">☁️ Firebase Cloud Backup</div>
-            <div style="font-size:11px; color:var(--muted);" id="fbStatus">Google से login करके डेटा कई फ़ोन में सिंक करें</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <img id="fbAvatar" alt="" referrerpolicy="no-referrer" style="display:none; width:42px; height:42px; border-radius:50%; object-fit:cover; flex:none; border:2px solid var(--accent);" onerror="this.style.display='none'">
+            <div style="min-width:0;">
+              <div style="font-size:12.5px; font-weight:750;">☁️ Firebase Cloud Backup</div>
+              <div id="fbName" style="font-size:12px; font-weight:700; display:none;"></div>
+              <div style="font-size:11px; color:var(--muted); word-break:break-all;" id="fbStatus">Google से login करके डेटा कई फ़ोन में सिंक करें</div>
+            </div>
           </div>
           <button type="button" class="btn btn-accent" id="fbLoginBtn" onclick="fbLogin()">
             <svg class="ic"><use href="#i-cloud"/></svg>
@@ -7908,10 +7912,14 @@ function fbUI(user) {
     lb.style.display = 'none'; ac.style.display = 'none';
     return;
   }
+  const av = g('fbAvatar'), nm = g('fbName');
   if (user) {
     fbSetStatus();
     lb.style.display = 'none'; ac.style.display = 'flex';
+    if (user.photoUrl) { av.src = user.photoUrl; av.style.display = 'block'; } else { av.style.display = 'none'; }
+    nm.textContent = user.displayName || ''; nm.style.display = user.displayName ? 'block' : 'none';
   } else {
+    av.style.display = 'none'; nm.style.display = 'none';
     fbAutoOn = false;
     st.textContent = 'Google से login करके डेटा कई फ़ोन में सिंक करें';
     lb.style.display = ''; ac.style.display = 'none';
