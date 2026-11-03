@@ -3395,6 +3395,31 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
 .ws-empty button{margin-top:14px;height:38px;padding:0 20px;border-radius:999px;border:1px solid var(--primary);background:var(--primary-dim);color:var(--primary);font:inherit;font-size:12.5px;font-weight:750;cursor:pointer}
 .ws-empty button:active{transform:scale(.96)}
 .ws-pane-pills{margin:0 -14px 8px;padding:2px 14px}
+
+.cx-card{background:var(--surface-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-top:10px;display:flex;flex-direction:column;gap:12px}
+.cx-head{display:flex;align-items:center;gap:12px;min-width:0}
+.cx-ico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);color:var(--accent);flex:none;overflow:hidden}
+.cx-ico svg.ic{width:20px;height:20px}
+.cx-ico img{width:100%;height:100%;object-fit:cover;display:block}
+.cx-t{min-width:0;flex:1}
+.cx-title{font-size:13.5px;font-weight:800;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cx-sub{font-size:11.5px;color:var(--muted);line-height:1.4;margin-top:3px;display:flex;align-items:center;gap:6px;min-width:0}
+.cx-sub .tx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cx-dot{width:7px;height:7px;border-radius:50%;background:var(--muted-dim);flex:none}
+.cx-dot.ok{background:#22c55e}.cx-dot.warn{background:#f59e0b}.cx-dot.err{background:#ef4444}
+.cx-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cx-btn{height:42px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:12.5px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:0 10px;width:100%;transition:transform .12s ease}
+.cx-btn:active{transform:scale(.97)}
+.cx-btn.pri{background:var(--accent);color:#000;border-color:transparent;font-weight:800}
+.cx-btn.goog{background:#fff;color:#1f1f1f;border-color:#dadce0}
+.cx-btn.ghost{background:transparent;color:var(--muted);border-color:transparent;height:34px}
+.cx-btn svg.ic{width:16px;height:16px}
+.cx-fld{display:flex;flex-direction:column;gap:5px}
+.cx-lbl{font-size:11px;color:var(--muted);font-weight:700}
+.cx-in{position:relative}
+.cx-in svg.ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
+.cx-in input{width:100%;box-sizing:border-box;height:42px;padding:0 12px 0 36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:12.5px}
+.cx-note{font-size:11px;color:var(--muted);line-height:1.45;margin:0;word-break:break-all}
 </style>
 </head>
 <body>
@@ -3430,6 +3455,11 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
 <symbol id="i-filter" viewBox="0 0 24 24" stroke-linejoin="round"><path d="M7.5 5v14M3.8 15.2L7.5 19l3.7-3.8"/><line x1="14.5" y1="5" x2="16" y2="5"/><line x1="14.5" y1="9.7" x2="17.8" y2="9.7"/><line x1="14.5" y1="14.3" x2="19.6" y2="14.3"/><line x1="14.5" y1="19" x2="21.5" y2="19"/></symbol>
 <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
 <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19C19.985 19 22 16.985 22 14.5C22 12.148 20.187 10.22 17.89 10.02C17.42 6.64 14.47 4 11 4C7.13 4 4 7.13 4 11C2.34 11.23 1 12.7 1 14.5C1 16.43 2.57 18 4.5 18"/><path d="M12 12v9M8 17l4-4 4 4"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.7-1.7"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L21 2"/><path d="M17 6l3 3"/><path d="M14 9l2 2"/></symbol>
+<symbol id="i-google" viewBox="0 0 48 48"><path stroke="none" fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path stroke="none" fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path stroke="none" fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path stroke="none" fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></symbol>
 </defs>
 </svg>
 
@@ -3840,41 +3870,49 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
           </button>
           <p class="hint" id="syncHint">केवल नए सेशन क्लाउड पर भेजे जाते हैं।</p>
         </div>
-        <div class="sync-box" id="fbBox" style="margin-top:10px; flex-direction:column; align-items:stretch; gap:8px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <img id="fbAvatar" alt="" referrerpolicy="no-referrer" style="display:none; width:42px; height:42px; border-radius:50%; object-fit:cover; flex:none; border:2px solid var(--accent);" onerror="this.style.display='none'">
-            <div style="min-width:0;">
-              <div style="font-size:12.5px; font-weight:750;">☁️ Firebase Cloud Backup</div>
-              <div id="fbName" style="font-size:12px; font-weight:700; display:none;"></div>
-              <div style="font-size:11px; color:var(--muted); word-break:break-all;" id="fbStatus">Google से login करके डेटा कई फ़ोन में सिंक करें</div>
+        <div class="cx-card" id="fbBox">
+          <div class="cx-head">
+            <div class="cx-ico">
+              <svg class="ic" id="fbIcoSvg"><use href="#i-cloud"/></svg>
+              <img id="fbAvatar" alt="" referrerpolicy="no-referrer" style="display:none" onerror="this.style.display='none';document.getElementById('fbIcoSvg').style.display=''">
+            </div>
+            <div class="cx-t">
+              <div class="cx-title" id="fbTitle">क्लाउड सिंक</div>
+              <div class="cx-sub"><i class="cx-dot" id="fbDot"></i><span class="tx" id="fbStatus">लॉगिन नहीं है</span></div>
             </div>
           </div>
-          <button type="button" class="btn btn-accent" id="fbLoginBtn" onclick="fbLogin()">
-            <svg class="ic"><use href="#i-cloud"/></svg>
-            <span>Google से Login</span>
+          <button type="button" class="cx-btn goog" id="fbLoginBtn" onclick="fbLogin()">
+            <svg class="ic" viewBox="0 0 48 48"><use href="#i-google"/></svg>
+            <span>Google से लॉगिन</span>
           </button>
-          <div id="fbActions" style="display:none; flex-direction:column; gap:8px;">
-            <button type="button" class="btn btn-accent" onclick="fbBackup()">
-              <svg class="ic"><use href="#i-upload"/></svg>
-              <span>अभी Backup करें</span>
-            </button>
-            <button type="button" class="btn btn-accent" onclick="fbRestore()">
-              <svg class="ic"><use href="#i-download"/></svg>
-              <span>Cloud से Restore करें</span>
-            </button>
-            <button type="button" class="btn" onclick="fbLogout()"><span>Logout</span></button>
+          <div id="fbActions" style="display:none; flex-direction:column; gap:6px;">
+            <div class="cx-row">
+              <button type="button" class="cx-btn pri" onclick="fbBackup()"><svg class="ic"><use href="#i-upload"/></svg><span>अभी बैकअप</span></button>
+              <button type="button" class="cx-btn" onclick="fbRestore()"><svg class="ic"><use href="#i-download"/></svg><span>वापस लाएं</span></button>
+            </div>
+            <button type="button" class="cx-btn ghost" onclick="fbLogout()"><svg class="ic"><use href="#i-logout"/></svg><span>लॉगआउट</span></button>
           </div>
-          <p class="hint" id="fbHint">Login के बाद हर बदलाव कुछ सेकंड में अपने-आप Cloud पर सेव होता है। नीचे के बटन ज़रूरत पड़ने पर हाथ से Backup/Restore के लिए हैं।</p>
+          <p class="cx-note" id="fbHint">लॉगिन के बाद हर बदलाव अपने-आप सेव होता है।</p>
         </div>
-        <div class="sync-box" id="shBox" style="margin-top:10px; flex-direction:column; align-items:stretch; gap:8px;">
-          <div>
-            <div style="font-size:12.5px; font-weight:750;">📄 Google Sheet Backup</div>
-            <div style="font-size:11px; color:var(--muted);" id="shStatus">Sheet का लिंक डालें, हर बदलाव उसमें भी सेव होगा</div>
+        <div class="cx-card" id="shBox">
+          <div class="cx-head">
+            <div class="cx-ico"><svg class="ic"><use href="#i-sheet"/></svg></div>
+            <div class="cx-t">
+              <div class="cx-title">Google Sheet बैकअप</div>
+              <div class="cx-sub"><i class="cx-dot" id="shDot"></i><span class="tx" id="shStatus">सेट नहीं है</span></div>
+            </div>
           </div>
-          <input type="url" id="shUrl" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="Web app URL (https://script.google.com/...)" style="width:100%; box-sizing:border-box; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:12.5px;">
-          <input type="text" id="shKey" autocapitalize="off" autocomplete="off" placeholder="गुप्त शब्द (Script वाला ही)" style="width:100%; box-sizing:border-box; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:12.5px;">
-          <button type="button" class="btn btn-accent" onclick="shSaveCfg()"><span>सेव करें और Sheet में भेजें</span></button>
-          <button type="button" class="btn" onclick="shPush(true)"><span>अभी Sheet में भेजें</span></button>
+          <div class="cx-fld">
+            <label class="cx-lbl" for="shUrl">Web app URL</label>
+            <div class="cx-in"><svg class="ic"><use href="#i-link"/></svg><input type="url" id="shUrl" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="https://script.google.com/.../exec"></div>
+          </div>
+          <div class="cx-fld">
+            <label class="cx-lbl" for="shKey">गुप्त शब्द</label>
+            <div class="cx-in"><svg class="ic"><use href="#i-key"/></svg><input type="text" id="shKey" autocapitalize="off" autocomplete="off" placeholder="स्क्रिप्ट में लिखा शब्द"></div>
+          </div>
+          <button type="button" class="cx-btn pri" onclick="shSaveCfg()"><svg class="ic"><use href="#i-save"/></svg><span>सेव करें और भेजें</span></button>
+          <button type="button" class="cx-btn" id="shNowBtn" style="display:none" onclick="shPush(true)"><svg class="ic"><use href="#i-reload"/></svg><span>अभी भेजें</span></button>
+          <p class="cx-note" id="shNote" style="display:none">हर बदलाव के लगभग 15 सेकंड बाद Sheet अपडेट होती है।</p>
         </div>
       </div>
     </div>
@@ -7890,7 +7928,7 @@ function buildCSV(logs) {
   return '\uFEFF' + [head].concat(rows).join('\r\n');
 }
 
-/* ===== Firebase Cloud Backup (Google Login + Firestore REST + Auto-sync) ===== */
+/* ===== क्लाउड सिंक (Firebase) ===== */
 const FB_PROJECT_ID = 'YOUR_FIREBASE_PROJECT_ID';
 const FB_KEYS = ['ru_local_history', 'ru_local_database', 'ru_csv_ids', 'nc_lib_v1', 'ru_ws_recent', 'ru_ws_default_view', 'ru_syl_synced'];
 const FB_CHUNK = 250000;
@@ -7898,6 +7936,8 @@ const FB_FLAG = 'ru_fb_uid';
 const FB_LAST = 'ru_fb_last';
 let fbUser = null, fbAutoOn = false, fbTimer = null, fbBusy = false, fbDirty = false;
 let fbLastJson = null, fbLastUpload = 0, fbRestoring = false, fbLastCheck = 0;
+
+function nowHM() { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
 
 function fbPlugin() {
   try {
@@ -7907,32 +7947,40 @@ function fbPlugin() {
   return null;
 }
 
-function fbSetStatus(extra) {
-  const st = g('fbStatus');
-  if (!st || !fbUser) return;
-  st.textContent = 'Login: ' + (fbUser.email || fbUser.displayName || fbUser.uid) + (fbAutoOn ? ' · Auto-sync चालू' : ' · Auto-sync बंद') + (extra || '');
+function cxState(dotId, txId, kind, text) {
+  const d = g(dotId), t = g(txId);
+  if (d) d.className = 'cx-dot ' + kind;
+  if (t) t.textContent = text;
 }
+function fbState(kind, text) { cxState('fbDot', 'fbStatus', kind, text); }
 
 function fbUI(user) {
   fbUser = user || null;
-  const st = g('fbStatus'), lb = g('fbLoginBtn'), ac = g('fbActions');
-  if (!st || !lb || !ac) return;
+  const lb = g('fbLoginBtn'), ac = g('fbActions'), av = g('fbAvatar'), sv = g('fbIcoSvg'), ti = g('fbTitle'), hi = g('fbHint');
+  if (!lb || !ac) return;
+  const use = sv.firstElementChild;
   if (!fbPlugin()) {
-    st.textContent = 'Cloud login सिर्फ़ APK ऐप में चलता है';
-    lb.style.display = 'none'; ac.style.display = 'none';
+    ti.textContent = 'क्लाउड सिंक';
+    fbState('off', 'सिर्फ़ APK ऐप में उपलब्ध');
+    lb.style.display = 'none'; ac.style.display = 'none'; hi.style.display = 'none';
     return;
   }
-  const av = g('fbAvatar'), nm = g('fbName');
   if (user) {
-    fbSetStatus();
+    ti.textContent = user.displayName || user.email || 'खाता';
+    hi.textContent = user.email || ''; hi.style.display = user.email ? '' : 'none';
     lb.style.display = 'none'; ac.style.display = 'flex';
-    if (user.photoUrl) { av.src = user.photoUrl; av.style.display = 'block'; } else { av.style.display = 'none'; }
-    nm.textContent = user.displayName || ''; nm.style.display = user.displayName ? 'block' : 'none';
+    if (use) use.setAttribute('href', '#i-user');
+    if (user.photoUrl) { av.src = user.photoUrl; av.style.display = 'block'; sv.style.display = 'none'; }
+    else { av.style.display = 'none'; sv.style.display = ''; }
+    fbState(fbAutoOn ? 'ok' : 'warn', fbAutoOn ? 'सिंक चालू' : 'सिंक बंद');
   } else {
-    av.style.display = 'none'; nm.style.display = 'none';
     fbAutoOn = false;
-    st.textContent = 'Google से login करके डेटा कई फ़ोन में सिंक करें';
+    ti.textContent = 'क्लाउड सिंक';
+    av.style.display = 'none'; sv.style.display = '';
+    if (use) use.setAttribute('href', '#i-cloud');
     lb.style.display = ''; ac.style.display = 'none';
+    hi.textContent = 'लॉगिन के बाद हर बदलाव अपने-आप सेव होता है।'; hi.style.display = '';
+    fbState('off', 'लॉगिन नहीं है');
   }
 }
 
@@ -7942,9 +7990,9 @@ function fbWhen(meta) {
 
 async function fbAuth() {
   const P = fbPlugin();
-  if (!P) throw new Error('सिर्फ़ APK में चलता है');
+  if (!P) throw new Error('यह सुविधा सिर्फ़ APK ऐप में है');
   const u = await P.getCurrentUser();
-  if (!u || !u.user) throw new Error('पहले Google से login करें');
+  if (!u || !u.user) throw new Error('पहले Google से लॉगिन करें');
   const t = await P.getIdToken({ forceRefresh: true });
   return { uid: u.user.uid, token: t.token };
 }
@@ -7970,11 +8018,11 @@ function fbMetaPath(a) { return 'users/' + a.uid + '/backup/meta'; }
 async function fbPull(a, meta) {
   const base = 'users/' + a.uid + '/backup/';
   const n = parseInt(meta.fields.parts.integerValue, 10);
-  showIsland('Cloud से डेटा आ रहा है...', 'success');
+  showIsland('क्लाउड से डेटा आ रहा है…', 'success');
   let json = '';
   for (let i = 0; i < n; i++) {
     const d = await fbCall('GET', base + 'part' + i, a.token);
-    if (!d || !d.fields) throw new Error('Backup का हिस्सा ' + i + ' नहीं मिला');
+    if (!d || !d.fields) throw new Error('बैकअप का हिस्सा ' + (i + 1) + ' नहीं मिला');
     json += d.fields.data.stringValue;
   }
   const obj = JSON.parse(json);
@@ -7982,7 +8030,7 @@ async function fbPull(a, meta) {
   Object.keys(obj).forEach(k => { if (FB_KEYS.indexOf(k) >= 0) localStorage.setItem(k, obj[k]); });
   localStorage.setItem(FB_LAST, meta.fields.updated.stringValue);
   localStorage.setItem(FB_FLAG, a.uid);
-  showIsland('Restore हो गया, ऐप दोबारा खुल रहा है...');
+  showIsland('डेटा वापस आ गया, ऐप दोबारा खुल रहा है…');
   setTimeout(() => location.reload(), 900);
 }
 
@@ -7997,7 +8045,7 @@ async function fbDoBackup(silent, a, force) {
       const last = localStorage.getItem(FB_LAST);
       if (meta && meta.fields && meta.fields.updated && last && meta.fields.updated.stringValue !== last) {
         if (document.hidden) return;
-        if (confirm('दूसरे फ़ोन से Cloud पर नया डेटा आया है (' + fbWhen(meta) + ').\n\nOK = Cloud से यहाँ ले आएं (इस फ़ोन के नए बदलाव जाएंगे)\nCancel = इस फ़ोन का डेटा Cloud पर डालें')) {
+        if (confirm('दूसरे फ़ोन से नया डेटा क्लाउड पर आया है (' + fbWhen(meta) + ').\n\nOK: क्लाउड का डेटा लें (इस फ़ोन के नए बदलाव जाएंगे)\nCancel: इस फ़ोन का डेटा क्लाउड पर रखें')) {
           await fbPull(a, meta);
           return;
         }
@@ -8006,7 +8054,7 @@ async function fbDoBackup(silent, a, force) {
     const obj = {};
     FB_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) obj[k] = v; });
     const json = JSON.stringify(obj);
-    if (!force && json === fbLastJson) { fbDirty = false; if (!silent) showIsland('Cloud पर पहले से सब सेव है'); return; }
+    if (!force && json === fbLastJson) { fbDirty = false; if (!silent) showIsland('कोई नया बदलाव नहीं है'); return; }
     const parts = [];
     for (let i = 0; i < json.length; i += FB_CHUNK) parts.push(json.slice(i, i + FB_CHUNK));
     if (!parts.length) parts.push('{}');
@@ -8020,10 +8068,11 @@ async function fbDoBackup(silent, a, force) {
     } });
     localStorage.setItem(FB_LAST, stamp);
     fbLastJson = json; fbDirty = false; fbLastUpload = Date.now();
-    if (!silent) showIsland('☁️ Cloud पर Backup हो गया'); else fbSetStatus(' · सेव हुआ ✓');
+    fbState('ok', 'सेव हुआ ' + nowHM());
+    if (!silent) showIsland('क्लाउड बैकअप हो गया');
   } catch (e) {
-    if (!silent) showIsland('Backup नहीं हुआ: ' + ((e && e.message) || e), 'error');
-    else fbSetStatus(' · सेव नहीं हुआ (इंटरनेट?)');
+    fbState('err', 'सेव नहीं हुआ, इंटरनेट जाँचें');
+    if (!silent) showIsland('बैकअप नहीं हुआ: ' + ((e && e.message) || e), 'error');
   } finally {
     fbBusy = false;
   }
@@ -8043,7 +8092,7 @@ async function fbCheckRemote(a) {
     const meta = await fbCall('GET', fbMetaPath(a), a.token);
     if (!meta || !meta.fields || !meta.fields.updated) return;
     if (meta.fields.updated.stringValue === localStorage.getItem(FB_LAST)) return;
-    if (confirm('Cloud पर नया डेटा है (' + fbWhen(meta) + ').\nइस फ़ोन में लाएं?')) await fbPull(a, meta);
+    if (confirm('क्लाउड पर नया डेटा है (' + fbWhen(meta) + ').\nइस फ़ोन में लाएं?')) await fbPull(a, meta);
   } catch (e) {}
 }
 
@@ -8051,31 +8100,31 @@ async function fbFirstSync() {
   try {
     const a = await fbAuth();
     if (localStorage.getItem(FB_FLAG) === a.uid) {
-      fbAutoOn = true; fbSetStatus();
+      fbAutoOn = true; fbState('ok', 'सिंक चालू');
       await fbCheckRemote(a);
       return;
     }
     const meta = await fbCall('GET', fbMetaPath(a), a.token);
     if (!meta || !meta.fields) {
       localStorage.setItem(FB_FLAG, a.uid);
-      fbAutoOn = true; fbSetStatus();
+      fbAutoOn = true; fbState('ok', 'सिंक चालू');
       await fbDoBackup(true, a, true);
       return;
     }
-    if (confirm('Cloud पर पहले से Backup है (' + fbWhen(meta) + ').\n\nOK = Cloud से इस फ़ोन में ले आएं\nCancel = इस फ़ोन का डेटा Cloud पर डालें')) {
+    if (confirm('इस खाते का क्लाउड बैकअप मिला (' + fbWhen(meta) + ').\n\nOK: क्लाउड का डेटा इस फ़ोन में लाएं\nCancel: इस फ़ोन का डेटा क्लाउड पर रखें')) {
       await fbPull(a, meta);
       return;
     }
-    if (confirm('पक्का? Cloud का पुराना Backup बदल जाएगा।')) {
+    if (confirm('क्लाउड का पुराना बैकअप बदल जाएगा। जारी रखें?')) {
       localStorage.setItem(FB_FLAG, a.uid);
-      fbAutoOn = true; fbSetStatus();
+      fbAutoOn = true; fbState('ok', 'सिंक चालू');
       await fbDoBackup(true, a, true);
     } else {
-      fbSetStatus();
-      showIsland('Auto-sync बंद रहेगा', 'warning');
+      fbState('warn', 'सिंक बंद');
+      showIsland('सिंक बंद रखा गया', 'warning');
     }
   } catch (e) {
-    showIsland('Sync शुरू नहीं हुआ: ' + ((e && e.message) || e), 'error');
+    showIsland('सिंक शुरू नहीं हुआ: ' + ((e && e.message) || e), 'error');
   }
 }
 
@@ -8091,14 +8140,14 @@ async function fbInit() {
 
 async function fbLogin() {
   const P = fbPlugin();
-  if (!P) return showIsland('Login सिर्फ़ APK ऐप में चलता है', 'warning');
+  if (!P) return showIsland('लॉगिन सिर्फ़ APK ऐप में चलता है', 'warning');
   try {
     const r = await P.signInWithGoogle();
     fbUI(r && r.user);
-    showIsland('Login हो गया');
+    showIsland('लॉगिन हो गया');
     await fbFirstSync();
   } catch (e) {
-    showIsland('Login नहीं हुआ: ' + ((e && e.message) || e), 'error');
+    showIsland('लॉगिन नहीं हुआ: ' + ((e && e.message) || e), 'error');
   }
 }
 
@@ -8107,7 +8156,7 @@ async function fbLogout() {
   try { if (P) await P.signOut(); } catch (e) {}
   clearTimeout(fbTimer);
   fbUI(null);
-  showIsland('Logout हो गया');
+  showIsland('लॉगआउट हो गया');
 }
 
 function fbBackup() { return fbDoBackup(false); }
@@ -8116,15 +8165,15 @@ async function fbRestore() {
   try {
     const a = await fbAuth();
     const meta = await fbCall('GET', fbMetaPath(a), a.token);
-    if (!meta || !meta.fields) return showIsland('Cloud पर कोई Backup नहीं मिला', 'warning');
-    if (!confirm('Cloud का Backup (' + fbWhen(meta) + ') इस फ़ोन का मौजूदा डेटा बदल देगा। जारी रखें?')) return;
+    if (!meta || !meta.fields) return showIsland('क्लाउड पर बैकअप नहीं मिला', 'warning');
+    if (!confirm('क्लाउड बैकअप (' + fbWhen(meta) + ') इस फ़ोन का मौजूदा डेटा बदल देगा। जारी रखें?')) return;
     await fbPull(a, meta);
   } catch (e) {
-    showIsland('Restore नहीं हुआ: ' + ((e && e.message) || e), 'error');
+    showIsland('डेटा वापस नहीं आया: ' + ((e && e.message) || e), 'error');
   }
 }
 
-/* ===== Google Sheet Backup (Apps Script Web App) ===== */
+/* ===== Google Sheet बैकअप (Apps Script) ===== */
 const SH_URL = 'ru_sheet_url', SH_KEY = 'ru_sheet_key';
 let shTimer = null, shBusy = false, shLastHash = null;
 
@@ -8133,13 +8182,16 @@ function shCfg() {
   try { u = localStorage.getItem(SH_URL) || ''; k = localStorage.getItem(SH_KEY) || ''; } catch (e) {}
   return { url: u, key: k };
 }
-function shStatus(t) { const e = g('shStatus'); if (e) e.textContent = t; }
+function shState(kind, text) { cxState('shDot', 'shStatus', kind, text); }
 function shUI() {
   const c = shCfg();
   const u = g('shUrl'), k = g('shKey');
   if (u && !u.value) u.value = c.url;
   if (k && !k.value) k.value = c.key;
-  if (c.url) shStatus('Auto-sync चालू · हर बदलाव Sheet में भी जाएगा');
+  const on = !!c.url;
+  g('shNowBtn').style.display = on ? '' : 'none';
+  g('shNote').style.display = on ? '' : 'none';
+  shState(on ? 'ok' : 'off', on ? 'चालू' : 'सेट नहीं है');
 }
 function shPayload(c) {
   let logs = [];
@@ -8151,33 +8203,37 @@ function shPayload(c) {
 }
 function shSaveCfg() {
   const u = (g('shUrl').value || '').trim(), k = (g('shKey').value || '').trim();
-  if (u.indexOf('https://script.google.com/') !== 0) return showIsland('URL गलत है, https://script.google.com/ से शुरू होना चाहिए', 'warning');
+  if (u.indexOf('https://script.google.com/') !== 0) return showIsland('URL गलत है, यह https://script.google.com/ से शुरू होना चाहिए', 'warning');
   if (!k) return showIsland('गुप्त शब्द डालें', 'warning');
   try { localStorage.setItem(SH_URL, u); localStorage.setItem(SH_KEY, k); } catch (e) {}
   shLastHash = null;
+  shUI();
   shPush(true);
 }
 async function shPush(manual) {
   const c = shCfg();
-  if (!c.url) { if (manual) showIsland('पहले Sheet का URL डालें', 'warning'); return; }
+  if (!c.url) { if (manual) showIsland('पहले Web app URL डालें', 'warning'); return; }
   if (shBusy) return;
   shBusy = true;
   try {
-    const p = shPayload(c);
-    const body = JSON.stringify(p);
+    const body = JSON.stringify(shPayload(c));
     const h = body.length + ':' + body.slice(0, 200) + body.slice(-200);
     if (!manual && h === shLastHash) return;
-    if (manual) showIsland('Google Sheet में भेज रहे हैं...', 'success');
+    if (manual) showIsland('Sheet में भेजा जा रहा है…', 'success');
     const res = await fetch(c.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body });
     const txt = await res.text();
-    let j; try { j = JSON.parse(txt); } catch (e) { throw new Error('जवाब समझ नहीं आया, URL जाँचें'); }
-    if (!j.ok) throw new Error(j.error || 'नहीं हो सका');
+    let j;
+    try { j = JSON.parse(txt); } catch (e) {
+      console.log('Sheet response:', txt.slice(0, 300));
+      throw new Error('Script का जवाब सही नहीं है (HTTP ' + res.status + '). Deploy में "कोई भी देख सकता है" चुनें और /exec वाला URL डालें');
+    }
+    if (!j.ok) throw new Error(j.error || 'अपडेट नहीं हुई');
     shLastHash = h;
-    shStatus('आख़िरी सेव: ' + new Date().toLocaleTimeString() + ' ✓');
-    if (manual) showIsland('📄 Google Sheet में सेव हो गया');
+    shState('ok', 'आख़िरी अपडेट ' + nowHM());
+    if (manual) showIsland('Sheet अपडेट हो गई');
   } catch (e) {
-    if (manual) showIsland('Sheet में नहीं गया: ' + ((e && e.message) || e), 'error');
-    else shStatus('Sheet में नहीं गया (इंटरनेट/URL?)');
+    shState('err', 'अपडेट नहीं हुई');
+    if (manual) showIsland('Sheet अपडेट नहीं हुई: ' + ((e && e.message) || e), 'error');
   } finally {
     shBusy = false;
   }
@@ -8189,7 +8245,7 @@ function shSchedule() {
 }
 setTimeout(shUI, 1500);
 
-/* हर बदलाव पर अपने-आप Cloud Backup */
+/* हर बदलाव पर अपने-आप बैकअप */
 (function () {
   try {
     const sp = Storage.prototype, os = sp.setItem, orm = sp.removeItem;
@@ -8239,7 +8295,7 @@ function saveBlob(blob, name) {
         try {
           const b64 = String(r.result).split(',')[1];
           await FS.writeFile({ path: name, data: b64, directory: 'DOCUMENTS', recursive: true });
-          showIsland('✅ Documents फ़ोल्डर में सेव हुई: ' + name);
+          showIsland('फ़ाइल Documents फ़ोल्डर में सेव हुई: ' + name);
         } catch (e) {
           showIsland('सेव नहीं हो सकी: ' + ((e && e.message) || e), 'error');
         }
