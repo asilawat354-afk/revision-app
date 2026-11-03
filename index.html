@@ -3840,6 +3840,28 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
           </button>
           <p class="hint" id="syncHint">केवल नए सेशन क्लाउड पर भेजे जाते हैं।</p>
         </div>
+        <div class="sync-box" id="fbBox" style="margin-top:10px; flex-direction:column; align-items:stretch; gap:8px;">
+          <div>
+            <div style="font-size:12.5px; font-weight:750;">☁️ Firebase Cloud Backup</div>
+            <div style="font-size:11px; color:var(--muted);" id="fbStatus">Google से login करके डेटा कई फ़ोन में सिंक करें</div>
+          </div>
+          <button type="button" class="btn btn-accent" id="fbLoginBtn" onclick="fbLogin()">
+            <svg class="ic"><use href="#i-cloud"/></svg>
+            <span>Google से Login</span>
+          </button>
+          <div id="fbActions" style="display:none; flex-direction:column; gap:8px;">
+            <button type="button" class="btn btn-accent" onclick="fbBackup()">
+              <svg class="ic"><use href="#i-upload"/></svg>
+              <span>अभी Backup करें</span>
+            </button>
+            <button type="button" class="btn btn-accent" onclick="fbRestore()">
+              <svg class="ic"><use href="#i-download"/></svg>
+              <span>Cloud से Restore करें</span>
+            </button>
+            <button type="button" class="btn" onclick="fbLogout()"><span>Logout</span></button>
+          </div>
+          <p class="hint" id="fbHint">Login के बाद हर बदलाव कुछ सेकंड में अपने-आप Cloud पर सेव होता है। नीचे के बटन ज़रूरत पड़ने पर हाथ से Backup/Restore के लिए हैं।</p>
+        </div>
       </div>
     </div>
     <!-- बैकग्राउंड चुनें -->
@@ -5016,6 +5038,7 @@ async function sylExport(kind) {
   if (kind === 'xlsx') { saveBlob(xlsx(), name + '.xlsx'); done('Excel'); }
   else if (kind === 'csv') { saveBlob(new Blob([csv()], { type: 'text/csv;charset=utf-8' }), name + '.csv'); done('CSV'); }
   else if (kind === 'share') {
+    if (await nativeShare(new Blob([csv()], { type: 'text/csv' }), name + '.csv')) { done('Shared'); return; }
     if (navigator.share) {
       try { await navigator.share({ files: [new File([csv()], name + '.csv', { type: 'text/csv' })], title: 'Syllabus' }); done('Shared'); return; }
       catch (e) { if (e.name === 'AbortError') return; }
@@ -7623,6 +7646,7 @@ async function fsExport(kind) {
     afterDownload(logs, 'CSV');
   }
   else if (kind === 'share') {
+    if (await nativeShare(new Blob([buildCSV(logs)], { type: 'text/csv' }), name + '.csv')) { afterDownload(logs, 'Shared'); return; }
     const xlsxBlob = buildXlsx(logs);
     const csvFile = new File([buildCSV(logs)], name + '.csv', { type: 'text/csv' });
 
@@ -7850,6 +7874,275 @@ function buildCSV(logs) {
     csvCell(l.notes, true)
   ].join(','));
   return '\uFEFF' + [head].concat(rows).join('\r\n');
+}
+
+/* ===== Firebase Cloud Backup (Google Login + Firestore REST + Auto-sync) ===== */
+const FB_PROJECT_ID = 'YOUR_FIREBASE_PROJECT_ID';
+const FB_KEYS = ['ru_local_history', 'ru_local_database', 'ru_csv_ids', 'nc_lib_v1', 'ru_ws_recent', 'ru_ws_default_view', 'ru_syl_synced'];
+const FB_CHUNK = 250000;
+const FB_FLAG = 'ru_fb_uid';
+const FB_LAST = 'ru_fb_last';
+let fbUser = null, fbAutoOn = false, fbTimer = null, fbBusy = false, fbDirty = false;
+let fbLastJson = null, fbLastUpload = 0, fbRestoring = false, fbLastCheck = 0;
+
+function fbPlugin() {
+  try {
+    const C = window.Capacitor;
+    if (C && C.isNativePlatform && C.isNativePlatform() && C.Plugins && C.Plugins.FirebaseAuthentication) return C.Plugins.FirebaseAuthentication;
+  } catch (e) {}
+  return null;
+}
+
+function fbSetStatus(extra) {
+  const st = g('fbStatus');
+  if (!st || !fbUser) return;
+  st.textContent = 'Login: ' + (fbUser.email || fbUser.displayName || fbUser.uid) + (fbAutoOn ? ' · Auto-sync चालू' : ' · Auto-sync बंद') + (extra || '');
+}
+
+function fbUI(user) {
+  fbUser = user || null;
+  const st = g('fbStatus'), lb = g('fbLoginBtn'), ac = g('fbActions');
+  if (!st || !lb || !ac) return;
+  if (!fbPlugin()) {
+    st.textContent = 'Cloud login सिर्फ़ APK ऐप में चलता है';
+    lb.style.display = 'none'; ac.style.display = 'none';
+    return;
+  }
+  if (user) {
+    fbSetStatus();
+    lb.style.display = 'none'; ac.style.display = 'flex';
+  } else {
+    fbAutoOn = false;
+    st.textContent = 'Google से login करके डेटा कई फ़ोन में सिंक करें';
+    lb.style.display = ''; ac.style.display = 'none';
+  }
+}
+
+function fbWhen(meta) {
+  try { return new Date(meta.fields.updated.stringValue).toLocaleString(); } catch (e) { return ''; }
+}
+
+async function fbAuth() {
+  const P = fbPlugin();
+  if (!P) throw new Error('सिर्फ़ APK में चलता है');
+  const u = await P.getCurrentUser();
+  if (!u || !u.user) throw new Error('पहले Google से login करें');
+  const t = await P.getIdToken({ forceRefresh: true });
+  return { uid: u.user.uid, token: t.token };
+}
+
+function fbUrl(path) {
+  return 'https://firestore.googleapis.com/v1/projects/' + FB_PROJECT_ID + '/databases/(default)/documents/' + path;
+}
+
+async function fbCall(method, path, token, body) {
+  const res = await fetch(fbUrl(path), {
+    method,
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (res.status === 404) return null;
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((j && j.error && j.error.message) || ('HTTP ' + res.status));
+  return j;
+}
+
+function fbMetaPath(a) { return 'users/' + a.uid + '/backup/meta'; }
+
+async function fbPull(a, meta) {
+  const base = 'users/' + a.uid + '/backup/';
+  const n = parseInt(meta.fields.parts.integerValue, 10);
+  showIsland('Cloud से डेटा आ रहा है...', 'success');
+  let json = '';
+  for (let i = 0; i < n; i++) {
+    const d = await fbCall('GET', base + 'part' + i, a.token);
+    if (!d || !d.fields) throw new Error('Backup का हिस्सा ' + i + ' नहीं मिला');
+    json += d.fields.data.stringValue;
+  }
+  const obj = JSON.parse(json);
+  fbRestoring = true;
+  Object.keys(obj).forEach(k => { if (FB_KEYS.indexOf(k) >= 0) localStorage.setItem(k, obj[k]); });
+  localStorage.setItem(FB_LAST, meta.fields.updated.stringValue);
+  localStorage.setItem(FB_FLAG, a.uid);
+  showIsland('Restore हो गया, ऐप दोबारा खुल रहा है...');
+  setTimeout(() => location.reload(), 900);
+}
+
+async function fbDoBackup(silent, a, force) {
+  if (fbBusy) return;
+  fbBusy = true;
+  try {
+    a = a || await fbAuth();
+    const base = 'users/' + a.uid + '/backup/';
+    if (!force) {
+      const meta = await fbCall('GET', fbMetaPath(a), a.token);
+      const last = localStorage.getItem(FB_LAST);
+      if (meta && meta.fields && meta.fields.updated && last && meta.fields.updated.stringValue !== last) {
+        if (document.hidden) return;
+        if (confirm('दूसरे फ़ोन से Cloud पर नया डेटा आया है (' + fbWhen(meta) + ').\n\nOK = Cloud से यहाँ ले आएं (इस फ़ोन के नए बदलाव जाएंगे)\nCancel = इस फ़ोन का डेटा Cloud पर डालें')) {
+          await fbPull(a, meta);
+          return;
+        }
+      }
+    }
+    const obj = {};
+    FB_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) obj[k] = v; });
+    const json = JSON.stringify(obj);
+    if (!force && json === fbLastJson) { fbDirty = false; if (!silent) showIsland('Cloud पर पहले से सब सेव है'); return; }
+    const parts = [];
+    for (let i = 0; i < json.length; i += FB_CHUNK) parts.push(json.slice(i, i + FB_CHUNK));
+    if (!parts.length) parts.push('{}');
+    for (let i = 0; i < parts.length; i++) {
+      await fbCall('PATCH', base + 'part' + i, a.token, { fields: { data: { stringValue: parts[i] } } });
+    }
+    const stamp = new Date().toISOString();
+    await fbCall('PATCH', fbMetaPath(a), a.token, { fields: {
+      parts: { integerValue: String(parts.length) },
+      updated: { stringValue: stamp }
+    } });
+    localStorage.setItem(FB_LAST, stamp);
+    fbLastJson = json; fbDirty = false; fbLastUpload = Date.now();
+    if (!silent) showIsland('☁️ Cloud पर Backup हो गया'); else fbSetStatus(' · सेव हुआ ✓');
+  } catch (e) {
+    if (!silent) showIsland('Backup नहीं हुआ: ' + ((e && e.message) || e), 'error');
+    else fbSetStatus(' · सेव नहीं हुआ (इंटरनेट?)');
+  } finally {
+    fbBusy = false;
+  }
+}
+
+function fbSchedule(delay) {
+  if (!fbAutoOn || fbRestoring) return;
+  fbDirty = true;
+  clearTimeout(fbTimer);
+  const wait = Math.max(delay || 8000, 20000 - (Date.now() - fbLastUpload));
+  fbTimer = setTimeout(() => fbDoBackup(true), wait);
+}
+
+async function fbCheckRemote(a) {
+  try {
+    a = a || await fbAuth();
+    const meta = await fbCall('GET', fbMetaPath(a), a.token);
+    if (!meta || !meta.fields || !meta.fields.updated) return;
+    if (meta.fields.updated.stringValue === localStorage.getItem(FB_LAST)) return;
+    if (confirm('Cloud पर नया डेटा है (' + fbWhen(meta) + ').\nइस फ़ोन में लाएं?')) await fbPull(a, meta);
+  } catch (e) {}
+}
+
+async function fbFirstSync() {
+  try {
+    const a = await fbAuth();
+    if (localStorage.getItem(FB_FLAG) === a.uid) {
+      fbAutoOn = true; fbSetStatus();
+      await fbCheckRemote(a);
+      return;
+    }
+    const meta = await fbCall('GET', fbMetaPath(a), a.token);
+    if (!meta || !meta.fields) {
+      localStorage.setItem(FB_FLAG, a.uid);
+      fbAutoOn = true; fbSetStatus();
+      await fbDoBackup(true, a, true);
+      return;
+    }
+    if (confirm('Cloud पर पहले से Backup है (' + fbWhen(meta) + ').\n\nOK = Cloud से इस फ़ोन में ले आएं\nCancel = इस फ़ोन का डेटा Cloud पर डालें')) {
+      await fbPull(a, meta);
+      return;
+    }
+    if (confirm('पक्का? Cloud का पुराना Backup बदल जाएगा।')) {
+      localStorage.setItem(FB_FLAG, a.uid);
+      fbAutoOn = true; fbSetStatus();
+      await fbDoBackup(true, a, true);
+    } else {
+      fbSetStatus();
+      showIsland('Auto-sync बंद रहेगा', 'warning');
+    }
+  } catch (e) {
+    showIsland('Sync शुरू नहीं हुआ: ' + ((e && e.message) || e), 'error');
+  }
+}
+
+async function fbInit() {
+  const P = fbPlugin();
+  if (!P) return fbUI(null);
+  try {
+    const r = await P.getCurrentUser();
+    fbUI(r && r.user);
+    if (r && r.user) await fbFirstSync();
+  } catch (e) { fbUI(null); }
+}
+
+async function fbLogin() {
+  const P = fbPlugin();
+  if (!P) return showIsland('Login सिर्फ़ APK ऐप में चलता है', 'warning');
+  try {
+    const r = await P.signInWithGoogle();
+    fbUI(r && r.user);
+    showIsland('Login हो गया');
+    await fbFirstSync();
+  } catch (e) {
+    showIsland('Login नहीं हुआ: ' + ((e && e.message) || e), 'error');
+  }
+}
+
+async function fbLogout() {
+  const P = fbPlugin();
+  try { if (P) await P.signOut(); } catch (e) {}
+  clearTimeout(fbTimer);
+  fbUI(null);
+  showIsland('Logout हो गया');
+}
+
+function fbBackup() { return fbDoBackup(false); }
+
+async function fbRestore() {
+  try {
+    const a = await fbAuth();
+    const meta = await fbCall('GET', fbMetaPath(a), a.token);
+    if (!meta || !meta.fields) return showIsland('Cloud पर कोई Backup नहीं मिला', 'warning');
+    if (!confirm('Cloud का Backup (' + fbWhen(meta) + ') इस फ़ोन का मौजूदा डेटा बदल देगा। जारी रखें?')) return;
+    await fbPull(a, meta);
+  } catch (e) {
+    showIsland('Restore नहीं हुआ: ' + ((e && e.message) || e), 'error');
+  }
+}
+
+/* हर बदलाव पर अपने-आप Cloud Backup */
+(function () {
+  try {
+    const sp = Storage.prototype, os = sp.setItem, orm = sp.removeItem;
+    sp.setItem = function (k) { const r = os.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) fbSchedule(); return r; };
+    sp.removeItem = function (k) { const r = orm.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) fbSchedule(); return r; };
+  } catch (e) {}
+})();
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (fbDirty && fbAutoOn) { clearTimeout(fbTimer); fbDoBackup(true); }
+  } else if (fbAutoOn && fbUser && Date.now() - fbLastCheck > 60000) {
+    fbLastCheck = Date.now(); fbCheckRemote();
+  }
+});
+window.addEventListener('online', () => { if (fbDirty) fbSchedule(1000); });
+
+setTimeout(fbInit, 1200);
+
+async function nativeShare(blob, name) {
+  try {
+    const C = window.Capacitor;
+    const P = C && C.Plugins;
+    if (!(C && C.isNativePlatform && C.isNativePlatform() && P && P.Filesystem && P.Share)) return false;
+    const b64 = await new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onloadend = () => res(String(r.result).split(',')[1]);
+      r.onerror = rej;
+      r.readAsDataURL(blob);
+    });
+    const f = await P.Filesystem.writeFile({ path: name, data: b64, directory: 'CACHE' });
+    await P.Share.share({ title: name, url: f.uri, dialogTitle: 'Share' });
+    return true;
+  } catch (e) {
+    showIsland('Share नहीं हो सका: ' + ((e && e.message) || e), 'error');
+    return true;
+  }
 }
 
 function saveBlob(blob, name) {
