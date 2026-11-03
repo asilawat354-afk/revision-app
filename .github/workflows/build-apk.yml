@@ -24,11 +24,35 @@ jobs:
         run: |
           mkdir www
           cp index.html www/index.html
+          if [ -f google-services.json ]; then
+            PID=$(python3 -c "import json;print(json.load(open('google-services.json'))['project_info']['project_id'])")
+            sed -i "s/YOUR_FIREBASE_PROJECT_ID/$PID/" www/index.html
+          fi
+          cat > capacitor.config.json << 'CFG'
+          {
+            "appId": "com.revision.universe",
+            "appName": "Revision Universe",
+            "webDir": "www",
+            "plugins": {
+              "CapacitorHttp": { "enabled": true },
+              "FirebaseAuthentication": {
+                "skipNativeAuth": false,
+                "providers": ["google.com"]
+              }
+            }
+          }
+          CFG
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem
-          npx cap init "Revision Universe" com.revision.universe --web-dir www
+          npm install --legacy-peer-deps @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem @capacitor/share @capacitor-firebase/authentication firebase
           npx cap add android
+          printf '\next {\n    rgcfaIncludeGoogle = true\n}\n' >> android/variables.gradle
+          if [ -f google-services.json ]; then cp google-services.json android/app/google-services.json; fi
           npx cap sync android
+
+      - name: Use fixed debug keystore
+        run: |
+          mkdir -p ~/.android
+          if [ -f debug.keystore ]; then cp debug.keystore ~/.android/debug.keystore; fi
 
       - name: Build debug APK
         working-directory: android
