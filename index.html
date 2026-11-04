@@ -3912,7 +3912,7 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
           </div>
           <button type="button" class="cx-btn pri" onclick="shSaveCfg()"><svg class="ic"><use href="#i-save"/></svg><span>सेव करें और भेजें</span></button>
           <button type="button" class="cx-btn" id="shNowBtn" style="display:none" onclick="shPush(true)"><svg class="ic"><use href="#i-reload"/></svg><span>अभी भेजें</span></button>
-          <p class="cx-note" id="shNote" style="display:none">हर बदलाव के लगभग 15 सेकंड बाद Sheet अपडेट होती है।</p>
+          <p class="cx-note" id="shNote" style="display:none">History, Syllabus और Full backup, तीनों टैब हर बदलाव के लगभग 15 सेकंड बाद अपडेट होते हैं।</p>
         </div>
       </div>
     </div>
@@ -7930,7 +7930,7 @@ function buildCSV(logs) {
 
 /* ===== क्लाउड सिंक (Firebase) ===== */
 const FB_PROJECT_ID = 'YOUR_FIREBASE_PROJECT_ID';
-const FB_KEYS = ['ru_local_history', 'ru_local_database', 'ru_csv_ids', 'nc_lib_v1', 'ru_ws_recent', 'ru_ws_default_view', 'ru_syl_synced'];
+const FB_KEYS = ['ru_local_history', 'ru_local_database', 'ru_csv_ids', 'nc_lib_v1', 'ru_ws_recent', 'ru_ws_default_view', 'ru_syl_synced', 'ru_theme', 'ru_bg', 'ru_card'];
 const FB_CHUNK = 250000;
 const FB_FLAG = 'ru_fb_uid';
 const FB_LAST = 'ru_fb_last';
@@ -8199,7 +8199,32 @@ function shPayload(c) {
   const hist = [['Date', 'Subject', 'Chapter', 'Lecture', 'Time (min)', 'Difficulty', 'Notes']]
     .concat(logs.slice().reverse().map(l => [isoDate(l.date), l.sub, l.chap, l.lec, Number(l.time) || 0, l.diff, l.notes || '']));
   const syl = [['Subject', 'Chapter', 'Lecture']].concat(sylRows());
-  return { key: c.key, history: hist, syllabus: syl };
+  return { key: c.key, history: hist, syllabus: syl, full: shFull() };
+}
+/* Full backup: ऐप का पूरा डेटा, Sheet की सीमा (50,000 अक्षर प्रति सेल) के हिसाब से टुकड़ों में */
+const SH_CHUNK = 40000;
+function shChunks(v) {
+  const out = [];
+  let i = 0;
+  while (i < v.length) {
+    let e = Math.min(i + SH_CHUNK, v.length);
+    if (e < v.length) { const c = v.charCodeAt(e - 1); if (c >= 0xD800 && c <= 0xDBFF) e--; }
+    out.push(v.slice(i, e));
+    i = e;
+  }
+  return out.length ? out : [''];
+}
+function shFull() {
+  const rows = [['Key', 'Part', 'Total parts', 'Data']];
+  FB_KEYS.forEach(k => {
+    let v = null;
+    try { v = localStorage.getItem(k); } catch (e) {}
+    if (v === null) return;
+    const ch = shChunks(v);
+    ch.forEach((t, i) => rows.push([k, i + 1, ch.length, t]));
+  });
+  rows.push(['_meta', 1, 1, JSON.stringify({ app: 'Revision Universe', format: 1, saved: new Date().toISOString() })]);
+  return rows;
 }
 function shSaveCfg() {
   const u = (g('shUrl').value || '').trim(), k = (g('shKey').value || '').trim();
