@@ -10942,6 +10942,56 @@ try { ntPaint(''); ntPaint('Manual'); } catch(e) {}
 
 })();
 </script>
+<script>
+/* ===== System bars (status bar + navigation bar) app ke rang ke saath ===== */
+(function(){
+  var last = "";
+  function parse(c){
+    var m = c && c.match(/rgba?\(([^)]+)\)/); if(!m) return null;
+    var a = m[1].split(/[ ,\/]+/).filter(Boolean).map(parseFloat);
+    return {r:a[0],g:a[1],b:a[2],a:a.length>3&&!isNaN(a[3])?a[3]:1};
+  }
+  function colorAt(x,y){
+    var el = document.elementFromPoint(x,y), layers = [];
+    while(el){
+      var c = parse(getComputedStyle(el).backgroundColor);
+      if(c && c.a>0){ layers.push(c); if(c.a>=0.99) break; }
+      el = el.parentElement;
+    }
+    var base = {r:0,g:0,b:0};
+    if(!layers.length || layers[layers.length-1].a<0.99){
+      var b = parse(getComputedStyle(document.body).backgroundColor) || parse(getComputedStyle(document.documentElement).backgroundColor);
+      base = (b && b.a>0) ? b : {r:9,g:10,b:15};
+    }
+    var r=base.r,g=base.g,bl=base.b;
+    for(var i=layers.length-1;i>=0;i--){
+      var L=layers[i]; r=L.r*L.a+r*(1-L.a); g=L.g*L.a+g*(1-L.a); bl=L.b*L.a+bl*(1-L.a);
+    }
+    function h(n){n=Math.max(0,Math.min(255,Math.round(n)));return (n<16?"0":"")+n.toString(16);}
+    return "#"+h(r)+h(g)+h(bl);
+  }
+  function sync(){
+    try{
+      var w = window.innerWidth, hh = window.innerHeight;
+      var top = colorAt(w/2, 2);
+      var bottom = colorAt(w/2, hh-3);
+      var key = top+bottom; if(key===last) return; last = key;
+      var m = document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute("content", top);
+      if(window.AndroidBars && AndroidBars.setBars) AndroidBars.setBars(top, bottom);
+    }catch(e){}
+  }
+  var t; function soon(){ clearTimeout(t); t = setTimeout(sync, 60); }
+  window.addEventListener("load", function(){ sync(); setTimeout(sync,300); setTimeout(sync,1000); });
+  window.addEventListener("resize", soon);
+  window.addEventListener("hashchange", soon);
+  window.addEventListener("popstate", soon);
+  document.addEventListener("click", function(){ setTimeout(sync,120); setTimeout(sync,450); }, true);
+  document.addEventListener("transitionend", soon, true);
+  document.addEventListener("scroll", soon, true);
+  new MutationObserver(soon).observe(document.documentElement,{attributes:true,subtree:true,childList:true,attributeFilter:["class","style","data-theme","data-bg","data-card","hidden"]});
+  setInterval(sync, 1500);
+})();
+</script>
 </body>
 </html>
     
