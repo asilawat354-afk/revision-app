@@ -78,7 +78,7 @@
   color-scheme: light;
 }
 
-html { overscroll-behavior-y: none; overflow-anchor: none; }
+html { overscroll-behavior-y: contain; overflow-anchor: none; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; margin: 0; padding: 0; }
 body {
   font-family: var(--font);
@@ -10942,7 +10942,24 @@ try { ntPaint(''); ntPaint('Manual'); } catch(e) {}
 
 })();
 </script>
-<style>/* रबड़ जैसा खिंचाव बंद */html,body,*{overscroll-behavior:none !important;}</style>
+<style>
+/* नीचे की पट्टी पर बंद sheets की छाया (काली/सफ़ेद रोशनी) न दिखे */
+.fx:not(.open),.hf-sheet:not(.open){box-shadow:none!important}
+.fx,.hf-sheet{transition:transform .34s cubic-bezier(.22,1,.36,1),box-shadow .3s ease!important}
+/* scroll के समय पृष्ठभूमि के orbs रुकें, ताकि हर जगह scrolling Subject tab जैसी smooth रहे */
+html.is-scrolling .bg-orb{animation-play-state:paused!important}
+#bgOrbs{contain:strict;transform:translateZ(0)}
+.hf-glass-popover:not(.open){box-shadow:none!important}
+.ws-tip:not(.show){box-shadow:none!important}
+</style>
+<script>
+(function(){
+  var el=document.documentElement,t=null;
+  function on(){ if(!el.classList.contains('is-scrolling')) el.classList.add('is-scrolling'); clearTimeout(t); t=setTimeout(function(){ el.classList.remove('is-scrolling'); },180); }
+  window.addEventListener('scroll',on,{passive:true,capture:true});
+  window.addEventListener('touchmove',on,{passive:true,capture:true});
+})();
+</script>
 </body>
 </html>
     
