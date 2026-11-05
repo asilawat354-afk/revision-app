@@ -59,60 +59,123 @@ jobs:
           cat > "$MAIN" << JAVA
           package $PKG;
 
-          import android.app.Activity;
+          import android.graphics.Bitmap;
           import android.graphics.Color;
+          import android.graphics.Rect;
           import android.os.Build;
           import android.os.Bundle;
+          import android.os.Handler;
+          import android.os.Looper;
+          import android.view.PixelCopy;
+          import android.view.View;
           import android.view.Window;
           import android.view.WindowManager;
+          import android.webkit.WebView;
           import android.widget.Toast;
           import androidx.core.view.WindowCompat;
           import androidx.core.view.WindowInsetsControllerCompat;
           import com.getcapacitor.BridgeActivity;
-          import com.getcapacitor.Plugin;
-          import com.getcapacitor.PluginCall;
-          import com.getcapacitor.PluginMethod;
-          import com.getcapacitor.annotation.CapacitorPlugin;
 
           public class MainActivity extends BridgeActivity {
 
-            @CapacitorPlugin(name = "AppBars")
-            public static class AppBarsPlugin extends Plugin {
-              static int shown = 0;
-              @PluginMethod
-              public void setBars(final PluginCall call) {
-                final String t = call.getString("top");
-                final String b = call.getString("bottom");
-                final Activity act = getActivity();
-                act.runOnUiThread(() -> {
-                  String err = "ok";
-                  try {
-                    int tc = Color.parseColor(t), bc = Color.parseColor(b);
-                    Window w = act.getWindow();
-                    w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                    w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    w.setStatusBarColor(tc);
-                    w.setNavigationBarColor(bc);
-                    if (Build.VERSION.SDK_INT >= 29) {
-                      w.setNavigationBarContrastEnforced(false);
-                      w.setStatusBarContrastEnforced(false);
-                    }
-                    WindowInsetsControllerCompat c = WindowCompat.getInsetsController(w, w.getDecorView());
-                    c.setAppearanceLightStatusBars(isLight(tc));
-                    c.setAppearanceLightNavigationBars(isLight(bc));
-                  } catch (Throwable e) {
-                    err = e.toString();
-                  }
-                  if (shown++ < 2) Toast.makeText(act, "v4 " + t + " " + b + " " + err + " sdk" + Build.VERSION.SDK_INT, Toast.LENGTH_LONG).show();
-                });
-                call.resolve();
+            private final Handler handler = new Handler(Looper.getMainLooper());
+            private int candTop = 0, candBot = 0, stable = 0;
+            private int curTop = 0, curBot = 0;
+            private boolean applied = false, toasted = false;
+            private int gotTop, gotBot, got = 0;
+
+            private final Runnable tick = new Runnable() {
+              @Override public void run() {
+                try { sample(); } catch (Throwable ignored) {}
+                handler.postDelayed(this, 350);
               }
-            }
+            };
 
             @Override
             public void onCreate(Bundle savedInstanceState) {
-              registerPlugin(AppBarsPlugin.class);
               super.onCreate(savedInstanceState);
+              try { getBridge().getWebView().setOverScrollMode(View.OVER_SCROLL_NEVER); } catch (Throwable ignored) {}
+            }
+
+            @Override
+            public void onResume() {
+              super.onResume();
+              handler.postDelayed(tick, 700);
+            }
+
+            @Override
+            public void onPause() {
+              super.onPause();
+              handler.removeCallbacks(tick);
+            }
+
+            private void sample() {
+              if (Build.VERSION.SDK_INT < 26) return;
+              final WebView wv = getBridge().getWebView();
+              if (wv == null || wv.getWidth() == 0 || wv.getHeight() == 0) return;
+              int[] loc = new int[2];
+              wv.getLocationInWindow(loc);
+              final Window w = getWindow();
+              int x = loc[0] + 6;
+              int yTop = loc[1] + 2;
+              int yBot = loc[1] + wv.getHeight() - 3;
+              got = 0;
+              grab(w, x, yTop, true);
+              grab(w, x, yBot, false);
+            }
+
+            private void grab(Window w, int x, int y, final boolean isTop) {
+              final Bitmap bm = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+              PixelCopy.request(w, new Rect(x, y, x + 1, y + 1), bm, copyResult -> {
+                if (copyResult != PixelCopy.SUCCESS) return;
+                int c = bm.getPixel(0, 0) | 0xFF000000;
+                if (isTop) gotTop = c; else gotBot = c;
+                if (++got == 2) onColors(gotTop, gotBot);
+              }, handler);
+            }
+
+            private static boolean close(int a, int b, int d) {
+              return Math.abs(Color.red(a) - Color.red(b)) <= d
+                  && Math.abs(Color.green(a) - Color.green(b)) <= d
+                  && Math.abs(Color.blue(a) - Color.blue(b)) <= d;
+            }
+
+            private void onColors(int t, int b) {
+              if (!close(t, candTop, 3) || !close(b, candBot, 3)) {
+                candTop = t; candBot = b; stable = 1;
+                return;
+              }
+              if (++stable < 2) return;
+              if (applied && close(t, curTop, 6) && close(b, curBot, 6)) return;
+              curTop = t; curBot = b; applied = true;
+              applyBars(t, b);
+            }
+
+            private void applyBars(int tc, int bc) {
+              String err = "ok";
+              try {
+                Window w = getWindow();
+                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                w.setStatusBarColor(tc);
+                w.setNavigationBarColor(bc);
+                if (Build.VERSION.SDK_INT >= 29) {
+                  w.setNavigationBarContrastEnforced(false);
+                  w.setStatusBarContrastEnforced(false);
+                }
+                WindowInsetsControllerCompat c = WindowCompat.getInsetsController(w, w.getDecorView());
+                c.setAppearanceLightStatusBars(isLight(tc));
+                c.setAppearanceLightNavigationBars(isLight(bc));
+                if (!toasted) {
+                  toasted = true;
+                  Toast.makeText(this, "v5 sdk" + Build.VERSION.SDK_INT
+                    + " set top=" + String.format("#%06X", tc & 0xFFFFFF)
+                    + " bot=" + String.format("#%06X", bc & 0xFFFFFF)
+                    + " readTop=" + String.format("#%06X", w.getStatusBarColor() & 0xFFFFFF), Toast.LENGTH_LONG).show();
+                }
+              } catch (Throwable e) {
+                Toast.makeText(this, "err " + e, Toast.LENGTH_LONG).show();
+              }
             }
 
             static boolean isLight(int c) {
