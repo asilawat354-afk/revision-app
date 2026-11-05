@@ -59,6 +59,7 @@ jobs:
           cat > "$MAIN" << JAVA
           package $PKG;
 
+          import android.app.Activity;
           import android.graphics.Canvas;
           import android.graphics.Color;
           import android.graphics.ColorFilter;
@@ -69,7 +70,7 @@ jobs:
           import android.os.Bundle;
           import android.view.View;
           import android.view.Window;
-          import android.webkit.JavascriptInterface;
+          import android.widget.Toast;
           import androidx.annotation.NonNull;
           import androidx.core.graphics.Insets;
           import androidx.core.view.ViewCompat;
@@ -77,17 +78,19 @@ jobs:
           import androidx.core.view.WindowInsetsCompat;
           import androidx.core.view.WindowInsetsControllerCompat;
           import com.getcapacitor.BridgeActivity;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.CapacitorPlugin;
 
           public class MainActivity extends BridgeActivity {
 
-            // ऊपर और नीचे की पट्टी के पीछे का रंग
             static class BarsBg extends Drawable {
               int top = Color.BLACK, bottom = Color.BLACK, topH = 0, botH = 0;
               final Paint p = new Paint();
               @Override public void draw(@NonNull Canvas c) {
                 int w = getBounds().width(), h = getBounds().height();
                 p.setColor(top);    c.drawRect(0, 0, w, h, p);
-                p.setColor(top);    c.drawRect(0, 0, w, topH, p);
                 p.setColor(bottom); c.drawRect(0, h - botH, w, h, p);
               }
               @Override public void setAlpha(int a) {}
@@ -95,10 +98,33 @@ jobs:
               @Override public int getOpacity() { return PixelFormat.OPAQUE; }
             }
 
-            private final BarsBg bg = new BarsBg();
+            static final BarsBg bg = new BarsBg();
+
+            @CapacitorPlugin(name = "AppBars")
+            public static class AppBarsPlugin extends Plugin {
+              @PluginMethod
+              public void setBars(final PluginCall call) {
+                final String t = call.getString("top");
+                final String b = call.getString("bottom");
+                final Activity act = getActivity();
+                act.runOnUiThread(() -> {
+                  try {
+                    int tc = Color.parseColor(t), bc = Color.parseColor(b);
+                    bg.top = tc; bg.bottom = bc;
+                    Window w = act.getWindow();
+                    w.getDecorView().invalidate();
+                    WindowInsetsControllerCompat c = WindowCompat.getInsetsController(w, w.getDecorView());
+                    c.setAppearanceLightStatusBars(isLight(tc));
+                    c.setAppearanceLightNavigationBars(isLight(bc));
+                  } catch (Throwable ignored) {}
+                });
+                call.resolve();
+              }
+            }
 
             @Override
             public void onCreate(Bundle savedInstanceState) {
+              registerPlugin(AppBarsPlugin.class);
               super.onCreate(savedInstanceState);
               final Window w = getWindow();
               WindowCompat.setDecorFitsSystemWindows(w, false);
@@ -123,22 +149,7 @@ jobs:
                 return WindowInsetsCompat.CONSUMED;
               });
               ViewCompat.requestApplyInsets(content);
-
-              getBridge().getWebView().addJavascriptInterface(new Object() {
-                @JavascriptInterface
-                public void setBars(final String topHex, final String bottomHex) {
-                  runOnUiThread(() -> {
-                    try {
-                      int t = Color.parseColor(topHex), b = Color.parseColor(bottomHex);
-                      bg.top = t; bg.bottom = b;
-                      w.getDecorView().invalidate();
-                      WindowInsetsControllerCompat c = WindowCompat.getInsetsController(w, w.getDecorView());
-                      c.setAppearanceLightStatusBars(isLight(t));
-                      c.setAppearanceLightNavigationBars(isLight(b));
-                    } catch (Throwable ignored) {}
-                  });
-                }
-              }, "AndroidBars");
+              Toast.makeText(this, "Bars v2 active", Toast.LENGTH_SHORT).show();
             }
 
             static boolean isLight(int c) {
