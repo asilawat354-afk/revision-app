@@ -10975,9 +10975,10 @@ try { ntPaint(''); ntPaint('Manual'); } catch(e) {}
       var w = window.innerWidth, hh = window.innerHeight;
       var top = colorAt(w/2, 2);
       var bottom = colorAt(w/2, hh-3);
-      var key = top+bottom; if(key===last) return; last = key;
       var m = document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute("content", top);
-      if(window.AndroidBars && AndroidBars.setBars) AndroidBars.setBars(top, bottom);
+      if(!(window.AndroidBars && AndroidBars.setBars)) return;
+      var key = top+bottom; if(key===last) return;
+      AndroidBars.setBars(top, bottom); last = key;
     }catch(e){}
   }
   var t; function soon(){ clearTimeout(t); t = setTimeout(sync, 60); }
