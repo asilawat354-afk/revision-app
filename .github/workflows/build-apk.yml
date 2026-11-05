@@ -51,138 +51,169 @@ jobs:
           if [ -f google-services.json ]; then cp google-services.json android/app/google-services.json; fi
           npx cap sync android
 
-      - name: Match system bars with app colors
+      - name: Edge-to-edge system bars (transparent status + navigation bar)
         run: |
           MAIN=$(find android/app/src/main/java -name MainActivity.java | head -1)
           PKG=$(grep -m1 '^package ' "$MAIN" | sed 's/package //; s/;//')
           echo "MainActivity: $MAIN  package: $PKG"
-          cat > "$MAIN" << JAVA
-          package $PKG;
+          cat > "$MAIN" << 'JAVA'
+          package __PKG__;
 
-          import android.graphics.Bitmap;
           import android.graphics.Color;
-          import android.graphics.Rect;
           import android.os.Build;
           import android.os.Bundle;
           import android.os.Handler;
           import android.os.Looper;
-          import android.view.PixelCopy;
+          import android.view.View;
           import android.view.Window;
           import android.view.WindowManager;
+          import android.webkit.JavascriptInterface;
           import android.webkit.WebView;
-          import android.widget.Toast;
+          import androidx.core.graphics.Insets;
+          import androidx.core.view.ViewCompat;
           import androidx.core.view.WindowCompat;
+          import androidx.core.view.WindowInsetsCompat;
           import androidx.core.view.WindowInsetsControllerCompat;
           import com.getcapacitor.BridgeActivity;
 
           public class MainActivity extends BridgeActivity {
 
-            private final Handler handler = new Handler(Looper.getMainLooper());
-            private int candTop = 0, candBot = 0, stable = 0;
-            private int curTop = 0, curBot = 0;
-            private boolean applied = false, toasted = false;
-            private int gotTop, gotBot, got = 0;
+            private static final int DARK_BG = 0xFF030712;
+            private static final int LIGHT_BG = 0xFFF8FAFC;
 
-            private final Runnable tick = new Runnable() {
-              @Override public void run() {
-                try { sample(); } catch (Throwable ignored) {}
-                handler.postDelayed(this, 350);
-              }
+            private final Handler handler = new Handler(Looper.getMainLooper());
+            private volatile int insTop = 0, insBottom = 0, insLeft = 0, insRight = 0;
+            private boolean dark = true;
+            private boolean bridgeAdded = false;
+
+            private final Runnable pushNow = new Runnable() {
+              @Override public void run() { pushInsets(); }
             };
+
+            /** Web page isse status bar / navigation bar ki size (dp) padhta hai aur icon colour set karta hai. */
+            public class InsetsBridge {
+              @JavascriptInterface
+              public String get() {
+                return insTop + "," + insBottom + "," + insLeft + "," + insRight;
+              }
+
+              @JavascriptInterface
+              public void setDark(final boolean isDark) {
+                runOnUiThread(new Runnable() {
+                  @Override public void run() { applyAppearance(isDark); }
+                });
+              }
+            }
 
             @Override
             public void onCreate(Bundle savedInstanceState) {
               super.onCreate(savedInstanceState);
+              try {
+                setupEdgeToEdge();
+              } catch (Throwable ignored) {
+              }
             }
 
             @Override
             public void onResume() {
               super.onResume();
-              handler.postDelayed(tick, 700);
+              try {
+                attachBridge();
+                applyAppearance(dark);
+                View content = findViewById(android.R.id.content);
+                if (content != null) ViewCompat.requestApplyInsets(content);
+                handler.postDelayed(pushNow, 400);
+                handler.postDelayed(pushNow, 1500);
+                handler.postDelayed(pushNow, 3500);
+              } catch (Throwable ignored) {
+              }
             }
 
             @Override
             public void onPause() {
               super.onPause();
-              handler.removeCallbacks(tick);
+              handler.removeCallbacks(pushNow);
             }
 
-            private void sample() {
-              if (Build.VERSION.SDK_INT < 26) return;
-              final WebView wv = getBridge().getWebView();
-              if (wv == null || wv.getWidth() == 0 || wv.getHeight() == 0) return;
-              int[] loc = new int[2];
-              wv.getLocationInWindow(loc);
+            private void setupEdgeToEdge() {
               final Window w = getWindow();
-              int x = loc[0] + 6;
-              int yTop = loc[1] + 2;
-              int yBot = loc[1] + wv.getHeight() - 3;
-              got = 0;
-              grab(w, x, yTop, true);
-              grab(w, x, yBot, false);
-            }
-
-            private void grab(Window w, int x, int y, final boolean isTop) {
-              final Bitmap bm = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-              PixelCopy.request(w, new Rect(x, y, x + 1, y + 1), bm, copyResult -> {
-                if (copyResult != PixelCopy.SUCCESS) return;
-                int c = bm.getPixel(0, 0) | 0xFF000000;
-                if (isTop) gotTop = c; else gotBot = c;
-                if (++got == 2) onColors(gotTop, gotBot);
-              }, handler);
-            }
-
-            private static boolean close(int a, int b, int d) {
-              return Math.abs(Color.red(a) - Color.red(b)) <= d
-                  && Math.abs(Color.green(a) - Color.green(b)) <= d
-                  && Math.abs(Color.blue(a) - Color.blue(b)) <= d;
-            }
-
-            private void onColors(int t, int b) {
-              if (!close(t, candTop, 3) || !close(b, candBot, 3)) {
-                candTop = t; candBot = b; stable = 1;
-                return;
+              WindowCompat.setDecorFitsSystemWindows(w, false);
+              w.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+              w.setStatusBarColor(Color.TRANSPARENT);
+              w.setNavigationBarColor(Color.TRANSPARENT);
+              if (Build.VERSION.SDK_INT >= 29) {
+                w.setNavigationBarContrastEnforced(false);
+                w.setStatusBarContrastEnforced(false);
               }
-              if (++stable < 2) return;
-              if (applied && close(t, curTop, 6) && close(b, curBot, 6)) return;
-              curTop = t; curBot = b; applied = true;
-              applyBars(t, b);
+              if (Build.VERSION.SDK_INT >= 28) {
+                WindowManager.LayoutParams lp = w.getAttributes();
+                lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                w.setAttributes(lp);
+              }
+              applyAppearance(true);
+
+              final View content = findViewById(android.R.id.content);
+              if (content == null) return;
+              ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
+                try {
+                  Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+                  Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+                  boolean imeOn = insets.isVisible(WindowInsetsCompat.Type.ime()) && ime.bottom > 0;
+                  // Keyboard khula ho to webview ko keyboard ke upar tak chhota kar do
+                  v.setPadding(0, 0, 0, imeOn ? ime.bottom : 0);
+                  float d = getResources().getDisplayMetrics().density;
+                  if (d <= 0f) d = 1f;
+                  insTop = Math.round(bars.top / d);
+                  insBottom = imeOn ? 0 : Math.round(bars.bottom / d);
+                  insLeft = Math.round(bars.left / d);
+                  insRight = Math.round(bars.right / d);
+                  pushInsets();
+                } catch (Throwable ignored) {
+                }
+                return insets;
+              });
+              ViewCompat.requestApplyInsets(content);
+              attachBridge();
             }
 
-            private void applyBars(int tc, int bc) {
-              String err = "ok";
+            private void attachBridge() {
+              if (bridgeAdded) return;
+              try {
+                WebView wv = getBridge() != null ? getBridge().getWebView() : null;
+                if (wv == null) return;
+                wv.addJavascriptInterface(new InsetsBridge(), "AndroidInsets");
+                bridgeAdded = true;
+              } catch (Throwable ignored) {
+              }
+            }
+
+            private void pushInsets() {
+              try {
+                WebView wv = getBridge() != null ? getBridge().getWebView() : null;
+                if (wv == null) return;
+                wv.evaluateJavascript("window.__setInsets&&window.__setInsets("
+                    + insTop + "," + insBottom + "," + insLeft + "," + insRight + ")", null);
+              } catch (Throwable ignored) {
+              }
+            }
+
+            private void applyAppearance(boolean isDark) {
+              dark = isDark;
               try {
                 Window w = getWindow();
-                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                w.setStatusBarColor(tc);
-                w.setNavigationBarColor(bc);
-                if (Build.VERSION.SDK_INT >= 29) {
-                  w.setNavigationBarContrastEnforced(false);
-                  w.setStatusBarContrastEnforced(false);
-                }
+                int bg = isDark ? DARK_BG : LIGHT_BG;
+                w.getDecorView().setBackgroundColor(bg);
                 WindowInsetsControllerCompat c = WindowCompat.getInsetsController(w, w.getDecorView());
-                c.setAppearanceLightStatusBars(isLight(tc));
-                c.setAppearanceLightNavigationBars(isLight(bc));
-                if (!toasted) {
-                  toasted = true;
-                  Toast.makeText(this, "v5 sdk" + Build.VERSION.SDK_INT
-                    + " set top=" + String.format("#%06X", tc & 0xFFFFFF)
-                    + " bot=" + String.format("#%06X", bc & 0xFFFFFF)
-                    + " readTop=" + String.format("#%06X", w.getStatusBarColor() & 0xFFFFFF), Toast.LENGTH_LONG).show();
-                }
-              } catch (Throwable e) {
-                Toast.makeText(this, "err " + e, Toast.LENGTH_LONG).show();
+                // true = dark icons (light theme), false = light icons (dark theme)
+                c.setAppearanceLightStatusBars(!isDark);
+                c.setAppearanceLightNavigationBars(!isDark);
+              } catch (Throwable ignored) {
               }
-            }
-
-            static boolean isLight(int c) {
-              double l = (0.299 * Color.red(c) + 0.587 * Color.green(c) + 0.114 * Color.blue(c)) / 255.0;
-              return l > 0.6;
             }
           }
           JAVA
-          head -20 "$MAIN"
+          sed -i "s/__PKG__/$PKG/" "$MAIN"
+          head -5 "$MAIN"
 
       - name: Use fixed debug keystore
         run: |
