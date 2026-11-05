@@ -60,22 +60,13 @@ jobs:
           package $PKG;
 
           import android.app.Activity;
-          import android.graphics.Canvas;
           import android.graphics.Color;
-          import android.graphics.ColorFilter;
-          import android.graphics.Paint;
-          import android.graphics.PixelFormat;
-          import android.graphics.drawable.Drawable;
           import android.os.Build;
           import android.os.Bundle;
-          import android.view.View;
           import android.view.Window;
+          import android.view.WindowManager;
           import android.widget.Toast;
-          import androidx.annotation.NonNull;
-          import androidx.core.graphics.Insets;
-          import androidx.core.view.ViewCompat;
           import androidx.core.view.WindowCompat;
-          import androidx.core.view.WindowInsetsCompat;
           import androidx.core.view.WindowInsetsControllerCompat;
           import com.getcapacitor.BridgeActivity;
           import com.getcapacitor.Plugin;
@@ -84,21 +75,6 @@ jobs:
           import com.getcapacitor.annotation.CapacitorPlugin;
 
           public class MainActivity extends BridgeActivity {
-
-            static class BarsBg extends Drawable {
-              int top = Color.RED, bottom = Color.GREEN, topH = 0, botH = 0;
-              final Paint p = new Paint();
-              @Override public void draw(@NonNull Canvas c) {
-                int w = getBounds().width(), h = getBounds().height();
-                p.setColor(top);    c.drawRect(0, 0, w, h, p);
-                p.setColor(bottom); c.drawRect(0, h - botH, w, h, p);
-              }
-              @Override public void setAlpha(int a) {}
-              @Override public void setColorFilter(ColorFilter f) {}
-              @Override public int getOpacity() { return PixelFormat.OPAQUE; }
-            }
-
-            static final BarsBg bg = new BarsBg();
 
             @CapacitorPlugin(name = "AppBars")
             public static class AppBarsPlugin extends Plugin {
@@ -109,16 +85,25 @@ jobs:
                 final String b = call.getString("bottom");
                 final Activity act = getActivity();
                 act.runOnUiThread(() -> {
+                  String err = "ok";
                   try {
                     int tc = Color.parseColor(t), bc = Color.parseColor(b);
-                    bg.top = tc; bg.bottom = bc;
-                    if (shown++ < 3) Toast.makeText(act, "setBars " + t + " " + b, Toast.LENGTH_SHORT).show();
                     Window w = act.getWindow();
-                    w.getDecorView().invalidate();
+                    w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                    w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    w.setStatusBarColor(tc);
+                    w.setNavigationBarColor(bc);
+                    if (Build.VERSION.SDK_INT >= 29) {
+                      w.setNavigationBarContrastEnforced(false);
+                      w.setStatusBarContrastEnforced(false);
+                    }
                     WindowInsetsControllerCompat c = WindowCompat.getInsetsController(w, w.getDecorView());
                     c.setAppearanceLightStatusBars(isLight(tc));
                     c.setAppearanceLightNavigationBars(isLight(bc));
-                  } catch (Throwable ignored) {}
+                  } catch (Throwable e) {
+                    err = e.toString();
+                  }
+                  if (shown++ < 2) Toast.makeText(act, "v4 " + t + " " + b + " " + err + " sdk" + Build.VERSION.SDK_INT, Toast.LENGTH_LONG).show();
                 });
                 call.resolve();
               }
@@ -128,30 +113,6 @@ jobs:
             public void onCreate(Bundle savedInstanceState) {
               registerPlugin(AppBarsPlugin.class);
               super.onCreate(savedInstanceState);
-              final Window w = getWindow();
-              WindowCompat.setDecorFitsSystemWindows(w, false);
-              w.setBackgroundDrawable(bg);
-              try {
-                w.setStatusBarColor(Color.TRANSPARENT);
-                w.setNavigationBarColor(Color.TRANSPARENT);
-                if (Build.VERSION.SDK_INT >= 29) {
-                  w.setNavigationBarContrastEnforced(false);
-                  w.setStatusBarContrastEnforced(false);
-                }
-              } catch (Throwable ignored) {}
-
-              final View content = findViewById(android.R.id.content);
-              ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
-                Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
-                Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
-                v.setPadding(bars.left, bars.top, bars.right, Math.max(bars.bottom, ime.bottom));
-                bg.topH = bars.top;
-                bg.botH = Math.max(bars.bottom, ime.bottom);
-                w.getDecorView().invalidate();
-                return WindowInsetsCompat.CONSUMED;
-              });
-              ViewCompat.requestApplyInsets(content);
-              Toast.makeText(this, "Bars v3 active", Toast.LENGTH_SHORT).show();
             }
 
             static boolean isLight(int c) {
@@ -161,13 +122,6 @@ jobs:
           }
           JAVA
           head -20 "$MAIN"
-
-      - name: Transparent system bars in theme
-        run: |
-          S=android/app/src/main/res/values/styles.xml
-          cat "$S"
-          sed -i '/name="AppTheme.NoActionBar"/,/<\/style>/ s#</style>#    <item name="android:statusBarColor">@android:color/transparent</item>\n    <item name="android:navigationBarColor">@android:color/transparent</item>\n    <item name="android:enforceNavigationBarContrast">false</item>\n    <item name="android:enforceStatusBarContrast">false</item>\n</style>#' "$S" || true
-          cat "$S"
 
       - name: Use fixed debug keystore
         run: |
