@@ -43,7 +43,7 @@ jobs:
           }
           CFG
           npm init -y
-          npm install --legacy-peer-deps @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem @capacitor/share @capacitor-firebase/authentication firebase
+          npm install --legacy-peer-deps @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem @capacitor/share @capacitor/app @capacitor-firebase/authentication firebase
           npx cap add android
           printf '\next {\n    rgcfaIncludeGoogle = true\n}\n' >> android/variables.gradle
           if [ -f google-services.json ]; then cp google-services.json android/app/google-services.json; fi
