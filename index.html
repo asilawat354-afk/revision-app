@@ -1746,7 +1746,7 @@ html[data-card] .stats-row .stat-capsule { background: linear-gradient(135deg, v
 /* ===== bottom bars (main + workspace sub-tabs), pill switcher ===== */
 .bbw{position:fixed;left:0;right:0;bottom:0;margin:0 auto;width:100%;max-width:520px;height:calc(62px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--border);z-index:100;overflow:hidden}
 .bbw nav{position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:auto!important;width:auto!important;max-width:none!important;height:62px;margin:0!important;transform:none!important;padding:4px 8px 2px!important;display:grid!important;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));align-items:center;gap:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .22s ease;will-change:auto}
-body.in-ws .bbw nav#mainBar{transform:translateY(100%)!important;opacity:0;pointer-events:none}
+
 .ni,.si{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px!important;padding:0!important;border:0;border-radius:0!important;background:transparent!important;color:var(--muted);box-shadow:none!important;min-width:0;cursor:pointer;font:inherit;-webkit-tap-highlight-color:transparent}
 .ni.active,.si.active{background:transparent!important;color:var(--primary)!important}
 .ni .pl,.si .pl{position:relative;width:60px;height:29px;border-radius:999px;display:flex;align-items:center;justify-content:center}
@@ -1940,7 +1940,7 @@ body.ws-deep .ws-pane{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)
 .rfb.has .rfb-n{display:inline-flex}
 
 /* ===== Play Store style: collapsing top header + sticky underline tab bar ===== */
-body.in-ws .bbw{transform:translateY(105%);pointer-events:none}
+
 .ws{display:block;padding:0}
 .ws-safe-shield{position:absolute;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:95}
 .ws-chrome{position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:85;background:var(--surface);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);will-change:transform}
@@ -3420,6 +3420,31 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
 .cx-in svg.ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
 .cx-in input{width:100%;box-sizing:border-box;height:42px;padding:0 12px 0 36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:12.5px}
 .cx-note{font-size:11px;color:var(--muted);line-height:1.45;margin:0;word-break:break-all}
+
+/* ===== नेविगेशन और स्क्रॉल सुधार ===== */
+.bbw{transition:transform .24s cubic-bezier(.22,1,.36,1)}
+body.nav-hide .bbw,body.ws-deep .bbw,body.ws-sel .bbw{transform:translateY(105%);pointer-events:none}
+body.in-ws:not(.ws-deep):not(.ws-sel) .ws-pane{padding-bottom:calc(34px + env(safe-area-inset-bottom,0px))}
+/* Master Database: स्लाइड की जगह हल्का फ़ेड, ताकि स्विच करते समय अटकाव न दिखे */
+.ws{transform:none;visibility:hidden;transition:opacity .16s ease,visibility 0s linear .16s}
+body.in-ws .ws{visibility:visible;transition:opacity .16s ease}
+/* हेडर की धुंधली (blur) परत स्क्रॉल में अटकाव देती है, इसलिए सादा रंग */
+.ws-chrome,.ws-hclone{-webkit-backdrop-filter:none;backdrop-filter:none}
+.ws-chrome{background:var(--surface)}
+/* लंबा नोट बगल में न खिसके */
+.wv-note,.wv-nl{overflow-wrap:anywhere;word-break:break-word;max-width:100%;white-space:normal}
+.ws-pane{overflow-x:hidden}
+
+/* ===== टैब बदलने का सादा effect + नीचे का gap ===== */
+@keyframes viewFade{from{opacity:0}to{opacity:1}}
+.view{animation:viewFade .14s ease-out both}
+.view > .card:not(.session-review-card),.stats-row .stat-capsule{animation:none}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px));transition:padding-bottom .24s cubic-bezier(.22,1,.36,1)}
+body.nav-hide{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.ws-top.no-back .ws-hl > div{padding-left:10px}
+/* दूसरी जगह से (नीचे के मेन्यू के अलावा) खुले तो sub-page की तरह दाईं ओर से स्लाइड */
+body.ws-slide .ws{transform:translateX(100%);transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .22s ease,visibility 0s linear .34s}
+body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .22s ease}
 </style>
 </head>
 <body>
@@ -4223,7 +4248,7 @@ a.nt-lkc svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;
 <div class="bbw">
   <nav id="mainBar">
     <button type="button" class="ni active" data-tab="study" onclick="go('study')"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v4l2.6 1.6M9.5 3h5"/></svg><svg class="i-s" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M9.5 2.5h5a.75.75 0 0 1 0 1.5h-1.75v1.6a8 8 0 1 1-1.5 0V4H9.5a.75.75 0 0 1 0-1.5zm3.25 8a.75.75 0 0 0-1.5 0v3.9c0 .27.14.52.37.65l2.4 1.45a.75.75 0 0 0 .78-1.28l-2.05-1.24z"/></svg></div><span class="lb">Flow</span></button>
-    <button type="button" class="ni" data-tab="ws" onclick="openWS(0)"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><ellipse cx="12" cy="6.5" rx="7.5" ry="2.8"/><path d="M4.5 6.5v11c0 1.5 3.36 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-11"/><path d="M4.5 12c0 1.5 3.36 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></svg><svg class="i-s" viewBox="0 0 24 24"><ellipse cx="12" cy="6.2" rx="8" ry="3"/><path d="M4 8.5v3.2c0 1.8 3.58 3.2 8 3.2s8-1.4 8-3.2V8.5c-1.8 1.3-4.7 2-8 2s-6.2-.7-8-2z"/><path d="M4 14v3.5c0 1.8 3.58 3.2 8 3.2s8-1.4 8-3.2V14c-1.8 1.3-4.7 2-8 2s-6.2-.7-8-2z"/></svg></div><span class="lb">Master Database</span></button>
+    <button type="button" class="ni" data-tab="ws" onclick="openWS(0, true)"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><ellipse cx="12" cy="6.5" rx="7.5" ry="2.8"/><path d="M4.5 6.5v11c0 1.5 3.36 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-11"/><path d="M4.5 12c0 1.5 3.36 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></svg><svg class="i-s" viewBox="0 0 24 24"><ellipse cx="12" cy="6.2" rx="8" ry="3"/><path d="M4 8.5v3.2c0 1.8 3.58 3.2 8 3.2s8-1.4 8-3.2V8.5c-1.8 1.3-4.7 2-8 2s-6.2-.7-8-2z"/><path d="M4 14v3.5c0 1.8 3.58 3.2 8 3.2s8-1.4 8-3.2V14c-1.8 1.3-4.7 2-8 2s-6.2-.7-8-2z"/></svg></div><span class="lb">Master Database</span></button>
     <button type="button" class="ni" data-tab="database" onclick="go('database')"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg><svg class="i-s" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="2"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="2"/><rect x="13" y="13" width="7.5" height="7.5" rx="2"/></svg></div><span class="lb">Tools</span></button>
   </nav>
 </div>
@@ -5551,6 +5576,8 @@ function restoreSession() {
 // --- FLOW LOGIC ---
 function go(tab) {
   if (tab === 'history') { openWS(0); return; }
+  if (wsOpen) { wsAfterExit = () => go(tab); wsExitAll(); return; }
+  navShow();
   document.querySelectorAll('.ni').forEach(n => n.classList.toggle('active', n.getAttribute('data-tab') === tab));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   g('view-' + tab).classList.add('active');
@@ -7152,6 +7179,8 @@ function wsRender() {
   else if (lvl === 2) { title = chSt.chap; subHTML = SB0(1, chSt.sub); }
   else { title = chSt.lec; subHTML = SB0(2, chSt.sub) + SB(1, chSt.chap); }
   g('wsTitle').textContent = title; g('wsSub').innerHTML = subHTML;
+  g('wsBack').style.display = lvl === 0 ? 'none' : '';
+  g('wsTop').classList.toggle('no-back', lvl === 0);
   g('wsViewIcon').innerHTML = WS_VIEWS[wsViewIdx].icon;
   const deep = lvl >= 2;
   g('wsVw').style.display = lvl >= 3 ? 'none' : '';
@@ -7167,6 +7196,7 @@ function wsRender() {
   document.body.classList.toggle('ws-deep', wsOpen && wsDeep);   // chapter / lecture pages: no tab bar, header stays open
   g('wsScreen').classList.toggle('deep', wsDeep);
   g('wsScreen').classList.toggle('sel', selMode && wsTab === 0);
+  document.body.classList.toggle('ws-sel', wsOpen && selMode && wsTab === 0);
   g('wsScreen').style.setProperty('--chrome-h', ((wsDeep || (selMode && wsTab === 0)) ? 52 : 96) + 'px');
   g('wsSelCount').textContent = selIds.size + ' Selected';
   document.querySelectorAll('#wsTabs .ws-tab').forEach((b, i) => b.classList.toggle('active', i === wsTab));
@@ -7327,13 +7357,16 @@ function chPills() {
 function chRm(k) { if (k === 'all') chF = { sort: 'recent', stat: 'all', sub: 'all' }; else chF[k] = 'all'; wsRender(); }
 
 // ---------- open / close / back ----------
-function openWS(tab) {
+function openWS(tab, viaNav) {
   if (typeof tab === 'number') wsTab = tab;
   if (wsOpen) { wsRender(); return; }
   wsOpen = true; haptic('light');
   try { wsDefKey = localStorage.getItem(WS_KEY) || wsDefKey; } catch (e) {}
   wsViewIdx = Math.max(0, WS_VIEWS.findIndex(m => m.key === wsDefKey));
+  document.body.classList.toggle('ws-slide', !viaNav);
+  void document.body.offsetWidth;
   document.body.classList.add('in-ws');
+  navMark('ws'); navShow();
   wsPush();
   wsHdrOff = 0; wsApplyHdr(0, false);
   wsRender(); window.scrollTo(0, 0);
@@ -7342,8 +7375,9 @@ function exitWSDirect() {
   if (!wsOpen) return;
   wsPopClose(); chReopen = false; chSheetClose(); if (fsOpen) closeFSheet(); if (selMode) exitSel();
   chSt.chap = null; chSt.sub = null; chSt.lec = null; wsOpen = false;
-  document.body.classList.remove('in-ws', 'ws-deep');
+  document.body.classList.remove('in-ws', 'ws-deep', 'ws-sel');
   wsHdrOff = 0; wsApplyHdr(0, false);
+  navAfterWS();
 }
 function wsBack() { if (wsDepth > 0) history.back(); else wsPop(); }
 function wsPop() {
@@ -7928,6 +7962,63 @@ function buildCSV(logs) {
   return '\uFEFF' + [head].concat(rows).join('\r\n');
 }
 
+/* ===== नीचे का मेन्यू, बैक बटन, Master Database से टैब बदलना ===== */
+var wsAfterExit = null;
+function navMark(tab) {
+  document.querySelectorAll('.ni').forEach(n => n.classList.toggle('active', n.getAttribute('data-tab') === tab));
+}
+function navShow() { document.body.classList.remove('nav-hide'); }
+function navHide() { document.body.classList.add('nav-hide'); }
+function navAfterWS() {
+  const v = document.querySelector('.view.active');
+  let t = v ? v.id.replace('view-', '') : 'study';
+  if (t === 'history') t = 'study';
+  navMark(t);
+  navShow();
+  if (wsAfterExit) { const f = wsAfterExit; wsAfterExit = null; setTimeout(f, 0); }
+}
+function wsExitAll() {
+  let n = 8;
+  while (n-- > 0 && (dsModal || g('ds').classList.contains('open') || g('wsPop').classList.contains('open') || fsOpen || chShOpen)) { if (!wsPop()) break; }
+  if (wsDepth > 0) history.go(-wsDepth);
+  else { n = 8; while (n-- > 0 && wsOpen && wsPop()) {} }
+}
+/* स्क्रॉल या उँगली ऊपर खींचने पर मेन्यू छिपे, नीचे खींचने पर दिखे (सामग्री छोटी हो तब भी) */
+(function () {
+  let ty = null, tx = null, acc = 0;
+  document.addEventListener('touchstart', e => {
+    if (!e.touches || e.touches.length !== 1) { ty = null; return; }
+    ty = e.touches[0].clientY; tx = e.touches[0].clientX; acc = 0;
+    if (ty > window.innerHeight - 28) navShow();
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (ty === null || !e.touches || !e.touches.length) return;
+    const y = e.touches[0].clientY, x = e.touches[0].clientX;
+    const dy = ty - y, dx = tx - x;
+    ty = y; tx = x;
+    if (Math.abs(dx) > Math.abs(dy)) return;
+    acc = (dy > 0) === (acc > 0) ? acc + dy : dy;
+    if (acc > 14) navHide(); else if (acc < -14) navShow();
+  }, { passive: true });
+  document.addEventListener('scroll', e => {
+    const t = e.target === document ? document.scrollingElement : e.target;
+    if (t && t.scrollTop <= 4) navShow();
+  }, true);
+})();
+/* Android का बैक बटन: पहले ऐप के अंदर पीछे जाए, आख़िर में ही ऐप छोटा हो */
+(function () {
+  const C = window.Capacitor;
+  const A = C && C.Plugins && C.Plugins.App;
+  if (!A || !C.isNativePlatform || !C.isNativePlatform()) return;
+  A.addListener('backButton', () => {
+    if (wsOpen || g('ds').classList.contains('open')) { wsBack(); return; }
+    if (wsPop()) return;
+    const act = document.querySelector('.ni.active');
+    if (act && act.getAttribute('data-tab') !== 'study') { go('study'); return; }
+    if (A.minimizeApp) A.minimizeApp(); else if (A.exitApp) A.exitApp();
+  });
+})();
+
 /* ===== क्लाउड सिंक (Firebase) ===== */
 const FB_PROJECT_ID = 'YOUR_FIREBASE_PROJECT_ID';
 const FB_KEYS = ['ru_local_history', 'ru_local_database', 'ru_csv_ids', 'nc_lib_v1', 'ru_ws_recent', 'ru_ws_default_view', 'ru_syl_synced', 'ru_theme', 'ru_bg', 'ru_card'];
@@ -8054,7 +8145,7 @@ async function fbDoBackup(silent, a, force) {
     const obj = {};
     FB_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) obj[k] = v; });
     const json = JSON.stringify(obj);
-    if (!force && json === fbLastJson) { fbDirty = false; if (!silent) showIsland('कोई नया बदलाव नहीं है'); return; }
+    if (!force && json === fbLastJson) { fbDirty = false; try { localStorage.removeItem('ru_fb_dirty'); } catch (e) {} if (!silent) showIsland('कोई नया बदलाव नहीं है'); return; }
     const parts = [];
     for (let i = 0; i < json.length; i += FB_CHUNK) parts.push(json.slice(i, i + FB_CHUNK));
     if (!parts.length) parts.push('{}');
@@ -8068,6 +8159,7 @@ async function fbDoBackup(silent, a, force) {
     } });
     localStorage.setItem(FB_LAST, stamp);
     fbLastJson = json; fbDirty = false; fbLastUpload = Date.now();
+    try { localStorage.removeItem('ru_fb_dirty'); } catch (e) {}
     fbState('ok', 'सेव हुआ ' + nowHM());
     if (!silent) showIsland('क्लाउड बैकअप हो गया');
   } catch (e) {
@@ -8081,6 +8173,7 @@ async function fbDoBackup(silent, a, force) {
 function fbSchedule(delay) {
   if (!fbAutoOn || fbRestoring) return;
   fbDirty = true;
+  try { localStorage.setItem('ru_fb_dirty', '1'); } catch (e) {}
   clearTimeout(fbTimer);
   const wait = Math.max(delay || 8000, 20000 - (Date.now() - fbLastUpload));
   fbTimer = setTimeout(() => fbDoBackup(true), wait);
@@ -8102,6 +8195,7 @@ async function fbFirstSync() {
     if (localStorage.getItem(FB_FLAG) === a.uid) {
       fbAutoOn = true; fbState('ok', 'सिंक चालू');
       await fbCheckRemote(a);
+      if (localStorage.getItem('ru_fb_dirty')) fbSchedule(2000);
       return;
     }
     const meta = await fbCall('GET', fbMetaPath(a), a.token);
@@ -8254,6 +8348,7 @@ async function shPush(manual) {
     }
     if (!j.ok) throw new Error(j.error || 'अपडेट नहीं हुई');
     shLastHash = h;
+    try { localStorage.removeItem('ru_sh_dirty'); } catch (e) {}
     shState('ok', 'आख़िरी अपडेट ' + nowHM());
     if (manual) showIsland('Sheet अपडेट हो गई');
   } catch (e) {
@@ -8265,10 +8360,11 @@ async function shPush(manual) {
 }
 function shSchedule() {
   if (fbRestoring || !shCfg().url) return;
+  try { localStorage.setItem('ru_sh_dirty', '1'); } catch (e) {}
   clearTimeout(shTimer);
   shTimer = setTimeout(() => shPush(false), 15000);
 }
-setTimeout(shUI, 1500);
+setTimeout(() => { shUI(); if (localStorage.getItem('ru_sh_dirty') && shCfg().url) shSchedule(); }, 1500);
 
 /* हर बदलाव पर अपने-आप बैकअप */
 (function () {
@@ -8281,11 +8377,15 @@ setTimeout(shUI, 1500);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     if (fbDirty && fbAutoOn) { clearTimeout(fbTimer); fbDoBackup(true); }
+    if (shCfg().url && localStorage.getItem('ru_sh_dirty')) { clearTimeout(shTimer); shPush(false); }
   } else if (fbAutoOn && fbUser && Date.now() - fbLastCheck > 60000) {
     fbLastCheck = Date.now(); fbCheckRemote();
   }
 });
-window.addEventListener('online', () => { if (fbDirty) fbSchedule(1000); });
+window.addEventListener('online', () => {
+  if (fbDirty) fbSchedule(1000);
+  if (shCfg().url && localStorage.getItem('ru_sh_dirty')) shSchedule();
+});
 
 setTimeout(fbInit, 1200);
 
