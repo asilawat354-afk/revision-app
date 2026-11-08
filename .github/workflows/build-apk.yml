@@ -181,6 +181,8 @@ jobs:
               try {
                 WebView wv = getBridge() != null ? getBridge().getWebView() : null;
                 if (wv == null) return;
+                // Android ka rubber-band / stretch effect band: header aur tab bar page ke saath khinchte nahi
+                wv.setOverScrollMode(View.OVER_SCROLL_NEVER);
                 wv.addJavascriptInterface(new InsetsBridge(), "AndroidInsets");
                 bridgeAdded = true;
               } catch (Throwable ignored) {
