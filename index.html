@@ -1745,7 +1745,7 @@ html[data-card] .stats-row .stat-capsule { background: linear-gradient(135deg, v
 .hf-result-text { font-size: 13.5px; font-weight: 600; opacity: 0.9; }
 
 /* ===== पुरानी Filter sheet (#fx: Subjects टैब) — नए HF फ़िल्टर जैसा रूप, काम वही ===== */
-.fx{border-radius:26px 26px 0 0;border:0;border-top:1px solid var(--hf-border);background:var(--hf-sheet);box-shadow:0 -12px 40px rgba(0,0,0,.58);transition:transform .34s cubic-bezier(.22,1,.36,1);padding-bottom:var(--sab)}
+.fx{border-radius:26px 26px 0 0;border:0;border-top:1px solid var(--hf-border);background:var(--hf-sheet);box-shadow:0 -4px 18px rgba(0,0,0,.14);transition:transform .34s cubic-bezier(.22,1,.36,1);padding-bottom:var(--sab)}
 .fx-top{padding:10px 20px 13px}
 .fx-handle{width:40px;background:var(--hf-handle);opacity:1;margin:0 auto 11px}
 .fx-title{font-size:16.5px;font-weight:600}
@@ -1975,7 +1975,7 @@ body.ws-deep .ws-pane{padding-bottom:calc(24px + var(--sab))}
 .ws-safe-shield{position:absolute;top:0;left:0;right:0;height:var(--sat);background:var(--surface);z-index:95}
 .ws-chrome{position:absolute;top:var(--sat);left:0;right:0;z-index:85;background:var(--surface);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);will-change:transform}
 @supports (color:color-mix(in srgb,red 50%,blue)){.ws-chrome{background:color-mix(in srgb,var(--surface) 86%,transparent)}}
-.ws-chrome.pinned{box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.ws-chrome.pinned{box-shadow:none}
 .ws-top{height:52px;min-height:52px;margin:0;padding:0 10px 0 6px;will-change:opacity}
 .ws-top{border-bottom:1px solid transparent;transition:border-color .38s ease}
 .ws.deep .ws-top{border-bottom-color:var(--border)}
@@ -7999,7 +7999,15 @@ function navMark(tab) {
   document.querySelectorAll('.ni').forEach(n => n.classList.toggle('active', n.getAttribute('data-tab') === tab));
 }
 function navShow() { document.body.classList.remove('nav-hide'); }
-function navHide() { document.body.classList.add('nav-hide'); }
+function navCanHide() {   // Flow / Tools (mukhya tab) me bar hamesha dikhe; sirf Master Database (sub tab, sub page) aur History page me scroll par chhipe
+  if (document.body.classList.contains('in-ws')) return true;
+  const v = document.querySelector('.view.active');
+  return !!v && v.id === 'view-history';
+}
+function navHide() {
+  if (!navCanHide()) { document.body.classList.remove('nav-hide'); return; }
+  document.body.classList.add('nav-hide');
+}
 function navAfterWS() {
   const v = document.querySelector('.view.active');
   let t = v ? v.id.replace('view-', '') : 'study';
