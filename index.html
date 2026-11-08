@@ -37,14 +37,9 @@
   --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
   --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
 }
-.sys-scrim {
-  position: fixed; left: 0; right: 0; z-index: 40; pointer-events: none;
-  background: var(--bg);
-  background: color-mix(in srgb, var(--bg) 60%, transparent);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-}
-#sysTop { top: 0; height: var(--sat); -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent); mask-image: linear-gradient(to bottom, #000 60%, transparent); }
-#sysBot { bottom: 0; height: var(--sab); -webkit-mask-image: linear-gradient(to top, #000 60%, transparent); mask-image: linear-gradient(to top, #000 60%, transparent); }
+.sys-scrim { position: fixed; left: 0; right: 0; z-index: 40; pointer-events: none; background: var(--bg); }
+#sysTop { top: 0; height: var(--sat); }
+#sysBot { bottom: 0; height: var(--sab); }
 :root {
   --bg: #090a0f;
   --surface: #11141c;
@@ -1979,7 +1974,8 @@ body.ws-deep .ws-pane{padding-bottom:calc(24px + var(--sab))}
 /* ===== Play Store style: collapsing top header + sticky underline tab bar ===== */
 
 .ws{display:block;padding:0}
-.ws-safe-shield{position:absolute;top:0;left:0;right:0;height:var(--sat);background:var(--bg);z-index:95}
+.ws-safe-shield{position:absolute;top:0;left:0;right:0;height:var(--sat);background:var(--surface);z-index:95}
+.ws::after{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--sab);background:var(--bg);z-index:84;pointer-events:none}
 .ws-chrome{position:absolute;top:var(--sat);left:0;right:0;z-index:85;background:var(--surface);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);will-change:transform}
 @supports (color:color-mix(in srgb,red 50%,blue)){.ws-chrome{background:color-mix(in srgb,var(--surface) 86%,transparent)}}
 .ws-chrome.pinned{box-shadow:0 6px 20px rgba(0,0,0,.18)}
