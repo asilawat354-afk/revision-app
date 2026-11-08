@@ -229,7 +229,26 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          PROPS=gradle/wrapper/gradle-wrapper.properties
+          cat "$PROPS"
+          VER=$(sed -nE 's/.*gradle-([0-9][0-9.]*)-(all|bin)\.zip.*/\1/p' "$PROPS" | head -1)
+          KIND=$(sed -nE 's/.*gradle-[0-9][0-9.]*-(all|bin)\.zip.*/\1/p' "$PROPS" | head -1)
+          echo "Gradle $VER ($KIND)"
+          ok=0
+          for i in 1 2 3 4; do
+            if ./gradlew assembleDebug; then ok=1; break; fi
+            echo "Build attempt $i failed"
+            M=""
+            if [ "$i" = "1" ]; then M="https://mirrors.cloud.tencent.com/gradle"; fi
+            if [ "$i" = "2" ]; then M="https://repo.huaweicloud.com/gradle"; fi
+            if [ -n "$M" ] && [ -n "$VER" ] && [ -n "$KIND" ]; then
+              echo "Switching Gradle download to mirror: $M"
+              sed -i "s#^distributionUrl=.*#distributionUrl=$M/gradle-$VER-$KIND.zip#" "$PROPS"
+              grep distributionUrl "$PROPS"
+            fi
+            sleep 15
+          done
+          test "$ok" = 1
 
       - name: Show APK signing SHA-1
         run: |
