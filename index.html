@@ -3484,6 +3484,13 @@ body.nav-hide{padding-bottom:calc(20px + var(--sab))}
 /* दूसरी जगह से (नीचे के मेन्यू के अलावा) खुले तो sub-page की तरह दाईं ओर से स्लाइड */
 body.ws-slide .ws{transform:translateX(100%);transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .22s ease,visibility 0s linear .34s}
 body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .22s ease}
+
+/* ===== टच-एरिया: दिखावट वही, छूने की जगह कम से कम ~44px (आइकन) / 40px (बटन-पंक्ति) ===== */
+.ws-bi::after{content:"";position:absolute;inset:-3px}
+.ws-sf .ws-bi::after{inset:-5px}
+.ws-selbar .btn-sm,.selbar .btn-sm{min-height:40px}
+.item .pick,.item .go{min-height:40px}
+.item .go{min-width:40px;justify-content:center}
 </style>
 </head>
 <body>
@@ -4009,7 +4016,7 @@ body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .
       <span class="cnt" id="selCount">0 Selected</span>
       <button class="btn btn-secondary btn-sm" onclick="selectAllHist()">Select All</button>
       <button class="btn btn-danger btn-sm" id="selDelBtn" onclick="deleteSelected()">Delete</button>
-      <button class="btn btn-secondary btn-sm" onclick="exitSel()"><svg class="ic"><use href="#i-close"/></svg></button>
+      <button class="btn btn-secondary btn-sm" onclick="exitSel()" aria-label="चयन बंद करें" title="चयन बंद करें"><svg class="ic"><use href="#i-close"/></svg></button>
     </div>
 
     <div class="card" id="histCard" style="padding: 12px 10px;">
@@ -4259,7 +4266,7 @@ body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .
     <span class="cnt" id="wsSelCount">0 Selected</span>
     <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllHist()">Select All</button>
     <button type="button" class="btn btn-danger btn-sm" onclick="deleteSelected()">Delete</button>
-    <button type="button" class="btn btn-secondary btn-sm" onclick="exitSel()"><svg class="ic"><use href="#i-close"/></svg></button>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="exitSel()" aria-label="चयन बंद करें" title="चयन बंद करें"><svg class="ic"><use href="#i-close"/></svg></button>
   </div>
   <div class="ws-tabs" id="wsTabs" role="tablist">
     <button type="button" class="ws-tab active" role="tab" onclick="wsSetTab(0)">History</button>
@@ -7193,18 +7200,22 @@ function chBackDo() {
 function chJump(k) { if (wsDepth > k) history.go(-k); else for (let i = 0; i < k; i++) chBackDo(); }
 
 // ---------- render ----------
-function wsRender() {
+function wsRender(listOnly) {   // listOnly: सिर्फ़ History लिस्ट की दिखावट बदली (खोलना / चुनना) — Subjects पैन वही रहेगा, दोबारा नहीं बनेगा
   if (!window.__wsReady || !g('wsScreen')) return;
   const hist = getVisibleLogs();
   g('wsPane0').innerHTML = wsHistHTML(hist);
+  const skip1 = listOnly === true && wsTab === 0 && wsK1 !== undefined && wsPl !== undefined;
   let o = null, chList = [], subs = [];
-  if (chSt.sub && !subList().some(x => x[0] === chSt.sub)) { chSt.sub = null; chSt.chap = null; chSt.lec = null; }
-  if (chSt.chap) { o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap); if (!o) { chSt.chap = null; chSt.lec = null; } }
-  const plvl = chSt.sub ? (o ? (chSt.lec ? 3 : 2) : 1) : 0;      // 0 subjects, 1 chapters of a subject, 2 chapter, 3 lecture
-  const k1 = plvl + '|' + chSt.sub + '|' + chSt.chap + '|' + chSt.lec;
+  if (!skip1) {
+    if (chSt.sub && !subList().some(x => x[0] === chSt.sub)) { chSt.sub = null; chSt.chap = null; chSt.lec = null; }
+    if (chSt.chap) { o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap); if (!o) { chSt.chap = null; chSt.lec = null; } }
+  }
+  const plvl = skip1 ? wsPl : (chSt.sub ? (o ? (chSt.lec ? 3 : 2) : 1) : 0);      // 0 subjects, 1 chapters of a subject, 2 chapter, 3 lecture
+  const k1 = skip1 ? wsK1 : plvl + '|' + chSt.sub + '|' + chSt.chap + '|' + chSt.lec;
   let wsGh = null;
   if (wsK1 !== undefined && k1 !== wsK1 && wsOpen && wsTab === 1 && wsTp === 1 && wsPl !== undefined && plvl !== wsPl && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) wsGh = wsGhostMake();   // पुराना पेज सँभालकर रखो
-  if (plvl === 3) g('wsPane1').innerHTML = chLecHTML(o, chSt.lec);
+  if (skip1) { /* Subjects पैन पहले से बना है */ }
+  else if (plvl === 3) g('wsPane1').innerHTML = chLecHTML(o, chSt.lec);
   else if (plvl === 2) g('wsPane1').innerHTML = chLecListHTML(o);
   else if (plvl === 1) { chList = chFiltered(chF, chSt.sub); g('wsPane1').innerHTML = wsBuild(chList.map(c => chapItem(c, true)), 1, WS_H_CHAP); }
   else { subs = subItems(); g('wsPane1').innerHTML = wsBuild(subs, 1, WS_H_SUBS); }
@@ -7311,6 +7322,7 @@ function wsApplyHdr(px, anim) {
 }
 var wsKeepOff = null;   // टैब बदलते समय बार की जो स्थिति थी, वही रखो
 function wsHdrSync() {   // after any render / tab change: keep header and the active list consistent
+  if (typeof wsSnapRaf !== 'undefined' && wsSnapRaf) wsSnapStop();
   const pn = g('wsPane' + wsTab);
   if (wsKeepOff !== null) {
     const off = wsKeepOff; wsKeepOff = null;
@@ -7319,7 +7331,7 @@ function wsHdrSync() {   // after any render / tab change: keep header and the a
       if (pn.scrollTop < off) pn.scrollTop = off;   // हो सके तो लिस्ट खिसकाओ; न हो सके तो खाली जगह दिखे तो दिखे
       wsLastY[wsTab] = Math.max(0, pn.scrollTop);
       wsApplyHdr(off, false);
-      requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[wsTab] = Math.max(0, pn.scrollTop); }));
+      requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[wsTab] = Math.max(0, pn.scrollTop); wsSnapSchedule(pn, wsTab, 140); }));   // बार बीच में लटका हो तो खुद सेट हो जाए
       return;
     }
   }
@@ -7336,6 +7348,43 @@ function wsSetScroll(idx, y) {   // programmatic scroll: header fully open, no c
   if (idx === wsTab) wsApplyHdr(0, true);
   requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, g('wsPane' + idx).scrollTop); }));
 }
+// बार का "सेट होना" (snap): लिस्ट और बार एक ही फ़्रेम में साथ-साथ खिसकते हैं (पहले smooth-scroll उँगली से लड़ता था और बार अटक जाता था)।
+// उँगली छूते ही snap तुरंत रुकता है, और उँगली टिकी हो तब शुरू ही नहीं होता।
+var wsSnapRaf = 0, wsTouching = false, wsTouchT = 0;
+function wsSnapStop() {
+  clearTimeout(wsSnapT);
+  if (!wsSnapRaf) return;
+  cancelAnimationFrame(wsSnapRaf); wsSnapRaf = 0; wsIgnore = false;
+  const p = g('wsPane' + wsTab), y = Math.max(0, p.scrollTop);
+  wsLastY[wsTab] = y;
+  wsApplyHdr(Math.min(wsHdrOff, y), false);   // बार कभी लिस्ट से ज़्यादा ऊपर न रहे
+}
+function wsSnapTo(pane, idx, to) {
+  wsSnapStop();
+  const s0 = pane.scrollTop, h0 = wsHdrOff, t0 = performance.now(), D = 180;
+  wsIgnore = true;
+  const step = now => {
+    const k = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - k, 3);
+    if (k >= 1) {
+      pane.scrollTop = to; wsLastY[idx] = Math.max(0, pane.scrollTop);
+      wsApplyHdr(to, false); wsSnapRaf = 0; wsIgnore = false; return;
+    }
+    pane.scrollTop = s0 + (to - s0) * e; wsLastY[idx] = Math.max(0, pane.scrollTop);
+    wsApplyHdr(h0 + (to - h0) * e, false);
+    wsSnapRaf = requestAnimationFrame(step);
+  };
+  wsSnapRaf = requestAnimationFrame(step);
+}
+function wsSnapSchedule(pane, idx, delay) {
+  clearTimeout(wsSnapT);
+  wsSnapT = setTimeout(() => {
+    if (wsTouching && Date.now() - wsTouchT < 1500) return;   // उँगली अभी टिकी है
+    if (idx !== wsTab || !wsCollapsible() || wsHdrOff <= 0 || wsHdrOff >= WS_TOPH) return;
+    const to = wsHdrOff > WS_TOPH * 0.5 ? WS_TOPH : 0;
+    if (pane.scrollTop < WS_TOPH) wsSnapTo(pane, idx, to);   // लिस्ट अभी पूरी नहीं खिसकी: दोनों साथ बिठाओ
+    else wsApplyHdr(to, true);
+  }, delay);
+}
 [0, 1].forEach(idx => {
   const pane = g('wsPane' + idx);
   pane.addEventListener('scroll', () => {
@@ -7347,19 +7396,14 @@ function wsSetScroll(idx, y) {   // programmatic scroll: header fully open, no c
     let next = wsHdrOff + dy;
     if (y < next) next = y;                 // top clamp
     wsApplyHdr(next, false);
-    clearTimeout(wsSnapT);
-    wsSnapT = setTimeout(() => {
-      if (!wsCollapsible() || wsHdrOff <= 0 || wsHdrOff >= WS_TOPH) return;
-      const hide = wsHdrOff > WS_TOPH * 0.5;
-      if (pane.scrollTop < WS_TOPH) {   // लिस्ट अभी पूरी नहीं खिसकी: लिस्ट और बार को साथ-साथ बिठाओ
-        const to = hide ? WS_TOPH : 0;
-        wsIgnore = true;
-        pane.scrollTo({ top: to, behavior: 'smooth' });
-        wsApplyHdr(to, true);
-        setTimeout(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop); }, 450);
-      } else wsApplyHdr(hide ? WS_TOPH : 0, true);
-    }, 140);
+    wsSnapSchedule(pane, idx, 140);
   }, { passive: true });
+  pane.addEventListener('touchstart', () => { wsTouching = true; wsTouchT = Date.now(); wsSnapStop(); }, { passive: true });
+  pane.addEventListener('touchmove', () => { wsTouchT = Date.now(); }, { passive: true });
+  const rel = () => { wsTouching = false; if (idx === wsTab && wsCollapsible()) wsSnapSchedule(pane, idx, 140); };
+  pane.addEventListener('touchend', rel, { passive: true });
+  pane.addEventListener('touchcancel', rel, { passive: true });
+  pane.addEventListener('wheel', () => wsSnapStop(), { passive: true });
 });
 // जब लिस्ट स्क्रॉल हो ही नहीं सकती (छोटी / खाली), तब scroll इवेंट नहीं आता —
 // तब उंगली की ऊपर-नीचे हरकत (touch) से ही बार दिखाओ / छिपाओ।
@@ -7383,7 +7427,7 @@ function wsSetScroll(idx, y) {   // programmatic scroll: header fully open, no c
   pane.addEventListener('touchcancel', end);
 });
 function chCloseAll() { haptic('light'); const k = wsDepth - 1; if (k > 0) history.go(-k); else while (chSt.sub) chBackDo(); }
-function wsRefresh() { if (wsOpen) wsRender(); }
+function wsRefresh(listOnly) { if (wsOpen) wsRender(listOnly === true); }
 function chPills() {
   let a = '';
   const so = CH_SORT.find(i => i[0] === chF.sort);
@@ -7487,7 +7531,7 @@ g('wsPopList').addEventListener('click', e => {
   tr.addEventListener('click', e => {
     if (fired) { fired = false; return; }
     const h = e.target.closest('[data-id]');
-    if (h && wsTab === 0) { if (selMode) toggleSel(h.dataset.id); else { openId = openId === h.dataset.id ? null : h.dataset.id; renderHistory(); } return; }
+    if (h && wsTab === 0) { if (selMode) toggleSel(h.dataset.id); else { openId = openId === h.dataset.id ? null : h.dataset.id; renderHistory(true); } return; }
     const lc = e.target.closest('[data-lec]');
     if (lc && wsTab === 1) { chLecOpen(lc.dataset.lec); return; }
     const sb = e.target.closest('[data-ss]');
@@ -7846,8 +7890,11 @@ function histApplySearch(logs) {
 }
 function getVisibleLogs() { return histApplySearch(HF.run(HF.applied())); }
 
-function renderHistory() {
-  if (window.__wsReady) wsRefresh();
+function renderHistory(listOnly) {
+  if (window.__wsReady) wsRefresh(listOnly === true);
+  // पुराना History टेबल (view-history) अब किसी रास्ते से खुलता नहीं; छिपा रहते हुए उसे हर बार बनाना बेकार मेहनत थी
+  const lv = g('view-history');
+  if (window.__wsReady && lv && !lv.classList.contains('active')) return;
   const logs = getVisibleLogs();
   const tbody = g('tblLocalLogs');
   g('histBar').classList.toggle('on', selMode);
@@ -7920,20 +7967,20 @@ function initHistEvents() {
   });
 }
 
-function enterSel(id) { selMode = true; selIds = new Set([id]); openId = null; renderHistory(); }
-function exitSel() { selMode = false; selIds.clear(); renderHistory(); }
+function enterSel(id) { selMode = true; selIds = new Set([id]); openId = null; renderHistory(true); }
+function exitSel() { selMode = false; selIds.clear(); renderHistory(true); }
 function toggleSel(id) {
   if (selIds.has(id)) selIds.delete(id);
   else selIds.add(id);
   if (!selIds.size) { exitSel(); return; }
-  renderHistory();
+  renderHistory(true);
 }
 
 function selectAllHist() {
   const vis = getVisibleLogs();
   if (vis.length && vis.every(l => selIds.has(l.id))) { exitSel(); return; }
   selIds = new Set(vis.map(l => l.id));
-  renderHistory();
+  renderHistory(true);
 }
 
 function deleteSelected() {
@@ -7941,11 +7988,10 @@ function deleteSelected() {
   if (!n) return showIsland('Select records to delete', 'error');
   const done = new Set(jget(CSV_KEY, []));
   const pending = [...selIds].filter(id => !done.has(id)).length;
-  if (n > 1 && pending > 0) {
-    askConfirm(pending + ' रिकॉर्ड अभी export नहीं हुए। फिर भी delete करें?', doDeleteSelected);
-    return;
-  }
-  doDeleteSelected();
+  const msg = pending > 0
+    ? (n === 1 ? 'यह रिकॉर्ड अभी export नहीं हुआ। फिर भी delete करें?' : pending + ' रिकॉर्ड अभी export नहीं हुए। फिर भी delete करें?')
+    : (n === 1 ? 'इस रिकॉर्ड को delete करें?' : n + ' रिकॉर्ड delete करें?');
+  askConfirm(msg, doDeleteSelected);
 }
 
 function doDeleteSelected() {
@@ -7965,8 +8011,11 @@ function doDeleteSelected() {
   showIsland((n === 1 ? '1 रिकॉर्ड हटाया गया' : n + ' रिकॉर्ड हटाए गए'), 'success', {
     label: 'पूर्ववत',
     onClick: () => {
-      const cur = getLogs();
-      jset(HISTORY_KEY, [...deletedLogs, ...cur]);
+      const cur = getLogs(), have = new Set(cur.map(l => l.id)), pos = new Map(allCurrent.map((l, i) => [l.id, i]));
+      const back = deletedLogs.filter(l => !have.has(l.id));
+      const fresh = cur.filter(l => !pos.has(l.id));   // हटाने के बाद जो नए रिकॉर्ड जुड़े, वे ऊपर
+      const old = cur.filter(l => pos.has(l.id)).concat(back).sort((a, b) => pos.get(a.id) - pos.get(b.id));   // बाकी पुराने क्रम में, हटाए गए अपनी जगह
+      jset(HISTORY_KEY, [...fresh, ...old]);
       renderHistory();
       updateDailyStats();
       updateBakStats();
