@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=0">
 <meta name="theme-color" content="#030712">
 <title>Revision Universe | Offline Pro</title>
+<script>try{var C=window.Capacitor;if(C&&C.isNativePlatform&&C.isNativePlatform())document.documentElement.classList.add('native-lite');}catch(e){}</script>
 <script>try{var _t=localStorage.getItem("ru_theme");if(_t)document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
 <script>
 /* Android (Capacitor) edge-to-edge: native side sends status/navigation bar sizes (dp) */
@@ -3485,12 +3486,12 @@ body.nav-hide{padding-bottom:calc(20px + var(--sab))}
 body.ws-slide .ws{transform:translateX(100%);transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .22s ease,visibility 0s linear .34s}
 body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .22s ease}
 
-/* ===== टच-एरिया: दिखावट वही, छूने की जगह कम से कम ~44px (आइकन) / 40px (बटन-पंक्ति) ===== */
-.ws-bi::after{content:"";position:absolute;inset:-3px}
-.ws-sf .ws-bi::after{inset:-5px}
-.ws-selbar .btn-sm,.selbar .btn-sm{min-height:40px}
-.item .pick,.item .go{min-height:40px}
-.item .go{min-width:40px;justify-content:center}
+/* हल्का मेन्यू: ठोस पट्टी पर blur की ज़रूरत नहीं, और यह स्क्रॉल में अटकाव देता है */
+.bbw nav{-webkit-backdrop-filter:none;backdrop-filter:none}
+
+/* ===== APK (WebView) के लिए हल्का मोड: चलती पृष्ठभूमि और धुंधली परतें बंद, ताकि स्क्रॉल अटके नहीं ===== */
+html.native-lite body::before,html.native-lite .bg-orb,html.native-lite .empty-state .ic{animation:none!important}
+html.native-lite .card,html.native-lite .stat-capsule,html.native-lite nav,html.native-lite .ws-chrome,html.native-lite .ws-tip,html.native-lite .ws-pop,html.native-lite .selbar,html.native-lite .theme-toggle,html.native-lite[data-card] .card,html.native-lite[data-card] .stats-row .stat-capsule{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 </style>
 </head>
 <body>
@@ -4016,7 +4017,7 @@ body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .
       <span class="cnt" id="selCount">0 Selected</span>
       <button class="btn btn-secondary btn-sm" onclick="selectAllHist()">Select All</button>
       <button class="btn btn-danger btn-sm" id="selDelBtn" onclick="deleteSelected()">Delete</button>
-      <button class="btn btn-secondary btn-sm" onclick="exitSel()" aria-label="चयन बंद करें" title="चयन बंद करें"><svg class="ic"><use href="#i-close"/></svg></button>
+      <button class="btn btn-secondary btn-sm" onclick="exitSel()"><svg class="ic"><use href="#i-close"/></svg></button>
     </div>
 
     <div class="card" id="histCard" style="padding: 12px 10px;">
@@ -4266,7 +4267,7 @@ body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .
     <span class="cnt" id="wsSelCount">0 Selected</span>
     <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllHist()">Select All</button>
     <button type="button" class="btn btn-danger btn-sm" onclick="deleteSelected()">Delete</button>
-    <button type="button" class="btn btn-secondary btn-sm" onclick="exitSel()" aria-label="चयन बंद करें" title="चयन बंद करें"><svg class="ic"><use href="#i-close"/></svg></button>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="exitSel()"><svg class="ic"><use href="#i-close"/></svg></button>
   </div>
   <div class="ws-tabs" id="wsTabs" role="tablist">
     <button type="button" class="ws-tab active" role="tab" onclick="wsSetTab(0)">History</button>
@@ -7200,22 +7201,18 @@ function chBackDo() {
 function chJump(k) { if (wsDepth > k) history.go(-k); else for (let i = 0; i < k; i++) chBackDo(); }
 
 // ---------- render ----------
-function wsRender(listOnly) {   // listOnly: सिर्फ़ History लिस्ट की दिखावट बदली (खोलना / चुनना) — Subjects पैन वही रहेगा, दोबारा नहीं बनेगा
+function wsRender() {
   if (!window.__wsReady || !g('wsScreen')) return;
   const hist = getVisibleLogs();
   g('wsPane0').innerHTML = wsHistHTML(hist);
-  const skip1 = listOnly === true && wsTab === 0 && wsK1 !== undefined && wsPl !== undefined;
   let o = null, chList = [], subs = [];
-  if (!skip1) {
-    if (chSt.sub && !subList().some(x => x[0] === chSt.sub)) { chSt.sub = null; chSt.chap = null; chSt.lec = null; }
-    if (chSt.chap) { o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap); if (!o) { chSt.chap = null; chSt.lec = null; } }
-  }
-  const plvl = skip1 ? wsPl : (chSt.sub ? (o ? (chSt.lec ? 3 : 2) : 1) : 0);      // 0 subjects, 1 chapters of a subject, 2 chapter, 3 lecture
-  const k1 = skip1 ? wsK1 : plvl + '|' + chSt.sub + '|' + chSt.chap + '|' + chSt.lec;
+  if (chSt.sub && !subList().some(x => x[0] === chSt.sub)) { chSt.sub = null; chSt.chap = null; chSt.lec = null; }
+  if (chSt.chap) { o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap); if (!o) { chSt.chap = null; chSt.lec = null; } }
+  const plvl = chSt.sub ? (o ? (chSt.lec ? 3 : 2) : 1) : 0;      // 0 subjects, 1 chapters of a subject, 2 chapter, 3 lecture
+  const k1 = plvl + '|' + chSt.sub + '|' + chSt.chap + '|' + chSt.lec;
   let wsGh = null;
   if (wsK1 !== undefined && k1 !== wsK1 && wsOpen && wsTab === 1 && wsTp === 1 && wsPl !== undefined && plvl !== wsPl && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) wsGh = wsGhostMake();   // पुराना पेज सँभालकर रखो
-  if (skip1) { /* Subjects पैन पहले से बना है */ }
-  else if (plvl === 3) g('wsPane1').innerHTML = chLecHTML(o, chSt.lec);
+  if (plvl === 3) g('wsPane1').innerHTML = chLecHTML(o, chSt.lec);
   else if (plvl === 2) g('wsPane1').innerHTML = chLecListHTML(o);
   else if (plvl === 1) { chList = chFiltered(chF, chSt.sub); g('wsPane1').innerHTML = wsBuild(chList.map(c => chapItem(c, true)), 1, WS_H_CHAP); }
   else { subs = subItems(); g('wsPane1').innerHTML = wsBuild(subs, 1, WS_H_SUBS); }
@@ -7301,7 +7298,7 @@ function wsGhostMake() {   // पुराना पेज = उसकी लि
 }
 // ---------- collapsing header engine (Play Store style) ----------
 const WS_TOPH = 52;
-let wsHdrOff = 0, wsLastY = [0, 0], wsIgnore = false, wsSnapT = null;
+let wsHdrOff = 0, wsLastY = [0, 0], wsIgnore = false, wsSnapT = null, wsTouching = false;
 function wsCollapsible() { return !(selMode && wsTab === 0) && !(wsTab === 1 && !!chSt.sub); }
 function wsLine() {
   const pin = g(wsTab ? 'wsPane1' : 'wsPane0').scrollTop > 4;
@@ -7318,11 +7315,11 @@ function wsApplyHdr(px, anim) {
   tp.style.opacity = max ? String(Math.max(0, 1 - (wsHdrOff / max) * 1.05)) : '1';
   tp.style.pointerEvents = max && wsHdrOff > max * 0.75 ? 'none' : '';
   if (max && wsHdrOff > max * 0.75 && g('wsPop').classList.contains('open')) wsPopClose();
+  if (wsOpen) document.body.classList.toggle('nav-hide', max > 0 && wsHdrOff > max * 0.5);
   wsLine();
 }
 var wsKeepOff = null;   // टैब बदलते समय बार की जो स्थिति थी, वही रखो
 function wsHdrSync() {   // after any render / tab change: keep header and the active list consistent
-  if (typeof wsSnapRaf !== 'undefined' && wsSnapRaf) wsSnapStop();
   const pn = g('wsPane' + wsTab);
   if (wsKeepOff !== null) {
     const off = wsKeepOff; wsKeepOff = null;
@@ -7331,7 +7328,7 @@ function wsHdrSync() {   // after any render / tab change: keep header and the a
       if (pn.scrollTop < off) pn.scrollTop = off;   // हो सके तो लिस्ट खिसकाओ; न हो सके तो खाली जगह दिखे तो दिखे
       wsLastY[wsTab] = Math.max(0, pn.scrollTop);
       wsApplyHdr(off, false);
-      requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[wsTab] = Math.max(0, pn.scrollTop); wsSnapSchedule(pn, wsTab, 140); }));   // बार बीच में लटका हो तो खुद सेट हो जाए
+      requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[wsTab] = Math.max(0, pn.scrollTop); }));
       return;
     }
   }
@@ -7348,42 +7345,22 @@ function wsSetScroll(idx, y) {   // programmatic scroll: header fully open, no c
   if (idx === wsTab) wsApplyHdr(0, true);
   requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, g('wsPane' + idx).scrollTop); }));
 }
-// बार का "सेट होना" (snap): लिस्ट और बार एक ही फ़्रेम में साथ-साथ खिसकते हैं (पहले smooth-scroll उँगली से लड़ता था और बार अटक जाता था)।
-// उँगली छूते ही snap तुरंत रुकता है, और उँगली टिकी हो तब शुरू ही नहीं होता।
-var wsSnapRaf = 0, wsTouching = false, wsTouchT = 0;
-function wsSnapStop() {
-  clearTimeout(wsSnapT);
-  if (!wsSnapRaf) return;
-  cancelAnimationFrame(wsSnapRaf); wsSnapRaf = 0; wsIgnore = false;
-  const p = g('wsPane' + wsTab), y = Math.max(0, p.scrollTop);
-  wsLastY[wsTab] = y;
-  wsApplyHdr(Math.min(wsHdrOff, y), false);   // बार कभी लिस्ट से ज़्यादा ऊपर न रहे
-}
-function wsSnapTo(pane, idx, to) {
-  wsSnapStop();
-  const s0 = pane.scrollTop, h0 = wsHdrOff, t0 = performance.now(), D = 180;
-  wsIgnore = true;
-  const step = now => {
-    const k = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - k, 3);
-    if (k >= 1) {
-      pane.scrollTop = to; wsLastY[idx] = Math.max(0, pane.scrollTop);
-      wsApplyHdr(to, false); wsSnapRaf = 0; wsIgnore = false; return;
-    }
-    pane.scrollTop = s0 + (to - s0) * e; wsLastY[idx] = Math.max(0, pane.scrollTop);
-    wsApplyHdr(h0 + (to - h0) * e, false);
-    wsSnapRaf = requestAnimationFrame(step);
-  };
-  wsSnapRaf = requestAnimationFrame(step);
-}
-function wsSnapSchedule(pane, idx, delay) {
+// एकमात्र Snap प्रक्रिया: उंगली स्क्रीन पर हो तो कभी Snap नहीं; scroll / fling रुकने के 140ms बाद ही Snap
+function wsSnapSchedule(idx) {
   clearTimeout(wsSnapT);
   wsSnapT = setTimeout(() => {
-    if (wsTouching && Date.now() - wsTouchT < 1500) return;   // उँगली अभी टिकी है
+    wsSnapT = null;
+    if (wsTouching) return;   // उंगली अभी स्क्रीन पर है — touchend पर दोबारा schedule होगा
     if (idx !== wsTab || !wsCollapsible() || wsHdrOff <= 0 || wsHdrOff >= WS_TOPH) return;
-    const to = wsHdrOff > WS_TOPH * 0.5 ? WS_TOPH : 0;
-    if (pane.scrollTop < WS_TOPH) wsSnapTo(pane, idx, to);   // लिस्ट अभी पूरी नहीं खिसकी: दोनों साथ बिठाओ
-    else wsApplyHdr(to, true);
-  }, delay);
+    const pane = g('wsPane' + idx), hide = wsHdrOff > WS_TOPH * 0.5;
+    if (pane.scrollTop < WS_TOPH) {   // लिस्ट अभी पूरी नहीं खिसकी: लिस्ट और बार को साथ-साथ बिठाओ
+      const to = hide ? WS_TOPH : 0;
+      wsIgnore = true;
+      pane.scrollTo({ top: to, behavior: 'smooth' });
+      wsApplyHdr(to, true);
+      setTimeout(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop); }, 450);
+    } else wsApplyHdr(hide ? WS_TOPH : 0, true);
+  }, 140);
 }
 [0, 1].forEach(idx => {
   const pane = g('wsPane' + idx);
@@ -7396,14 +7373,8 @@ function wsSnapSchedule(pane, idx, delay) {
     let next = wsHdrOff + dy;
     if (y < next) next = y;                 // top clamp
     wsApplyHdr(next, false);
-    wsSnapSchedule(pane, idx, 140);
+    wsSnapSchedule(idx);
   }, { passive: true });
-  pane.addEventListener('touchstart', () => { wsTouching = true; wsTouchT = Date.now(); wsSnapStop(); }, { passive: true });
-  pane.addEventListener('touchmove', () => { wsTouchT = Date.now(); }, { passive: true });
-  const rel = () => { wsTouching = false; if (idx === wsTab && wsCollapsible()) wsSnapSchedule(pane, idx, 140); };
-  pane.addEventListener('touchend', rel, { passive: true });
-  pane.addEventListener('touchcancel', rel, { passive: true });
-  pane.addEventListener('wheel', () => wsSnapStop(), { passive: true });
 });
 // जब लिस्ट स्क्रॉल हो ही नहीं सकती (छोटी / खाली), तब scroll इवेंट नहीं आता —
 // तब उंगली की ऊपर-नीचे हरकत (touch) से ही बार दिखाओ / छिपाओ।
@@ -7411,23 +7382,30 @@ function wsSnapSchedule(pane, idx, delay) {
   const pane = g('wsPane' + idx);
   let ty = null;
   const noScroll = () => pane.scrollHeight - pane.clientHeight <= 1;
-  pane.addEventListener('touchstart', e => { ty = (e.touches && e.touches.length === 1) ? e.touches[0].clientY : null; }, { passive: true });
+  pane.addEventListener('touchstart', e => {
+    ty = (e.touches && e.touches.length === 1) ? e.touches[0].clientY : null;
+    wsTouching = true;
+    clearTimeout(wsSnapT); wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop);
+  }, { passive: true });
   pane.addEventListener('touchmove', e => {
     if (ty === null || idx !== wsTab || !wsCollapsible() || !noScroll()) { if (e.touches && e.touches[0]) ty = e.touches[0].clientY; return; }
     const y = e.touches[0].clientY, dy = ty - y;   // उंगली ऊपर = बार छिपे, नीचे = बार दिखे
     ty = y;
     wsApplyHdr(wsHdrOff + dy, false);
   }, { passive: true });
-  const end = () => {
+  const end = e => {
     ty = null;
-    if (idx !== wsTab || !wsCollapsible() || !noScroll()) return;
+    if (e && e.touches && e.touches.length) return;   // अभी भी कोई उंगली स्क्रीन पर है
+    wsTouching = false;
+    if (idx !== wsTab || !wsCollapsible()) return;
+    if (!noScroll()) { wsSnapSchedule(idx); return; }   // fling खत्म होने के बाद ही Snap
     if (wsHdrOff > 0 && wsHdrOff < WS_TOPH) wsApplyHdr(wsHdrOff > WS_TOPH * 0.5 ? WS_TOPH : 0, true);
   };
   pane.addEventListener('touchend', end);
   pane.addEventListener('touchcancel', end);
 });
 function chCloseAll() { haptic('light'); const k = wsDepth - 1; if (k > 0) history.go(-k); else while (chSt.sub) chBackDo(); }
-function wsRefresh(listOnly) { if (wsOpen) wsRender(listOnly === true); }
+function wsRefresh() { if (wsOpen) wsRender(); }
 function chPills() {
   let a = '';
   const so = CH_SORT.find(i => i[0] === chF.sort);
@@ -7531,7 +7509,7 @@ g('wsPopList').addEventListener('click', e => {
   tr.addEventListener('click', e => {
     if (fired) { fired = false; return; }
     const h = e.target.closest('[data-id]');
-    if (h && wsTab === 0) { if (selMode) toggleSel(h.dataset.id); else { openId = openId === h.dataset.id ? null : h.dataset.id; renderHistory(true); } return; }
+    if (h && wsTab === 0) { if (selMode) toggleSel(h.dataset.id); else { openId = openId === h.dataset.id ? null : h.dataset.id; renderHistory(); } return; }
     const lc = e.target.closest('[data-lec]');
     if (lc && wsTab === 1) { chLecOpen(lc.dataset.lec); return; }
     const sb = e.target.closest('[data-ss]');
@@ -7890,11 +7868,8 @@ function histApplySearch(logs) {
 }
 function getVisibleLogs() { return histApplySearch(HF.run(HF.applied())); }
 
-function renderHistory(listOnly) {
-  if (window.__wsReady) wsRefresh(listOnly === true);
-  // पुराना History टेबल (view-history) अब किसी रास्ते से खुलता नहीं; छिपा रहते हुए उसे हर बार बनाना बेकार मेहनत थी
-  const lv = g('view-history');
-  if (window.__wsReady && lv && !lv.classList.contains('active')) return;
+function renderHistory() {
+  if (window.__wsReady) wsRefresh();
   const logs = getVisibleLogs();
   const tbody = g('tblLocalLogs');
   g('histBar').classList.toggle('on', selMode);
@@ -7967,20 +7942,20 @@ function initHistEvents() {
   });
 }
 
-function enterSel(id) { selMode = true; selIds = new Set([id]); openId = null; renderHistory(true); }
-function exitSel() { selMode = false; selIds.clear(); renderHistory(true); }
+function enterSel(id) { selMode = true; selIds = new Set([id]); openId = null; renderHistory(); }
+function exitSel() { selMode = false; selIds.clear(); renderHistory(); }
 function toggleSel(id) {
   if (selIds.has(id)) selIds.delete(id);
   else selIds.add(id);
   if (!selIds.size) { exitSel(); return; }
-  renderHistory(true);
+  renderHistory();
 }
 
 function selectAllHist() {
   const vis = getVisibleLogs();
   if (vis.length && vis.every(l => selIds.has(l.id))) { exitSel(); return; }
   selIds = new Set(vis.map(l => l.id));
-  renderHistory(true);
+  renderHistory();
 }
 
 function deleteSelected() {
@@ -7988,10 +7963,11 @@ function deleteSelected() {
   if (!n) return showIsland('Select records to delete', 'error');
   const done = new Set(jget(CSV_KEY, []));
   const pending = [...selIds].filter(id => !done.has(id)).length;
-  const msg = pending > 0
-    ? (n === 1 ? 'यह रिकॉर्ड अभी export नहीं हुआ। फिर भी delete करें?' : pending + ' रिकॉर्ड अभी export नहीं हुए। फिर भी delete करें?')
-    : (n === 1 ? 'इस रिकॉर्ड को delete करें?' : n + ' रिकॉर्ड delete करें?');
-  askConfirm(msg, doDeleteSelected);
+  if (n > 1 && pending > 0) {
+    askConfirm(pending + ' रिकॉर्ड अभी export नहीं हुए। फिर भी delete करें?', doDeleteSelected);
+    return;
+  }
+  doDeleteSelected();
 }
 
 function doDeleteSelected() {
@@ -8011,11 +7987,8 @@ function doDeleteSelected() {
   showIsland((n === 1 ? '1 रिकॉर्ड हटाया गया' : n + ' रिकॉर्ड हटाए गए'), 'success', {
     label: 'पूर्ववत',
     onClick: () => {
-      const cur = getLogs(), have = new Set(cur.map(l => l.id)), pos = new Map(allCurrent.map((l, i) => [l.id, i]));
-      const back = deletedLogs.filter(l => !have.has(l.id));
-      const fresh = cur.filter(l => !pos.has(l.id));   // हटाने के बाद जो नए रिकॉर्ड जुड़े, वे ऊपर
-      const old = cur.filter(l => pos.has(l.id)).concat(back).sort((a, b) => pos.get(a.id) - pos.get(b.id));   // बाकी पुराने क्रम में, हटाए गए अपनी जगह
-      jset(HISTORY_KEY, [...fresh, ...old]);
+      const cur = getLogs();
+      jset(HISTORY_KEY, [...deletedLogs, ...cur]);
       renderHistory();
       updateDailyStats();
       updateBakStats();
@@ -8094,7 +8067,7 @@ function wsExitAll() {
     ty = y; tx = x;
     if (Math.abs(dx) > Math.abs(dy)) return;
     acc = (dy > 0) === (acc > 0) ? acc + dy : dy;
-    if (acc > 14) navHide(); else if (acc < -14) navShow();
+    if (!document.body.classList.contains('in-ws')) { if (acc > 14) navHide(); else if (acc < -14) navShow(); }
   }, { passive: true });
   document.addEventListener('scroll', e => {
     const t = e.target === document ? document.scrollingElement : e.target;
