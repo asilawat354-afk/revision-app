@@ -1874,8 +1874,17 @@ body.in-ws .ws{transform:none;opacity:1;pointer-events:auto}
 .wv-trd td{white-space:normal;color:var(--muted);font-size:11.5px;line-height:1.55;padding:9px 12px}
 .wv-empty{text-align:center;color:var(--muted);font-size:12px;font-weight:700;padding:30px 12px}
 /* ===== search overlay (Drive style) ===== */
-.ds{position:fixed;inset:0;margin:0 auto;max-width:520px;z-index:140;background:var(--bg);display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .2s,transform .22s cubic-bezier(.22,1,.36,1)}
+.ds{position:fixed;top:var(--ds-top,100px);left:0;right:0;bottom:0;margin:0 auto;max-width:520px;z-index:140;background:var(--bg);display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .2s,transform .22s cubic-bezier(.22,1,.36,1)}
 .ds.open{opacity:1;pointer-events:auto;transform:none}
+/* History search: header ke andar dayein se bayein khulne wali patti; neeche usi page me nateeje */
+.ds{display:none!important}
+.ws-pane .ds-head{text-transform:uppercase;letter-spacing:.4px;margin:0 2px 10px}
+.ws-sf{position:absolute;right:var(--sf-r,86px);top:7px;height:38px;width:0;border-radius:999px;background:var(--bg);background:color-mix(in srgb,var(--text) 10%,var(--surface));box-shadow:inset 0 0 0 1px var(--border);overflow:hidden;display:flex;align-items:center;opacity:0;pointer-events:none;z-index:4;transition:width .27s cubic-bezier(.2,0,0,1),opacity .15s ease}
+body:has(#ds.open) .ws-sf{width:calc(100% - var(--sf-r,86px) - 8px);opacity:1;pointer-events:auto}
+.ws-sf .ds-in,.ws-sf .ds-in:focus{height:100%;padding:0 2px;font-size:14.5px;border:0;border-radius:0;background:transparent;box-shadow:none;transition:none}
+.ws-sf .ws-bi{width:34px;height:34px;border-radius:50%}.ws-sf .ws-bi svg{width:19px;height:19px}
+.ws-hl{transition:opacity .15s ease}
+body:has(#ds.open) .ws-hl,body:has(#ds.open) #wsSearchBtn{opacity:0;pointer-events:none}
 .ds-top{display:flex;align-items:center;gap:6px;height:calc(56px + var(--sat));padding:var(--sat) 8px 0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
 .ds-in{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:16px}
 .ds-in::placeholder{color:var(--muted)}
@@ -4239,6 +4248,11 @@ body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .
       <button type="button" class="ws-bi" id="wsFilterBtn" data-hold-label="Filter & Sort" aria-label="Filter and Sort" onclick="openFSheet()"><svg viewBox="0 0 24 24" stroke-linejoin="round" style="stroke-width:2.35"><path d="M7.5 5v14M3.8 15.2L7.5 19l3.7-3.8"/><line x1="14.5" y1="5" x2="16" y2="5"/><line x1="14.5" y1="9.7" x2="17.8" y2="9.7"/><line x1="14.5" y1="14.3" x2="19.6" y2="14.3"/><line x1="14.5" y1="19" x2="21.5" y2="19"/></svg><span class="ws-badge" id="wsBadge">0</span></button>
       <button type="button" class="ws-bi" id="wsMore" data-hold-label="More" aria-label="More options" onclick="chSheetOpen('menu')" style="display:none"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
       <button type="button" class="ws-bi" id="wsClose" data-hold-label="Close" aria-label="Close" onclick="chCloseAll()" style="display:none"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <div class="ws-sf" id="wsSf">
+        <button type="button" class="ws-bi" data-hold-label="Back" aria-label="Back" onclick="dsBack()"><svg viewBox="0 0 24 24"><path d="M20 12H4M10 18l-6-6 6-6"/></svg></button>
+        <input type="text" class="ds-in" id="dsIn" placeholder="Search" autocomplete="off" inputmode="search" enterkeyhint="search">
+        <button type="button" class="ws-bi hidden" id="dsClr" data-hold-label="Clear" aria-label="Clear"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
     </div>
   </div>
   <div class="ws-selbar" id="wsSel">
@@ -4259,13 +4273,6 @@ body.ws-slide.in-ws .ws{transform:none;visibility:visible;transition:transform .
 
 <!-- ===== SEARCH OVERLAY ===== -->
 <div class="ds" id="ds" role="dialog" aria-modal="true">
-  <div class="ds-top">
-    <button type="button" class="ws-bi" data-hold-label="Back" aria-label="Back" onclick="dsBack()"><svg viewBox="0 0 24 24"><path d="M20 12H4M10 18l-6-6 6-6"/></svg></button>
-    <input type="text" class="ds-in" id="dsIn" placeholder="Search" autocomplete="off">
-    <button type="button" class="ws-bi hidden" id="dsClr" data-hold-label="Clear" aria-label="Clear"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-  </div>
-  <div class="ds-chips" id="dsChips"></div>
-  <div class="ds-body" id="dsBody"></div>
 </div>
 <div class="ds-bk" id="dsBk"></div>
 <div class="ds-sh" id="dsSh">
@@ -7189,7 +7196,7 @@ function chJump(k) { if (wsDepth > k) history.go(-k); else for (let i = 0; i < k
 function wsRender() {
   if (!window.__wsReady || !g('wsScreen')) return;
   const hist = getVisibleLogs();
-  g('wsPane0').innerHTML = wsBuild(hist.map(histItem), 0);
+  g('wsPane0').innerHTML = wsHistHTML(hist);
   let o = null, chList = [], subs = [];
   if (chSt.sub && !subList().some(x => x[0] === chSt.sub)) { chSt.sub = null; chSt.chap = null; chSt.lec = null; }
   if (chSt.chap) { o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap); if (!o) { chSt.chap = null; chSt.lec = null; } }
@@ -7568,10 +7575,31 @@ function dsCfg() {
 function dsSubjects() { return wsTab === 0 ? [...new Set(getLogs().map(l => l.sub).filter(Boolean))] : [...new Set(chData().map(o => o.sub))]; }
 function reEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function hl(text, q) { const e = esc(text); q = q.trim(); return q ? e.replace(new RegExp('(' + reEsc(esc(q)) + ')', 'gi'), '<mark class="ws-m">$1</mark>') : e; }
+function wsSearchOn() { return g('ds') && g('ds').classList.contains('open'); }
+function dsLogOK(l) {   // search = sirf likha hua shabd; subject/difficulty wagairah ka filter mukhya filter button se
+  const q = dsQ.trim().toLowerCase();
+  return !q || ((l.sub || '') + ' ' + (l.chap || '') + ' ' + (l.lec || '') + ' ' + (l.notes || '') + ' ' + (l.date || '') + ' ' + diffHi(l.diff)).toLowerCase().includes(q);
+}
+function wsHistHTML(all) {   // History list: search band ho to usi list ko usi jagah chhanta hai
+  if (!wsSearchOn()) return wsBuild(all.map(histItem), 0);
+  const res = all.filter(dsLogOK);
+  const head = '<div class="ds-head"><span>' + (dsQ.trim() ? 'Results in History' : 'All History') + '</span><span>' + res.length + ' found</span></div>';
+  return head + (res.length ? wsBuild(res.map(histItem), 0) : wsEmptyBox('No results found', 'Try a different search'));
+}
+function wsRenderHist() { if (window.__wsReady && g('wsPane0')) g('wsPane0').innerHTML = wsHistHTML(getVisibleLogs()); }
+new MutationObserver(() => { wsRenderHist(); }).observe(g('ds'), { attributes: true, attributeFilter: ['class'] });
+(function () {   // search sirf History tab me hai; Subjects par jate hi band ho jaye
+  const _t = wsSetTab;
+  wsSetTab = function (i) { _t.apply(this, arguments); if (wsSearchOn() && wsTab !== 0) dsBack(); };
+})();
 function openDS() {
   wsPopClose(); if (fsOpen) closeFSheet();
   if (dsTab !== wsTab) { dsC2 = ''; dsC3 = ''; dsSubs = []; dsMod = ''; dsQ = ''; dsTab = wsTab; }
   g('dsIn').placeholder = 'Search in ' + WS_TABS[wsTab];
+  wsApplyHdr(0, false);   // header ki upar wali patti poori khuli rahe, taaki search patti dikhe
+  const sb = g('wsSearchBtn').getBoundingClientRect(), tp = g('wsTop').getBoundingClientRect();
+  if (sb.width) g('wsSf').style.setProperty('--sf-r', Math.max(0, Math.round(tp.right - sb.right)) + 'px');
+  g('ds').style.setProperty('--ds-top', Math.round(g('wsChrome').getBoundingClientRect().bottom) + 'px');
   g('ds').classList.add('open'); dsSync(); setTimeout(() => g('dsIn').focus(), 60);
   wsPush();
 }
@@ -7602,28 +7630,8 @@ function dsResults() {
   });
 }
 function dsSync() {
-  const cfg = dsCfg(), q = dsQ.trim();
   g('dsIn').value = dsQ; g('dsClr').classList.toggle('hidden', !dsQ);
-  const lab = (o, v) => { const f = o.opts.find(x => x[0] === v); return f ? f[1] : o.label; };
-  const any = dsSubs.length || dsC2 || dsC3 || dsMod;
-  const chip = (id, on, text) => '<button type="button" class="ds-chip' + (on ? ' selected' : '') + '" data-dc="' + id + '"><span>' + text + '</span>' + SVG_CHEV + '</button>';
-  g('dsChips').innerHTML = chip('sub', dsSubs.length, dsSubs.length ? 'Subject (' + dsSubs.length + ')' : 'Subject') + chip('c2', dsC2, dsC2 ? lab(cfg.c2, dsC2) : cfg.c2.label) + chip('c3', dsC3, dsC3 ? lab(cfg.c3, dsC3) : cfg.c3.label) + chip('mod', dsMod, dsMod || 'Modified') + (any ? '<button type="button" class="ds-chip reset" id="dsReset">Reset</button>' : '');
-  g('dsChips').querySelectorAll('[data-dc]').forEach(b => { b.onclick = () => dsSubOpen(b.dataset.dc); });
-  const rs = document.getElementById('dsReset'); if (rs) rs.onclick = () => { dsSubs = []; dsC2 = ''; dsC3 = ''; dsMod = ''; dsSync(); };
-  const body = g('dsBody');
-  if (!q && !any) {
-    body.innerHTML = '<div class="ds-head"><span>Recent searches</span></div>' + (dsRecent.length ? dsRecent.map(t => '<div class="ds-recent" data-r="' + esc(t) + '"><div class="ds-rl">' + SVG_CLK + '<span>' + esc(t) + '</span></div><button type="button" class="ds-fill" aria-label="Fill">' + SVG_NW + '</button></div>').join('') : '<div class="wv-empty">अभी कोई हालिया खोज नहीं</div>');
-    body.querySelectorAll('.ds-recent').forEach(r => { r.onclick = () => { dsQ = r.dataset.r; dsSync(); }; });
-    return;
-  }
-  const res = dsResults();
-  if (!res.length) { body.innerHTML = '<div class="ds-head"><span>Results (0)</span></div>' + wsEmptyBox('No results found', 'Try a different search') + ''; return; }
-  body.innerHTML = '<div class="ds-head"><span>Results in ' + WS_TABS[wsTab] + '</span><span>' + res.length + ' found</span></div><div class="wv-list">' + res.slice(0, 200).map(x => {
-    const it = wsTab === 0 ? histItem(x) : chapItem(x);
-    const nt = wsTab === 0 && x.notes && q && x.notes.toLowerCase().includes(q) ? '<div class="wv-nl">' + hl(x.notes.split('\n')[0], q) + '</div>' : '';
-    return '<div class="wv-item" style="--sc:' + it.col + '" ' + (wsTab === 1 ? it.attr : '') + '><div class="wv-m"><div class="wv-t">' + hl(it.title, q) + '</div><div class="wv-meta"><span style="color:' + it.col + ';font-weight:700">' + hl(it.sub, q) + '</span><i class="wv-dot"></i><span>' + it.d1 + '</span><i class="wv-dot"></i><span>' + esc(it.r1) + '</span></div>' + nt + '</div><span class="wv-pill ' + it.pc + '">' + esc(it.pill) + '</span></div>';
-  }).join('') + '</div>' + (res.length > 200 ? '<div class="wv-empty">पहले 200 नतीजे दिख रहे हैं। खोज और सटीक करें।</div>' : '');
-  body.querySelectorAll('[data-cs]').forEach(e => { e.onclick = () => dsOpenChapter(e.dataset.cs, e.dataset.cc); });
+  wsRenderHist();
 }
 function dsOpenChapter(s, c) { g('ds').classList.remove('open'); g('dsIn').blur(); dsSubClose(); chOpen(s, c, true); }
 function dsSubOpen(type) {
