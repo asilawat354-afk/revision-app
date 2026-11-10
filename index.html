@@ -7346,6 +7346,21 @@ function wsSetScroll(idx, y) {   // programmatic scroll: header fully open, no c
   requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, g('wsPane' + idx).scrollTop); }));
 }
 // एकमात्र Snap प्रक्रिया: उंगली स्क्रीन पर हो तो कभी Snap नहीं; scroll / fling रुकने के 140ms बाद ही Snap
+let wsSnapRaf = 0;
+// लिस्ट के बीच में स्नैप: हेडर और लिस्ट बिल्कुल साथ-साथ खिसकें (हेडर जितना हिले, लिस्ट भी उतनी)
+function wsSnapGlide(pane, idx, to) {
+  const off0 = wsHdrOff, d = to - off0, y0 = pane.scrollTop, t0 = performance.now(), D = 220;
+  wsIgnore = true;
+  cancelAnimationFrame(wsSnapRaf);
+  const step = now => {
+    const p = Math.max(0, Math.min(1, (now - t0) / D)), e = 1 - Math.pow(1 - p, 3);
+    pane.scrollTop = y0 + d * e;
+    wsApplyHdr(off0 + d * e, false);
+    if (p < 1) wsSnapRaf = requestAnimationFrame(step);
+    else requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop); }));
+  };
+  wsSnapRaf = requestAnimationFrame(step);
+}
 function wsSnapSchedule(idx) {
   clearTimeout(wsSnapT);
   wsSnapT = setTimeout(() => {
@@ -7359,7 +7374,7 @@ function wsSnapSchedule(idx) {
       pane.scrollTo({ top: to, behavior: 'smooth' });
       wsApplyHdr(to, true);
       setTimeout(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop); }, 450);
-    } else wsApplyHdr(hide ? WS_TOPH : 0, true);
+    } else wsSnapGlide(pane, idx, hide ? WS_TOPH : 0);
   }, 140);
 }
 [0, 1].forEach(idx => {
@@ -7385,6 +7400,7 @@ function wsSnapSchedule(idx) {
   pane.addEventListener('touchstart', e => {
     ty = (e.touches && e.touches.length === 1) ? e.touches[0].clientY : null;
     wsTouching = true;
+    cancelAnimationFrame(wsSnapRaf);
     clearTimeout(wsSnapT); wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop);
   }, { passive: true });
   pane.addEventListener('touchmove', e => {
