@@ -3494,12 +3494,27 @@ html.native-lite body::before,html.native-lite .bg-orb,html.native-lite .empty-s
 html.native-lite .card,html.native-lite .stat-capsule,html.native-lite nav,html.native-lite .ws-chrome,html.native-lite .ws-tip,html.native-lite .ws-pop,html.native-lite .selbar,html.native-lite .theme-toggle,html.native-lite[data-card] .card,html.native-lite[data-card] .stats-row .stat-capsule{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 </style>
 <style>
-/* दाएं-बाएं ज़्यादा खिंचाव और दो उंगली से अटकना रोकने के लिए */
+/* हेडर = लिस्ट के अंदर sticky: ऊपर की पट्टी लिस्ट के साथ जाती है, टैब ऊपर टिक जाते हैं */
+.ws-chrome{position:sticky!important;top:var(--ht,-52px)!important;left:auto!important;right:auto!important;
+  margin:calc(-1 * (var(--chrome-h,96px) + 10px)) -14px 10px!important;will-change:auto!important}
+.ws.deep .ws-chrome,.ws.sel .ws-chrome{top:0!important}
+.ws-chrome.ws-hclone{top:-52px!important;pointer-events:none}
+.ws.deep .ws-chrome.ws-hclone,.ws.sel .ws-chrome.ws-hclone{top:0!important}
+.ws.ws-slide .ws-chrome:not(.ws-hclone){visibility:visible!important}
+/* हेडर की चाल स्क्रीन खुद (बिना देरी) चलाती है; ऊपर वाला रंग-विस्तार हल्के ओवरशूट पर खाली जगह नहीं दिखने देता */
+.ws-chrome:not(.ws-hclone):not(.ws-ov){transform:var(--hct,none)}
+.ws.deep .ws-chrome:not(.ws-hclone):not(.ws-ov),.ws.sel .ws-chrome:not(.ws-hclone):not(.ws-ov){transform:none!important}
+.ws-chrome:not(.ws-hclone):not(.ws-ov)::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:120px;background:inherit;pointer-events:none}
+.ws-pane{padding-top:0!important}
+/* टैब बदलते समय हेडर स्थिर रहता है (सिर्फ़ लिस्ट सरकती है); असली हेडर तब तक छिपा */
+.ws-chrome.ws-ov{position:absolute!important;top:var(--sat,0px)!important;left:0!important;right:0!important;margin:0!important;z-index:95;pointer-events:none}
+.ws.ws-swiping .ws-pane .ws-chrome{visibility:hidden!important}
+.ws-pane::before{content:"";display:block;height:calc(var(--chrome-h,96px) + 10px)}
+/* दाएं-बाएं खिंचाव और दो उंगली से अटकना रोकने के लिए */
 html,body{touch-action:pan-x pan-y}
 .ws-vp,.ws-track{touch-action:pan-y;overscroll-behavior-x:none}
 .ws-pane{overflow-x:hidden!important;overscroll-behavior:none}
 .tc,.fs-active,.ds-chips,.ntb-pills,.wv-tc{overscroll-behavior-x:contain;touch-action:pan-x pan-y}
-.chm-b,.fx-body,.ds-body,.ds-sh{overscroll-behavior:contain}
 </style>
 </head>
 <body>
@@ -7211,11 +7226,63 @@ function chBackDo() {
 }
 function chJump(k) { if (wsDepth > k) history.go(-k); else for (let i = 0; i < k; i++) chBackDo(); }
 
+// ---------- हेडर अब हर पेज की लिस्ट के अंदर रहता है और लिस्ट के साथ अपने-आप (बिना देरी) चलता है ----------
+function wsSetPane(id, html) {   // लिस्ट बदलो पर हेडर को मत मिटाओ
+  const pn = g(id), ch = g('wsChrome'), had = pn.contains(ch);
+  if (had) g('wsScreen').insertBefore(ch, g('wsVp'));
+  pn.innerHTML = html;
+  if (had) pn.insertBefore(ch, pn.firstChild);
+}
+var wsOv = null, wsOvT = 0;
+function wsOvStart() {   // टैब बदलने से पहले: हेडर की स्थिर कॉपी स्क्रीन पर टिका दो
+  clearTimeout(wsOvT); if (wsOv) { wsOv.remove(); wsOv = null; }
+  const sc = g('wsScreen'), c = wsHeaderClone();
+  c.classList.add('ws-ov'); c.style.transition = 'none';
+  const S = Math.max(0, g('wsPane' + wsTab).scrollTop), off = wsCollapsible() ? Math.max(0, Math.min(52, -wsHdrY(S))) : 0;
+  c.style.transform = 'translate3d(0,' + (-off) + 'px,0)';
+  sc.appendChild(c); sc.classList.add('ws-swiping'); wsOv = c;
+}
+function wsOvLine(prog) {   // टैब की नीली लाइन उंगली के साथ चले
+  if (!wsOv) return;
+  const ln = wsOv.querySelector('.ws-tab-line');
+  if (ln) { ln.style.transition = 'none'; ln.style.transform = 'translate3d(' + (prog * 100) + '%,0,0)'; }
+  wsOv.querySelectorAll('.ws-tab').forEach((b, i) => b.classList.toggle('active', i === (prog > 0.5 ? 1 : 0)));
+}
+function wsOvEnd() { clearTimeout(wsOvT); if (wsOv) { wsOv.remove(); wsOv = null; } g('wsScreen').classList.remove('ws-swiping'); }
+function wsOvFinish(i) {   // स्लाइड खत्म होने तक कॉपी टिके, फिर असली हेडर दिखे (उसी जगह)
+  if (!wsOv) return;
+  const c = wsOv, S = Math.max(0, g('wsPane' + i).scrollTop), off = wsCollapsible() ? Math.max(0, Math.min(52, -wsHdrY(S))) : 0;
+  const tp = c.querySelector('.ws-top'); if (tp) tp.innerHTML = g('wsTop').innerHTML.replace(/ id="[^"]*"/g, '');
+  const ease = 'transform .28s cubic-bezier(.22,1,.36,1)';
+  c.style.transition = ease; c.style.transform = 'translate3d(0,' + (-off) + 'px,0)';
+  const ln = c.querySelector('.ws-tab-line'); if (ln) { ln.style.transition = ease; ln.style.transform = 'translate3d(' + (i * 100) + '%,0,0)'; }
+  c.querySelectorAll('.ws-tab').forEach((b, k) => b.classList.toggle('active', k === i));
+  clearTimeout(wsOvT); wsOvT = setTimeout(wsOvEnd, 360);
+}
+function wsStaticHdr(pane, tabIdx) {   // दूसरे पेज पर हेडर की सिर्फ़ दिखने वाली कॉपी (स्लाइड के समय)
+  pane.querySelectorAll(':scope > .ws-hclone').forEach(x => x.remove());
+  const c = wsHeaderClone();
+  if (wsCollapsible()) { const yo = wsHdrY(Math.max(0, pane.scrollTop)); if (yo > -WS_TOPH) c.style.setProperty('top', yo + 'px', 'important'); }
+  c.querySelectorAll('.ws-tab').forEach((b, i) => b.classList.toggle('active', i === tabIdx));
+  const ln = c.querySelector('.ws-tab-line'); if (ln) { ln.style.transition = 'none'; ln.style.transform = 'translate3d(' + (tabIdx * 100) + '%,0,0)'; }
+  pane.insertBefore(c, pane.firstChild);
+}
+function wsPlaceChrome() {   // असली हेडर चालू टैब की लिस्ट में
+  const ch = g('wsChrome'), act = g('wsPane' + wsTab);
+  const old = (wsTp !== undefined && wsTp !== wsTab) ? g('wsPane' + wsTp) : null;
+  act.querySelectorAll(':scope > .ws-hclone').forEach(x => x.remove());
+  if (old && !wsSliding && !wsOv) {   // टैब बदला: पुराने पेज पर स्लाइड ख़त्म होने तक हेडर की कॉपी रखो
+    old.querySelectorAll(':scope > .ws-hclone').forEach(x => x.remove());
+    wsStaticHdr(old, wsTp);
+    setTimeout(() => { old.querySelectorAll(':scope > .ws-hclone').forEach(x => x.remove()); }, 500);
+  }
+  if (ch.parentNode !== act || act.firstChild !== ch) act.insertBefore(ch, act.firstChild);
+}
 // ---------- render ----------
 function wsRender() {
   if (!window.__wsReady || !g('wsScreen')) return;
   const hist = getVisibleLogs();
-  g('wsPane0').innerHTML = wsHistHTML(hist);
+  wsSetPane('wsPane0', wsHistHTML(hist));
   let o = null, chList = [], subs = [];
   if (chSt.sub && !subList().some(x => x[0] === chSt.sub)) { chSt.sub = null; chSt.chap = null; chSt.lec = null; }
   if (chSt.chap) { o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap); if (!o) { chSt.chap = null; chSt.lec = null; } }
@@ -7223,10 +7290,11 @@ function wsRender() {
   const k1 = plvl + '|' + chSt.sub + '|' + chSt.chap + '|' + chSt.lec;
   let wsGh = null;
   if (wsK1 !== undefined && k1 !== wsK1 && wsOpen && wsTab === 1 && wsTp === 1 && wsPl !== undefined && plvl !== wsPl && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) wsGh = wsGhostMake();   // पुराना पेज सँभालकर रखो
-  if (plvl === 3) g('wsPane1').innerHTML = chLecHTML(o, chSt.lec);
-  else if (plvl === 2) g('wsPane1').innerHTML = chLecListHTML(o);
-  else if (plvl === 1) { chList = chFiltered(chF, chSt.sub); g('wsPane1').innerHTML = wsBuild(chList.map(c => chapItem(c, true)), 1, WS_H_CHAP); }
-  else { subs = subItems(); g('wsPane1').innerHTML = wsBuild(subs, 1, WS_H_SUBS); }
+  if (plvl === 3) wsSetPane('wsPane1', chLecHTML(o, chSt.lec));
+  else if (plvl === 2) wsSetPane('wsPane1', chLecListHTML(o));
+  else if (plvl === 1) { chList = chFiltered(chF, chSt.sub); wsSetPane('wsPane1', wsBuild(chList.map(c => chapItem(c, true)), 1, WS_H_CHAP)); }
+  else { subs = subItems(); wsSetPane('wsPane1', wsBuild(subs, 1, WS_H_SUBS)); }
+  wsPlaceChrome();
   const lvl = wsTab === 1 ? plvl : 0;
   const SB0 = (k, s) => '<span onclick="chJump(' + k + ')">' + esc(s) + '</span>', SB = (k, s) => SVG_SEP + '<span onclick="chJump(' + k + ')">' + esc(s) + '</span>';
   let title = 'Master Database', subHTML = '';
@@ -7265,7 +7333,7 @@ function wsRender() {
     pn.classList.remove('ws-fade', 'ws-in', 'ws-under'); void pn.offsetWidth;
     if (wsGh) {
       const fwd = plvl > wsPl, hd = document.createElement('div');
-      hd.className = 'ws-hd ' + (fwd ? 'fwd' : 'back'); hd.appendChild(wsHeaderClone()); g('wsTrack').appendChild(hd);   // नए पेज का अपना हेडर
+      hd.className = 'ws-hd';
       pn.classList.add(fwd ? 'ws-in' : 'ws-under'); wsGh.classList.add(fwd ? 'fwd' : 'back');
       // एनिमेशन सच में खत्म होने पर ही नकली कॉपियाँ हटाओ (धीमे फ़ोन पर टाइमर पहले बज जाता था और झपक होती थी)
       let tm = 0;
@@ -7301,7 +7369,7 @@ function wsGhostMake() {   // पुराना पेज = उसकी लि
   const pc = pn.cloneNode(true);
   pc.removeAttribute('id'); pc.className = 'ws-pane'; pc.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
   pc.style.paddingTop = getComputedStyle(pn).paddingTop;
-  wrap.appendChild(pc); wrap.appendChild(wsHeaderClone());
+  wrap.appendChild(pc);
   tr.appendChild(wrap);
   pc.scrollTop = pn.scrollTop;
   g('wsScreen').classList.add('ws-slide'); wsSliding = true;   // इसके बाद क्लास बदलने पर भी टैब सिकुड़ेंगे नहीं
@@ -7316,39 +7384,16 @@ function wsLine() {
   g('wsChrome').classList.toggle('pinned', pin);
   document.querySelectorAll('.ws-hd > .ws-hclone').forEach(c => c.classList.toggle('pinned', pin));
 }
-function wsApplyHdr(px, anim) {
-  const max = wsCollapsible() ? WS_TOPH : 0, ch = g('wsChrome'), tp = g('wsTop');
-  wsHdrOff = Math.max(0, Math.min(max, px));
-  if (wsSliding) anim = false;
-  ch.style.transition = anim ? 'transform .22s cubic-bezier(.22,1,.36,1)' : 'none';
-  tp.style.transition = anim ? 'opacity .18s ease' : 'none';
-  ch.style.transform = 'translate3d(0,' + (-wsHdrOff) + 'px,0)';
-  tp.style.opacity = max ? String(Math.max(0, 1 - (wsHdrOff / max) * 1.05)) : '1';
-  tp.style.pointerEvents = max && wsHdrOff > max * 0.75 ? 'none' : '';
-  if (max && wsHdrOff > max * 0.75 && g('wsPop').classList.contains('open')) wsPopClose();
-  if (wsOpen) document.body.classList.toggle('nav-hide', max > 0 && wsHdrOff > max * 0.5);
+function wsApplyHdr(px, anim) {   // हेडर अब खुद चलता है; यहाँ सिर्फ़ नीचे का बार और पॉपअप संभालते हैं
+  wsHdrOff = 0;
+  if (!wsOpen) return;
+  const S = Math.max(0, g('wsPane' + wsTab).scrollTop), hide = wsCollapsible() && wsHdrY(S) < -WS_TOPH * 0.5;   // हेडर आधे से ज़्यादा छिपा = नीचे का बार छिपे; हेडर लौटे = बार भी लौटे
+  document.body.classList.toggle('nav-hide', hide);
+  if (hide && g('wsPop').classList.contains('open')) wsPopClose();
   wsLine();
 }
 var wsKeepOff = null;   // टैब बदलते समय बार की जो स्थिति थी, वही रखो
-function wsHdrSync() {   // after any render / tab change: keep header and the active list consistent
-  const pn = g('wsPane' + wsTab);
-  if (wsKeepOff !== null) {
-    const off = wsKeepOff; wsKeepOff = null;
-    if (wsCollapsible()) {
-      wsIgnore = true;
-      if (pn.scrollTop < off) pn.scrollTop = off;   // हो सके तो लिस्ट खिसकाओ; न हो सके तो खाली जगह दिखे तो दिखे
-      wsLastY[wsTab] = Math.max(0, pn.scrollTop);
-      wsApplyHdr(off, false);
-      requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[wsTab] = Math.max(0, pn.scrollTop); }));
-      return;
-    }
-  }
-  const st = Math.max(0, g('wsPane' + wsTab).scrollTop);
-  wsLastY[wsTab] = st;
-  if (!wsCollapsible()) wsApplyHdr(0, wsHdrOff > 0);
-  else if (wsHdrOff > st) wsApplyHdr(st, true);
-  else wsApplyHdr(wsHdrOff, false);
-}
+function wsHdrSync() { wsKeepOff = null; wsHdrCarry(); wsApplyHdr(0, false); }
 function wsSetScroll(idx, y) {   // programmatic scroll: header fully open, no collapse jump
   wsIgnore = true;
   g('wsPane' + idx).scrollTop = y;
@@ -7358,35 +7403,76 @@ function wsSetScroll(idx, y) {   // programmatic scroll: header fully open, no c
 }
 // एकमात्र Snap प्रक्रिया: उंगली स्क्रीन पर हो तो कभी Snap नहीं; scroll / fling रुकने के 140ms बाद ही Snap
 let wsSnapRaf = 0;
-// लिस्ट के बीच में स्नैप: हेडर और लिस्ट बिल्कुल साथ-साथ खिसकें (हेडर जितना हिले, लिस्ट भी उतनी)
-function wsSnapGlide(pane, idx, to) {
-  const off0 = wsHdrOff, d = to - off0, y0 = pane.scrollTop, t0 = performance.now(), D = 220;
-  wsIgnore = true;
+// उंगली उठने के बाद (और fling रुकने पर) आधा छिपा हेडर अपने-आप पूरा छिपे / पूरा दिखे
+var wsGliding = false;
+function wsSnapGlide(pane, idx, hide) {
+  const S0 = Math.max(0, pane.scrollTop), ht = wsHT, y0 = wsHdrY(S0);
+  const yT = hide ? -WS_TOPH : 0;
+  const S1 = hide ? Math.max(S0, WS_TOPH) : (S0 < WS_TOPH ? 0 : S0);   // लिस्ट ऊपर के पास हो तो लिस्ट भी साथ बैठे
+  const t0 = performance.now(), D = 220;
+  wsGliding = true;
   cancelAnimationFrame(wsSnapRaf);
   const step = now => {
     const p = Math.max(0, Math.min(1, (now - t0) / D)), e = 1 - Math.pow(1 - p, 3);
-    pane.scrollTop = y0 + d * e;
-    wsApplyHdr(off0 + d * e, false);
-    if (p < 1) wsSnapRaf = requestAnimationFrame(step);
-    else requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop); }));
+    const S = S0 + (S1 - S0) * e, y = y0 + (yT - y0) * e;
+    if (S !== S0 || p >= 1) pane.scrollTop = S;
+    wsHdrSet(y - Math.max(-S, ht), ht, false);
+    wsApplyHdr(0, false);
+    if (p < 1) { wsSnapRaf = requestAnimationFrame(step); return; }
+    if (hide || S1 === 0) wsHdrReset(); else wsHdrSet(0, 0, true);
+    wsApplyHdr(0, false);
+    requestAnimationFrame(() => requestAnimationFrame(() => { wsGliding = false; wsLastY[idx] = Math.max(0, pane.scrollTop); }));
   };
   wsSnapRaf = requestAnimationFrame(step);
 }
-function wsSnapSchedule(idx) {
-  clearTimeout(wsSnapT);
-  wsSnapT = setTimeout(() => {
-    wsSnapT = null;
-    if (wsTouching) return;   // उंगली अभी स्क्रीन पर है — touchend पर दोबारा schedule होगा
-    if (idx !== wsTab || !wsCollapsible() || wsHdrOff <= 0 || wsHdrOff >= WS_TOPH) return;
-    const pane = g('wsPane' + idx), hide = wsHdrOff > WS_TOPH * 0.5;
-    if (pane.scrollTop < WS_TOPH) {   // लिस्ट अभी पूरी नहीं खिसकी: लिस्ट और बार को साथ-साथ बिठाओ
-      const to = hide ? WS_TOPH : 0;
-      wsIgnore = true;
-      pane.scrollTo({ top: to, behavior: 'smooth' });
-      wsApplyHdr(to, true);
-      setTimeout(() => { wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop); }, 450);
-    } else wsSnapGlide(pane, idx, hide ? WS_TOPH : 0);
-  }, 140);
+function wsSnapRun(idx) {
+  wsSnapT = null;
+  if (wsTouching || wsIgnore || wsGliding || idx !== wsTab || !wsCollapsible()) return;
+  const pane = g('wsPane' + idx), S = Math.max(0, pane.scrollTop), y = wsHdrY(S);
+  if (y >= -0.5 || y <= -WS_TOPH + 0.5) return;   // पहले से पूरा दिख रहा / पूरा छिपा
+  wsSnapGlide(pane, idx, y < -WS_TOPH * 0.5);
+}
+function wsSnapSchedule(idx) { clearTimeout(wsSnapT); wsSnapT = setTimeout(() => wsSnapRun(idx), 140); }
+// हेडर: y = max(-scroll, wsHT) + wsHC  (sticky + एक स्थिर शिफ़्ट)। चाल पूरी तरह नेटिव है; JS सिर्फ़ दिशा बदलने पर पैरामीटर बदलता है।
+var wsHC = 0, wsHT = -WS_TOPH, wsHPin = false;
+function wsHdrSet(c, t, pin) {
+  wsHC = c; wsHT = t; wsHPin = pin;
+  const ch = g('wsChrome');
+  ch.style.setProperty('--ht', t + 'px');
+  if (c) ch.style.setProperty('--hct', 'translate3d(0,' + c + 'px,0)'); else ch.style.removeProperty('--hct');
+}
+function wsHdrReset() { if (wsHC || wsHT !== -WS_TOPH || wsHPin) wsHdrSet(0, -WS_TOPH, false); }
+function wsHdrY(S) { return Math.max(-S, wsHT) + wsHC; }
+var wsHTab = 0, wsHColl = true;
+function wsHdrCarry() {   // टैब / पेज बदलने के बाद: हेडर बिल्कुल वैसा ही रहे जैसा अभी था (छिपा तो छिपा, आधा तो आधा)
+  if (!wsCollapsible()) { wsHdrReset(); wsHTab = wsTab; wsHColl = false; return; }
+  const pn = g('wsPane' + wsTab), S = Math.max(0, pn.scrollTop);
+  if (wsHColl && wsHTab !== wsTab) {
+    const yo = wsHdrY(Math.max(0, g('wsPane' + wsHTab).scrollTop)), need = Math.round(-yo);   // हेडर जितना छिपा था = लिस्ट को उतना खिसका होना चाहिए
+    if (S < need) {   // नई लिस्ट छोटी / ऊपर है: उसे उतना खिसकाओ ताकि हेडर कूदकर नीचे न आए
+      wsIgnore = true; pn.scrollTop = need; wsLastY[wsTab] = Math.max(0, pn.scrollTop);
+      requestAnimationFrame(() => requestAnimationFrame(() => { wsIgnore = false; wsLastY[wsTab] = Math.max(0, pn.scrollTop); }));
+      wsHdrReset();
+    }
+    else if (S <= 0 || yo <= -WS_TOPH + 0.5) wsHdrReset();
+    else if (yo >= 0) wsHdrSet(0, 0, true);
+    else { const c = S + yo; wsHdrSet(c, -WS_TOPH - c, false); }
+  } else if (!wsHColl) wsHdrReset();
+  else if (S <= 0) wsHdrReset();
+  else if (wsHdrY(S) > 0) wsHdrSet(0, 0, true);
+  wsHTab = wsTab; wsHColl = true;
+}   // इस scroll पर हेडर का ऊपरी किनारा (0 = पूरा दिख रहा, -52 = ऊपर की पट्टी छिपी)
+function wsHdrScroll(y, dy) {
+  if (!wsCollapsible()) return;
+  if (wsIgnore || y <= 0) { wsHdrReset(); return; }
+  if (!dy) return;
+  const Sp = y - dy;
+  if (dy > 0) {
+    if (wsHPin) wsHdrSet(Sp, -WS_TOPH - Sp, false);      // पूरा दिख रहा था, अब नीचे: लिस्ट के साथ ऊपर सरके
+  } else {
+    if (wsHdrY(Sp) <= -WS_TOPH + 0.5) { const c = Sp - WS_TOPH; wsHdrSet(c, -WS_TOPH - c, false); }   // छिपा था: ऊपर आते ही वहीं से उतरे
+    if (wsHdrY(y) >= 0) wsHdrSet(0, 0, true);             // पूरा दिख गया: ऊपर टिक जाए
+  }
 }
 [0, 1].forEach(idx => {
   const pane = g('wsPane' + idx);
@@ -7394,12 +7480,10 @@ function wsSnapSchedule(idx) {
     const y = Math.max(0, pane.scrollTop), dy = y - wsLastY[idx];
     wsLastY[idx] = y;
     if (idx !== wsTab) return;
-    if (wsIgnore) { wsLine(); return; }
-    if (!wsCollapsible()) { if (wsHdrOff) wsApplyHdr(0, false); else wsLine(); return; }
-    let next = wsHdrOff + dy;
-    if (y < next) next = y;                 // top clamp
-    wsApplyHdr(next, false);
-    wsSnapSchedule(idx);
+    if (wsGliding) { wsApplyHdr(0, false); return; }
+    wsHdrScroll(y, dy);
+    wsApplyHdr(0, false);
+    if (wsTouching) { clearTimeout(wsSnapT); wsSnapT = null; } else wsSnapSchedule(idx);   // उंगली screen पर हो तो कभी Snap नहीं
   }, { passive: true });
 });
 // जब लिस्ट स्क्रॉल हो ही नहीं सकती (छोटी / खाली), तब scroll इवेंट नहीं आता —
@@ -7411,7 +7495,7 @@ function wsSnapSchedule(idx) {
   pane.addEventListener('touchstart', e => {
     ty = (e.touches && e.touches.length === 1) ? e.touches[0].clientY : null;
     wsTouching = true;
-    cancelAnimationFrame(wsSnapRaf);
+    cancelAnimationFrame(wsSnapRaf); wsGliding = false;
     clearTimeout(wsSnapT); wsIgnore = false; wsLastY[idx] = Math.max(0, pane.scrollTop);
   }, { passive: true });
   pane.addEventListener('touchmove', e => {
@@ -7477,7 +7561,13 @@ function wsPop() {
   if (wsOpen) { exitWSDirect(); return true; }
   return false;
 }
-function wsSetTab(i) { wsPopClose(); if (i !== wsTab) { if (selMode && i !== 0) exitSel(); haptic('light'); wsKeepOff = wsHdrOff; } wsTab = i; wsRender(); }
+function wsSetTab(i) {
+  wsPopClose();
+  const changed = i !== wsTab;
+  if (changed) { if (selMode && i !== 0) exitSel(); haptic('light'); if (wsOpen && !wsOv) wsOvStart(); }
+  wsTab = i; wsRender();
+  if (changed && wsOv) wsOvFinish(i);
+}
 window.addEventListener('popstate', e => {
   if (!wsOpen && !g('ds').classList.contains('open')) return;
   const nonPushed = dsModal || g('wsPop').classList.contains('open') || fsOpen || chShOpen;
@@ -7544,17 +7634,15 @@ g('wsPopList').addEventListener('click', e => {
     const c = e.target.closest('[data-cs]');
     if (c && wsTab === 1) chOpen(c.dataset.cs, c.dataset.cc, false);
   });
-  const vp = g('wsVp'), trk = g('wsTrack'), tln = g('wsTabLine');
+  const vp = g('wsVp'), trk = g('wsTrack');
   let sx = 0, sy = 0, dx = 0, t0 = 0, sw = false, ign = false;
-  const snapBack = () => {   // जैसी जगह होनी चाहिए वहीं वापस, कभी अटके नहीं
-    trk.style.transition = ''; tln.style.transition = '';
-    trk.style.transform = 'translate3d(' + (-wsTab * 50) + '%,0,0)';
-    tln.style.transform = 'translate3d(' + (wsTab * 100) + '%,0,0)';
-    sw = false; dx = 0;
+  const snapBack = () => {   // जहाँ होना चाहिए वहीं वापस; कभी अटके नहीं
+    trk.style.transition = ''; trk.style.transform = 'translate3d(' + (-wsTab * 50) + '%,0,0)';
+    sw = false; dx = 0; wsOvFinish(wsTab);
   };
   vp.addEventListener('touchstart', e => {
     if (e.touches.length !== 1) { ign = true; if (sw) snapBack(); return; }   // दूसरी उंगली आते ही स्वाइप रद्द
-    if (selMode || (wsTab === 1 && chSt.sub) || e.target.closest('.tc, .fs-active')) { ign = true; return; }
+    if (selMode || (wsTab === 1 && chSt.sub) || e.target.closest('.tc, .fs-active, .ws-chrome')) { ign = true; return; }
     ign = false; sw = false; dx = 0; t0 = Date.now(); sx = e.touches[0].clientX; sy = e.touches[0].clientY;
   }, { passive: true });
   vp.addEventListener('touchmove', e => {
@@ -7563,26 +7651,25 @@ g('wsPopList').addEventListener('click', e => {
     const mx = e.touches[0].clientX - sx, my = e.touches[0].clientY - sy;
     if (!sw) {
       if (Math.abs(mx) < 8 && Math.abs(my) < 8) return;
-      if (Math.abs(mx) > Math.abs(my) * 1.15) { sw = true; trk.style.transition = 'none'; tln.style.transition = 'none'; wsPopClose(); }
+      if (Math.abs(mx) > Math.abs(my) * 1.15) { sw = true; trk.style.transition = 'none'; wsPopClose(); wsOvStart(); }
       else { ign = true; return; }
     }
     dx = mx;
     const w = vp.offsetWidth || 360;
-    let prog = wsTab - dx / w;
-    prog = Math.max(0, Math.min(1, prog));   // किनारे पर बिल्कुल खिंचाव नहीं
+    const prog = Math.max(0, Math.min(1, wsTab - dx / w));   // किनारे पर कोई खिंचाव नहीं
     trk.style.transform = 'translate3d(' + (-prog * 50) + '%,0,0)';
-    tln.style.transform = 'translate3d(' + (prog * 100) + '%,0,0)';
+    wsOvLine(prog);
   }, { passive: true });
   const endSw = e => {
-    if (e && e.touches && e.touches.length) { if (sw) snapBack(); ign = true; return; }   // अभी भी कोई उंगली बाकी है
+    if (e && e.touches && e.touches.length) { if (sw) snapBack(); ign = true; return; }
     if (ign || !sw) { if (sw) snapBack(); sw = false; return; }
-    trk.style.transition = ''; tln.style.transition = '';
+    trk.style.transition = '';
     const w = vp.offsetWidth || 360, vx = dx / Math.max(1, Date.now() - t0);
     let next = wsTab;
     if (wsTab === 0 && (dx < -w * 0.24 || (vx < -0.35 && dx < -30))) next = 1;
     else if (wsTab === 1 && (dx > w * 0.24 || (vx > 0.35 && dx > 30))) next = 0;
     sw = false; dx = 0;
-    if (next === wsTab) snapBack();
+    if (next === wsTab) { snapBack(); return; }
     wsSetTab(next);
   };
   vp.addEventListener('touchend', endSw);
@@ -7644,7 +7731,7 @@ function wsHistHTML(all) {   // History list: search band ho to usi list ko usi 
   const head = '<div class="ds-head"><span>' + (dsQ.trim() ? 'Results in History' : 'All History') + '</span><span>' + res.length + ' found</span></div>';
   return head + (res.length ? wsBuild(res.map(histItem), 0) : wsEmptyBox('No results found', 'Try a different search'));
 }
-function wsRenderHist() { if (window.__wsReady && g('wsPane0')) g('wsPane0').innerHTML = wsHistHTML(getVisibleLogs()); }
+function wsRenderHist() { if (window.__wsReady && g('wsPane0')) wsSetPane('wsPane0', wsHistHTML(getVisibleLogs())); }
 new MutationObserver(() => { wsRenderHist(); }).observe(g('ds'), { attributes: true, attributeFilter: ['class'] });
 (function () {   // search sirf History tab me hai; Subjects par jate hi band ho jaye
   const _t = wsSetTab;
