@@ -3516,6 +3516,25 @@ html,body{touch-action:pan-x pan-y}
 .ws-pane{overflow-x:hidden!important;overscroll-behavior:none}
 .tc,.fs-active,.ds-chips,.ntb-pills,.wv-tc{overscroll-behavior-x:contain;touch-action:pan-x pan-y}
 </style>
+<style>
+/* चैप्टर टच करने पर छोटा पॉपअप: All + Lec सूची (कोने हल्के मुड़े, वीडियो जैसे) */
+.chp{position:fixed;z-index:311;display:flex;flex-direction:column;min-width:176px;max-width:min(272px,calc(100vw - 24px));max-height:min(58vh,440px);overflow:hidden;
+  background:var(--surface-elevated);border:1px solid var(--border);border-radius:6px;box-shadow:var(--shadow);
+  transform-origin:var(--ox,50%) var(--oy,0);opacity:0;transform:scale(.9) translateY(-6px);
+  transition:opacity .14s ease,transform .2s cubic-bezier(.22,1,.36,1)}
+.chp.up{transform:scale(.9) translateY(6px)}
+.chp.on{opacity:1;transform:none}
+.chp-h{flex:none;padding:10px 14px 9px;font-size:12px;font-weight:700;letter-spacing:.2px;line-height:1.35;color:var(--muted);border-bottom:1px solid var(--border);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.chp-l{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:3px 0 5px;-webkit-overflow-scrolling:touch}
+.chp-i{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;border:0;background:none;color:var(--text);font:inherit;font-size:14.5px;font-weight:600;padding:12px 14px;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .12s}
+.chp-i:active{background:color-mix(in srgb,var(--primary) 16%,transparent)}
+.chp-i small{font-size:11px;font-weight:700;white-space:nowrap;min-width:20px;text-align:center;padding:2px 7px;border-radius:10px;background:color-mix(in srgb,var(--primary) 16%,transparent);color:var(--primary)}
+.chp-i.all{color:var(--primary)}
+.chp-sep{height:1px;background:var(--border);margin:3px 0}
+/* सर्च खुला हो तो नीचे का Flow/Master Database/Tools बार छिपा रहे (कीबोर्ड के ऊपर न उठे) */
+body.ds-on .bbw{transform:translateY(105%)!important;pointer-events:none!important}
+.chp-src{box-shadow:inset 0 0 0 1.5px var(--primary)!important;transition:box-shadow .15s}
+</style>
 </head>
 <body>
 <div id="bgOrbs" aria-hidden="true"><i class="bg-orb o1"></i><i class="bg-orb o2"></i><i class="bg-orb o3"></i></div>
@@ -7205,11 +7224,72 @@ var chShKeep = null;
 function chRecFilter() { chReopen = true; openFSheet(); }   // रिकॉर्ड शीट अपनी जगह खुली रहे, फ़िल्टर उसके ऊपर खुले
 function wsPush() { try { history.pushState({ wd: wsDepth + 1 }, ''); wsDepth++; } catch (e) {} }
 function chSubOpen(s) {
-  chSt.sy = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = null; chSt.lec = null; chF = { sort: 'recent', stat: 'all', sub: 'all' }; haptic('light');
+  chSt.sy = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = null; chSt.lec = null; chSt.direct = false; chF = { sort: 'recent', stat: 'all', sub: 'all' }; haptic('light');
   wsPush(); wsRender(); wsSetScroll(1, 0);
 }
+// ---------- चैप्टर टच: पॉपअप (All + Lec सूची) ----------
+var chPopEl = null, chPopRow = null;
+function chPopClose() {
+  const e = chPopEl, r = chPopRow; chPopEl = null; chPopRow = null;
+  if (r) r.classList.remove('chp-src');
+  if (!e) return;
+  e.classList.remove('on'); e.style.pointerEvents = 'none';
+  setTimeout(() => e.remove(), 180);
+}
+function chPopOpen(row, ev) {
+  if (chPopEl && chPopRow === row) { chPopClose(); return; }   // उसी चैप्टर पर दोबारा टच: बंद
+  const sub = row.dataset.cs, chap = row.dataset.cc, o = chData().find(x => x.sub === sub && x.chap === chap);
+  if (!o || !o.all.length) { chPopClose(); chOpen(sub, chap, false); return; }   // कोई लेक्चर नहीं: सीधे चैप्टर पेज
+  chPopClose(); haptic('light');
+  const sc = g('wsScreen'), p = document.createElement('div');
+  p.className = 'chp'; p.setAttribute('role', 'menu');
+  p.innerHTML = '<div class="chp-h">' + esc(chap) + '</div><div class="chp-l">' +
+    '<button type="button" class="chp-i all" data-a="all"><span>All</span></button><div class="chp-sep"></div>' +
+    o.all.map((l, i) => '<button type="button" class="chp-i" data-a="' + i + '"><span>' + esc(l) + '</span>' + (o.cnt[l] ? '<small>' + o.cnt[l] + '</small>' : '') + '</button>').join('') + '</div>';
+  sc.appendChild(p);
+  row.classList.add('chp-src');   // कौन सा चैप्टर खुला है, यह पंक्ति पर निशान से भी दिखे
+  const r = row.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, m = 12;
+  const w = p.offsetWidth; let h = p.offsetHeight;
+  const x = ev && ev.clientX ? ev.clientX : r.left + r.width / 2;
+  const left = Math.max(m, Math.min(x - w / 2, vw - w - m));
+  const below = vh - m - (r.bottom - 8), above = r.top + 8 - m;
+  let top, up = false;
+  if (h <= below) top = r.bottom - 8;
+  else if (h <= above) { top = r.top + 8 - h; up = true; }
+  else if (below >= above) { top = r.bottom - 8; p.style.maxHeight = Math.max(160, below) + 'px'; }
+  else { p.style.maxHeight = Math.max(160, above) + 'px'; h = p.offsetHeight; top = r.top + 8 - h; up = true; }
+  p.style.left = left + 'px'; p.style.top = Math.max(m, top) + 'px';
+  p.style.setProperty('--ox', Math.round(x - left) + 'px'); p.style.setProperty('--oy', up ? '100%' : '0');
+  if (up) p.classList.add('up');
+  chPopEl = p; chPopRow = row;
+  requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('on')));
+  p.addEventListener('click', e => {
+    const b = e.target.closest('.chp-i'); if (!b) return;
+    const a = b.dataset.a; chPopClose();
+    if (a === 'all') chOpen(sub, chap, false); else chOpenLec(sub, chap, o.all[+a]);
+  });
+}
+// बाहर कहीं भी टच (दूसरे चैप्टर पर भी): सिर्फ़ पॉपअप बंद होगा, और कुछ नहीं; खोलने के लिए दोबारा टच
+document.addEventListener('click', e => {
+  if (!chPopEl || chPopEl.contains(e.target)) return;
+  chPopClose(); e.stopPropagation(); e.preventDefault();
+}, true);
+// History में सर्च खुला हो तो टैब पर पहला टच सिर्फ़ सर्च बंद करे (बाकी पॉपअप की तरह), दूसरा टच टैब बदले
+document.addEventListener('click', e => {
+  if (!wsSearchOn()) return;
+  const t = e.target.closest && e.target.closest('.ws-tab, #wsViewBtn');
+  if (!t || g('ds').contains(t)) return;
+  dsCloseNow(); e.stopPropagation(); e.preventDefault();
+}, true);
+function chOpenLec(sub, chap, lec) {   // सीधे Lecture के डेटा पर (बीच का सूची पेज छोड़कर); Back से सूची, फिर चैप्टर
+  chSt.y = g('wsPane1').scrollTop; chSt.sub = sub; chSt.chap = chap; chSt.lec = lec; chSt.cy = 0; chSt.direct = true;
+  chRF = { d: [], m: [], l: [] }; haptic('light');
+  wsPush(); wsRender(); wsSetScroll(1, 0);
+}
+window.addEventListener('popstate', () => chPopClose());
+document.addEventListener('keydown', e => { if (e.key === 'Escape') chPopClose(); });
 function chOpen(s, c, fromSearch) {
-  chSt.y = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = c; chSt.lec = null; chRF = { d: [], m: [], l: [] }; haptic('light');
+  chSt.y = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = c; chSt.lec = null; chSt.direct = false; chRF = { d: [], m: [], l: [] }; haptic('light');
   if (fromSearch) {
     chF = { sort: 'recent', stat: 'all', sub: 'all' };
     try { while (wsDepth < 3) { history.pushState({ wd: wsDepth + 1 }, ''); wsDepth++; } history.replaceState({ wd: wsDepth }, ''); } catch (e) {}
@@ -7217,14 +7297,20 @@ function chOpen(s, c, fromSearch) {
   wsRender(); wsSetScroll(1, 0);
 }
 function chLecOpen(l) {
-  chSt.cy = g('wsPane1').scrollTop; chSt.lec = l; haptic('light'); wsPush(); wsRender(); wsSetScroll(1, 0);
+  chSt.cy = g('wsPane1').scrollTop; chSt.lec = l; chSt.direct = false; haptic('light'); wsPush(); wsRender(); wsSetScroll(1, 0);
 }
 function chBackDo() {
+  if (chSt.lec && chSt.direct) { chSt.direct = false; chSt.lec = null; chSt.chap = null; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.y)); return; }   // पॉपअप से सीधे आए थे: Back से सीधे चैप्टर सूची
   if (chSt.lec) { chSt.lec = null; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.cy)); return; }
   if (chSt.chap) { chSt.chap = null; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.y)); return; }
   if (chSt.sub) { chSt.sub = null; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.sy || 0)); }
 }
-function chJump(k) { if (wsDepth > k) history.go(-k); else for (let i = 0; i < k; i++) chBackDo(); }
+function chJump(k) {
+  if (chSt.direct && chSt.lec) {
+    if (k === 1) { chSt.direct = false; chSt.lec = null; wsRender(); requestAnimationFrame(() => wsSetScroll(1, 0)); return; }   // चैप्टर नाम दबाया: उसकी लेक्चर सूची
+    k = k - 1;   // विषय का नाम: एक कदम कम (बीच का पेज इतिहास में है ही नहीं)
+  }
+  if (wsDepth > k) history.go(-k); else for (let i = 0; i < k; i++) chBackDo(); }
 
 // ---------- हेडर अब हर पेज की लिस्ट के अंदर रहता है और लिस्ट के साथ अपने-आप (बिना देरी) चलता है ----------
 function wsSetPane(id, html) {   // लिस्ट बदलो पर हेडर को मत मिटाओ
@@ -7280,6 +7366,7 @@ function wsPlaceChrome() {   // असली हेडर चालू टैब
 }
 // ---------- render ----------
 function wsRender() {
+  chPopClose();
   if (!window.__wsReady || !g('wsScreen')) return;
   const hist = getVisibleLogs();
   wsSetPane('wsPane0', wsHistHTML(hist));
@@ -7480,6 +7567,7 @@ function wsHdrScroll(y, dy) {
     const y = Math.max(0, pane.scrollTop), dy = y - wsLastY[idx];
     wsLastY[idx] = y;
     if (idx !== wsTab) return;
+    if (chPopEl) chPopClose();
     if (wsGliding) { wsApplyHdr(0, false); return; }
     wsHdrScroll(y, dy);
     wsApplyHdr(0, false);
@@ -7545,7 +7633,7 @@ function openWS(tab, viaNav) {
 function exitWSDirect() {
   if (!wsOpen) return;
   wsPopClose(); chReopen = false; chSheetClose(); if (fsOpen) closeFSheet(); if (selMode) exitSel();
-  chSt.chap = null; chSt.sub = null; chSt.lec = null; wsOpen = false;
+  chSt.chap = null; chSt.sub = null; chSt.lec = null; chSt.direct = false; wsOpen = false;
   document.body.classList.remove('in-ws', 'ws-deep', 'ws-sel');
   wsHdrOff = 0; wsApplyHdr(0, false);
   navAfterWS();
@@ -7564,6 +7652,7 @@ function wsPop() {
 function wsSetTab(i) {
   wsPopClose();
   const changed = i !== wsTab;
+  if (changed) dsCloseNow();   // पहले सर्च बंद, फिर टैब बदले
   if (changed) { if (selMode && i !== 0) exitSel(); haptic('light'); if (wsOpen && !wsOv) wsOvStart(); }
   wsTab = i; wsRender();
   if (changed && wsOv) wsOvFinish(i);
@@ -7574,14 +7663,14 @@ window.addEventListener('popstate', e => {
   if (nonPushed) { wsPop(); try { history.pushState({ wd: wsDepth }, ''); } catch (x) {} return; }
   const target = e.state && typeof e.state.wd === 'number' ? e.state.wd : 0;
   let guard = 8;
-  while (wsDepth > target && guard-- > 0) { wsDepth--; if (!wsPop()) break; }
+  while (wsDepth > target && guard-- > 0) { wsDepth--; if (wsSkipPop > 0) { wsSkipPop--; continue; } if (!wsPop()) break; }
 });
 
 // ---------- view switcher (tap = next, hold = menu with Pin default) ----------
 function wsSyncPop() {
   g('wsPopList').innerHTML = WS_VIEWS.map((m, i) => '<div class="ws-pr' + (i === wsViewIdx ? ' active' : '') + '"><button type="button" class="ws-ps" data-vi="' + i + '" role="menuitem">' + m.icon + '<span class="ws-pn"><span>' + m.label + '</span>' + (m.key === wsDefKey ? '<span class="ws-dp">Default</span>' : '') + '</span></button><button type="button" class="ws-pin' + (m.key === wsDefKey ? ' is-def' : '') + '" data-pin="' + i + '" aria-label="Set ' + m.label + ' as Default">' + SVG_PIN + '</button></div>').join('');
 }
-function wsPopOpen() { if (g('wsPop').classList.contains('open')) return; wsSyncPop(); g('wsPop').classList.add('open'); g('wsViewBtn').classList.add('is-active'); haptic('medium'); }
+function wsPopOpen() { if (g('wsPop').classList.contains('open')) return; dsCloseNow(); wsSyncPop(); g('wsPop').classList.add('open'); g('wsViewBtn').classList.add('is-active'); haptic('medium'); }
 function wsPopClose() { g('wsPop').classList.remove('open'); g('wsViewBtn').classList.remove('is-active'); }
 g('wsPopList').addEventListener('click', e => {
   e.stopPropagation();
@@ -7632,7 +7721,7 @@ g('wsPopList').addEventListener('click', e => {
     const sb = e.target.closest('[data-ss]');
     if (sb && wsTab === 1) { chSubOpen(sb.dataset.ss); return; }
     const c = e.target.closest('[data-cs]');
-    if (c && wsTab === 1) chOpen(c.dataset.cs, c.dataset.cc, false);
+    if (c && wsTab === 1) chPopOpen(c, e);
   });
   const vp = g('wsVp'), trk = g('wsTrack');
   let sx = 0, sy = 0, dx = 0, t0 = 0, sw = false, ign = false;
@@ -7642,7 +7731,7 @@ g('wsPopList').addEventListener('click', e => {
   };
   vp.addEventListener('touchstart', e => {
     if (e.touches.length !== 1) { ign = true; if (sw) snapBack(); return; }   // दूसरी उंगली आते ही स्वाइप रद्द
-    if (selMode || (wsTab === 1 && chSt.sub) || e.target.closest('.tc, .fs-active, .ws-chrome')) { ign = true; return; }
+    if (selMode || wsSearchOn() || (wsTab === 1 && chSt.sub) || e.target.closest('.tc, .fs-active, .ws-chrome')) { ign = true; return; }
     ign = false; sw = false; dx = 0; t0 = Date.now(); sx = e.touches[0].clientX; sy = e.touches[0].clientY;
   }, { passive: true });
   vp.addEventListener('touchmove', e => {
@@ -7651,7 +7740,7 @@ g('wsPopList').addEventListener('click', e => {
     const mx = e.touches[0].clientX - sx, my = e.touches[0].clientY - sy;
     if (!sw) {
       if (Math.abs(mx) < 8 && Math.abs(my) < 8) return;
-      if (Math.abs(mx) > Math.abs(my) * 1.15) { sw = true; trk.style.transition = 'none'; wsPopClose(); wsOvStart(); }
+      if (Math.abs(mx) > Math.abs(my) * 1.15) { sw = true; trk.style.transition = 'none'; wsPopClose(); chPopClose(); wsOvStart(); }
       else { ign = true; return; }
     }
     dx = mx;
@@ -7737,6 +7826,7 @@ new MutationObserver(() => { wsRenderHist(); }).observe(g('ds'), { attributes: t
   const _t = wsSetTab;
   wsSetTab = function (i) { _t.apply(this, arguments); if (wsSearchOn() && wsTab !== 0) dsBack(); };
 })();
+new MutationObserver(() => { document.body.classList.toggle('ds-on', g('ds').classList.contains('open')); }).observe(g('ds'), { attributes: true, attributeFilter: ['class'] });
 function openDS() {
   wsPopClose(); if (fsOpen) closeFSheet();
   if (dsTab !== wsTab) { dsC2 = ''; dsC3 = ''; dsSubs = []; dsMod = ''; dsQ = ''; dsTab = wsTab; }
@@ -7747,6 +7837,12 @@ function openDS() {
   g('ds').style.setProperty('--ds-top', Math.round(g('wsChrome').getBoundingClientRect().bottom) + 'px');
   g('ds').classList.add('open'); dsSync(); setTimeout(() => g('dsIn').focus(), 60);
   wsPush();
+}
+var wsSkipPop = 0;
+function dsCloseNow() {   // सर्च तुरंत बंद (इतिहास की एक प्रविष्टि भी हटे, पर कोई और पेज पीछे न जाए)
+  if (!wsSearchOn()) return;
+  dsCloseDirect();
+  if (wsDepth > 0) { wsSkipPop++; setTimeout(() => { wsSkipPop = 0; }, 700); try { history.back(); } catch (e) { wsSkipPop = 0; } }
 }
 function dsCloseDirect() { dsSubClose(); g('ds').classList.remove('open'); g('dsIn').blur(); }
 function dsBack() { if (wsDepth > 0) history.back(); else dsCloseDirect(); }
@@ -8065,7 +8161,7 @@ function initHistEvents() {
   });
 }
 
-function enterSel(id) { selMode = true; selIds = new Set([id]); openId = null; renderHistory(); }
+function enterSel(id) { dsCloseNow(); selMode = true; selIds = new Set([id]); openId = null; renderHistory(); }
 function exitSel() { selMode = false; selIds.clear(); renderHistory(); }
 function toggleSel(id) {
   if (selIds.has(id)) selIds.delete(id);
