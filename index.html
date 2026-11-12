@@ -1982,7 +1982,7 @@ body.ws-deep .ws-pane{padding-bottom:calc(24px + var(--sab))}
 /* ===== Play Store style: collapsing top header + sticky underline tab bar ===== */
 
 .ws{display:block;padding:0}
-.ws-safe-shield{position:absolute;top:0;left:0;right:0;height:var(--sat);background:var(--surface);z-index:95}
+.ws-safe-shield{position:absolute;top:0;left:0;right:0;height:var(--sat);background:var(--surface);z-index:110}
 .ws-chrome{position:absolute;top:var(--sat);left:0;right:0;z-index:85;background:var(--surface);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);will-change:transform}
 @supports (color:color-mix(in srgb,red 50%,blue)){.ws-chrome{background:color-mix(in srgb,var(--surface) 86%,transparent)}}
 .ws-chrome.pinned{box-shadow:none}
@@ -3535,6 +3535,54 @@ html,body{touch-action:pan-x pan-y}
 body.ds-on .bbw{transform:translateY(105%)!important;pointer-events:none!important}
 .chp-src{box-shadow:inset 0 0 0 1.5px var(--primary)!important;transition:box-shadow .15s}
 </style>
+
+<style id="patch-style-1">
+/* ===== चैप्टर पॉपअप: All Lectures स्थिर, Pending आइकन, चुना हुआ विकल्प Highlight ===== */
+.chp-top{flex:none}
+.chp-top .chp-sep{margin:0}
+.chp-l{position:relative}
+.chp-i .chp-nm{display:inline-flex;align-items:center;min-width:0}
+.chp-i.cur{background:color-mix(in srgb,var(--primary) 14%,transparent);box-shadow:inset 3px 0 0 var(--primary);color:var(--primary)}
+.chp-i.cur small{background:var(--primary);color:#000}
+.chp-cd{display:inline-block;flex:none;width:7px;height:7px;border-radius:50%;background:var(--primary);margin-right:8px}
+.chp-pend{flex:none;width:15px;height:15px;color:var(--muted-dim);opacity:.9}
+</style>
+
+<style id="patch-style-2">
+/* ===== चैप्टर पेज: रिकॉर्ड + Filter ===== */
+.cr-tags{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.cr-tp{margin-top:10px;padding:12px;border-radius:14px;background:var(--hf-card);border:1px solid var(--hf-border)}
+.cr-tp .hf-inline-pills{margin-bottom:10px}
+.cr-gh{margin-top:14px}
+/* ===== Home + Study Session पेज ===== */
+#view-study{padding-bottom:84px}
+.sp-hint{display:flex;align-items:center;gap:10px;margin:4px 2px 14px;padding:12px 14px;border:1px dashed var(--border);border-radius:14px;color:var(--muted);font-size:12.5px;font-weight:600;line-height:1.4}
+.sp-hint svg{flex:none;width:18px;height:18px;stroke:var(--primary);stroke-width:2.4;stroke-linecap:round;fill:none}
+.sp-hint b{color:var(--primary)}
+body.sp-live .sp-hint{display:none}
+.sp{position:fixed;inset:0;margin:0 auto;max-width:520px;z-index:120;background:var(--bg);display:flex;flex-direction:column;transform:translateY(8%) scale(.985);opacity:0;visibility:hidden;pointer-events:none;transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .24s ease,visibility 0s linear .34s}
+.sp.open{transform:none;opacity:1;visibility:visible;pointer-events:auto;transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .24s ease,visibility 0s}
+.sp-bar{flex:none;display:flex;align-items:center;gap:6px;padding:calc(8px + var(--sat)) 12px 8px 8px;background:var(--surface);border-bottom:1px solid var(--border)}
+.sp-back{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sp-back:active{background:var(--surface-hover)}
+.sp-back svg{width:24px;height:24px;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.sp-ttl{font-size:17px;font-weight:800;letter-spacing:.1px;color:var(--text)}
+.sp-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:14px 14px calc(28px + var(--sab))}
+.sp-fab{position:fixed;z-index:99;right:calc(max(0px,(100vw - 520px)/2) + 16px);bottom:calc(62px + var(--sab) + 16px);height:58px;min-width:58px;padding:0;border:0;border-radius:29px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#38bdf8,#8b5cf6);color:#fff;box-shadow:0 10px 28px rgba(99,102,241,.45),0 2px 6px rgba(0,0,0,.25);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .25s cubic-bezier(.22,1,.36,1),bottom .24s cubic-bezier(.22,1,.36,1),opacity .2s ease,padding .25s ease}
+.sp-fab svg{width:26px;height:26px;stroke:#fff;stroke-width:2.4;stroke-linecap:round;fill:none}
+.sp-fab:active{transform:scale(.92)}
+.sp-fab.hide{opacity:0;pointer-events:none;transform:scale(.6)}
+body.nav-hide .sp-fab{bottom:calc(var(--sab) + 18px)}
+.sp-fab-live{display:none;align-items:center;gap:8px;font-weight:800;font-size:16px;letter-spacing:.3px;font-variant-numeric:tabular-nums}
+.sp-fab.live{padding:0 22px}
+.sp-fab.live .sp-fab-plus{display:none}
+.sp-fab.live .sp-fab-live{display:inline-flex}
+.sp-fab-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff}
+.sp-fab.run .sp-fab-dot{animation:spPulse 1.2s infinite ease-in-out}
+.sp-fab.live:not(.run) .sp-fab-dot{width:3px;height:11px;border-radius:1px;box-shadow:6px 0 0 #fff;margin-right:6px}
+@keyframes spPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.55);opacity:.5}}
+@media (prefers-reduced-motion:reduce){.sp,.sp-fab{transition:none!important}.sp-fab.run .sp-fab-dot{animation:none}}
+</style>
 </head>
 <body>
 <div id="bgOrbs" aria-hidden="true"><i class="bg-orb o1"></i><i class="bg-orb o2"></i><i class="bg-orb o3"></i></div>
@@ -3641,208 +3689,7 @@ body.ds-on .bbw{transform:translateY(105%)!important;pointer-events:none!importa
       <div class="day-detail" id="weeklyDayDetail" style="display:none;"></div>
     </div>
 
-    <!-- STEP 1 -->
-    <div class="card" id="selectorCard">
-      <div class="card-head">
-        <div class="step-badge-wrap">
-          <span class="step-num">1</span>
-          <h2 class="card-title">Select Lecture</h2>
-        </div>
-        <div class="tg tg-micro" id="studyModeToggle">
-          <button type="button" class="tb active" id="modeRev" onclick="setMode('revision')">Revision</button>
-          <button type="button" class="tb" id="modeNew" onclick="setMode('first_study')">First Study</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="field-label">SUBJECT</label>
-        <select id="mSub" onchange="populateChapters('mSub', 'mChap', 'mLec'); updateSelectionSummary(); clearFlowError();">
-          <option value="">Select Subject...</option>
-        </select>
-      </div>
-
-      <div class="fr">
-        <div class="form-group" style="margin-bottom:0;">
-          <label class="field-label">CHAPTER</label>
-          <select id="mChap" onchange="populateLectures('mSub', 'mChap', 'mLec'); updateSelectionSummary(); clearFlowError();" disabled>
-            <option value="">Select Chapter...</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label class="field-label">LECTURE</label>
-          <select id="mLec" disabled onchange="updateSelectionSummary(); clearFlowError();">
-            <option value="">Select Lecture...</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="selSummary" class="selection-summary">
-        <span class="sel-dot" id="selDot"></span>
-        <span id="selSummaryTxt">Select Subject, Chapter & Lecture</span>
-      </div>
-    </div>
-
-    <!-- STEP 2 -->
-    <div class="card timer-card" id="timerPanelCard">
-      <div class="card-head" style="margin-bottom:8px;">
-        <div class="step-badge-wrap">
-          <span class="step-num">2</span>
-          <h2 class="card-title">Focus Timer</h2>
-        </div>
-        <div class="timer-mode-segment" id="flowModeToggle">
-          <button type="button" class="segment-btn active" id="btnModeStopwatch" onclick="setFlowMode('stopwatch')">Timer</button>
-          <button type="button" class="segment-btn" id="btnModeManual" onclick="setFlowMode('manual')">Manual</button>
-        </div>
-      </div>
-
-      <!-- STOPWATCH VIEW -->
-      <div id="stopwatchPane">
-        <div class="zen-indicator" id="zenIndicator">
-          <span class="status-dot" style="width:5px;height:5px;"></span>
-          <span id="zenTopicTxt">Focus Flow Study</span>
-        </div>
-
-        <div class="ring">
-          <svg viewBox="0 0 280 280">
-            <circle class="track" cx="140" cy="140" r="130"/>
-            <g class="ticks-group" id="ticksGroup"></g>
-            <circle class="arc" id="arc" cx="140" cy="140" r="130"/>
-          </svg>
-          <div class="ro">
-            <div class="clock" id="clock">00:00</div>
-            <div class="cs" id="clockState">Ready</div>
-          </div>
-        </div>
-
-        <button class="btn btn-primary btn-start" id="startBtn" onclick="toggleTimer()">
-          <svg class="ic"><use href="#i-play"/></svg>
-          <span>Start</span>
-        </button>
-
-        <div class="timer-secondary-row">
-          <button class="btn btn-secondary" id="endBtn" onclick="stopTimer()">
-            <svg class="ic"><use href="#i-stop"/></svg>
-            <span>End Session</span>
-          </button>
-          <button class="btn btn-secondary" id="resetBtn" onclick="resetTimer()">
-            <svg class="ic"><use href="#i-reload"/></svg>
-            <span>Reset</span>
-          </button>
-        </div>
-
-        <p id="stopwatchInlineError" class="form-error" style="display:none;"></p>
-        <div class="timer-quote">"गति से ज़्यादा ज़रूरी है, चलते रहना।"</div>
-      </div>
-
-      <!-- MANUAL ENTRY VIEW -->
-      <div id="manualPane" style="display:none; padding-top:4px;">
-        <label class="field-label">STUDY TIME (MINUTES)</label>
-        <input type="number" id="manualTime" placeholder="e.g. 45" min="1" max="1440" style="font-weight:700; font-size:15px; margin-bottom:8px;">
-
-        <div class="manual-presets" id="manualPresets">
-          <button type="button" class="preset-chip" onclick="setManualPreset(15, this)">15m</button>
-          <button type="button" class="preset-chip" onclick="setManualPreset(25, this)">25m</button>
-          <button type="button" class="preset-chip" onclick="setManualPreset(45, this)">45m</button>
-          <button type="button" class="preset-chip" onclick="setManualPreset(60, this)">60m</button>
-        </div>
-
-        <label class="field-label">DIFFICULTY LEVEL</label>
-        <div class="tg diff-tg">
-          <div class="tb diff-btn" data-val="Easy" onclick="setDiff('Easy')">
-            <span class="diff-main">Easy</span>
-            <span class="diff-sub">आसान</span>
-          </div>
-          <div class="tb diff-btn active" data-val="Medium" onclick="setDiff('Medium')">
-            <span class="diff-main">Medium</span>
-            <span class="diff-sub">ठीक-ठाक</span>
-          </div>
-          <div class="tb diff-btn" data-val="Hard" onclick="setDiff('Hard')">
-            <span class="diff-main">Hard</span>
-            <span class="diff-sub">दोहराना है</span>
-          </div>
-        </div>
-
-        <div class="note-toggle-wrap nt-wrap">
-          <div class="ntb">
-            <div class="ntb-h" role="button" tabindex="0" onclick="ntOpen('Manual',1)"><span class="ntb-ic"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><div class="ntb-t"><b>Notes</b><span id="ntMetaManual">Quick add below, or open the full page</span></div><span class="ntb-go">Open<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></div>
-            <div class="ntb-pills" id="ntPillsManual"></div>
-            <div class="ntb-np" id="ntNpManual"><input id="ntNnManual" type="text" maxlength="14" autocomplete="off" placeholder="Pill name" onkeydown="if(event.key==='Enter'){event.preventDefault();ntPillSave('Manual')}"><div class="ntb-cols" id="ntNcManual"></div><div class="ntb-npr"><button type="button" class="ntb-qb" onclick="ntPillClose('Manual')">Cancel</button><button type="button" class="ntb-qb" onclick="ntPillSave('Manual')">Add</button></div></div>
-            <div class="ntb-qi" id="ntQiManual"><i id="ntQdManual"></i><input id="ntQtManual" type="text" autocomplete="off" placeholder="Write here" onkeydown="if(event.key==='Enter'){event.preventDefault();ntQuickAdd('Manual')}"><button type="button" class="ntb-qb" onclick="ntQuickAdd('Manual')">Add</button></div>
-            <div id="ntMiniManual"></div>
-            <div class="ntb-sep"></div>
-            <div class="ntb-lr"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><input id="ntLuManual" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="Paste a link" onkeydown="if(event.key==='Enter'){event.preventDefault();ntLinkAdd('Manual')}"><button type="button" class="ntb-qb" onclick="ntLinkAdd('Manual')">Add</button></div>
-            <div class="ntb-lk" id="ntLkManual"></div>
-          </div>
-          <textarea id="notesManual" aria-hidden="true" tabindex="-1" style="display:none"></textarea>
-        </div>
-
-        <button class="btn btn-primary" onclick="saveManualSession()" style="margin-top:8px;">
-          <svg class="ic"><use href="#i-save"/></svg>
-          <span>Save Locally</span>
-        </button>
-
-        <p id="manualInlineError" class="form-error" style="display:none;"></p>
-        <div class="timer-quote">"गति से ज़्यादा ज़रूरी है, चलते रहना।"</div>
-      </div>
-    </div>
-
-    <!-- SESSION REVIEW -->
-    <div class="card session-review-card" id="saveCard" style="display:none;">
-      <div class="card-head" style="margin-bottom:4px;">
-        <div>
-          <h2 class="card-title"><svg class="ic" style="color:var(--primary);"><use href="#i-save"/></svg> Session Review</h2>
-          <p class="card-subtitle">अपनी सीख और कठिनाई सहेजें</p>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span id="finalTimeTxt" class="final-time-badge">0 Min</span>
-          <button class="icon-btn-dismiss" onclick="closeSaveCard()" title="Dismiss">
-            <svg class="ic"><use href="#i-close"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <label class="field-label" style="margin-top:4px;">DIFFICULTY LEVEL</label>
-      <div class="tg diff-tg" style="margin-bottom:10px;">
-        <div class="tb diff-btn" data-val="Easy" onclick="setDiff('Easy')">
-          <span class="diff-main">Easy</span>
-          <span class="diff-sub">आसान</span>
-        </div>
-        <div class="tb diff-btn active" data-val="Medium" onclick="setDiff('Medium')">
-          <span class="diff-main">Medium</span>
-          <span class="diff-sub">ठीक-ठाक</span>
-        </div>
-        <div class="tb diff-btn" data-val="Hard" onclick="setDiff('Hard')">
-          <span class="diff-main">Hard</span>
-          <span class="diff-sub">दोहराना है</span>
-        </div>
-      </div>
-
-      <div class="note-toggle-wrap nt-wrap">
-          <div class="ntb">
-            <div class="ntb-h" role="button" tabindex="0" onclick="ntOpen('',1)"><span class="ntb-ic"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><div class="ntb-t"><b>Notes</b><span id="ntMeta">Quick add below, or open the full page</span></div><span class="ntb-go">Open<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></div>
-            <div class="ntb-pills" id="ntPills"></div>
-            <div class="ntb-np" id="ntNp"><input id="ntNn" type="text" maxlength="14" autocomplete="off" placeholder="Pill name" onkeydown="if(event.key==='Enter'){event.preventDefault();ntPillSave('')}"><div class="ntb-cols" id="ntNc"></div><div class="ntb-npr"><button type="button" class="ntb-qb" onclick="ntPillClose('')">Cancel</button><button type="button" class="ntb-qb" onclick="ntPillSave('')">Add</button></div></div>
-            <div class="ntb-qi" id="ntQi"><i id="ntQd"></i><input id="ntQt" type="text" autocomplete="off" placeholder="Write here" onkeydown="if(event.key==='Enter'){event.preventDefault();ntQuickAdd('')}"><button type="button" class="ntb-qb" onclick="ntQuickAdd('')">Add</button></div>
-            <div id="ntMini"></div>
-            <div class="ntb-sep"></div>
-            <div class="ntb-lr"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><input id="ntLu" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="Paste a link" onkeydown="if(event.key==='Enter'){event.preventDefault();ntLinkAdd('')}"><button type="button" class="ntb-qb" onclick="ntLinkAdd('')">Add</button></div>
-            <div class="ntb-lk" id="ntLk"></div>
-          </div>
-          <textarea id="notes" aria-hidden="true" tabindex="-1" style="display:none"></textarea>
-        </div>
-
-      <button class="btn btn-primary" onclick="saveSession()" style="margin-top:8px;">
-        <svg class="ic"><use href="#i-save"/></svg>
-        <span>Save Locally</span>
-      </button>
-
-      <button class="btn btn-secondary btn-full" onclick="continueStudying()" style="margin-top:6px; height:34px; font-size:11.5px;">
-        <svg class="ic" style="width:12px;height:12px;"><use href="#i-play"/></svg>
-        <span>Keep Studying (Resume)</span>
-      </button>
-
-      <p id="saveCardInlineError" class="form-error" style="display:none;"></p>
-    </div>
+    <div class="sp-hint" id="spHint"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>नया Study Session शुरू करने के लिए नीचे दाईं ओर <b>+</b> दबाएँ</span></div>
   </main>
 
   <!-- TOOLS VIEW: OPTION 3 (1 SINGLE SUPER-CARD FOR SYLLABUS + BACKUP/SYNC) -->
@@ -4239,6 +4086,23 @@ body.ds-on .bbw{transform:translateY(105%)!important;pointer-events:none!importa
   </div>
 </div>
 
+<!-- चैप्टर पेज (All Lectures) का Filter & Sort : HF जैसा -->
+<div class="hf-backdrop" id="crBackdrop"></div>
+<div class="hf-sheet" id="crSheet" role="dialog" aria-modal="true" aria-label="Filter and Sort">
+  <div class="hf-sheet-top" id="crDrag">
+    <div class="hf-handle"></div>
+    <div class="hf-sheet-head">
+      <div class="hf-sheet-title">Filter & Sort</div>
+      <button class="hf-close-btn" id="crClose" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+  </div>
+  <div class="hf-sheet-body" id="crBody"></div>
+  <div class="hf-sheet-footer">
+    <button class="hf-btn-reset" id="crReset" type="button">Reset</button>
+    <button class="hf-btn-apply" id="crApply" type="button"><span>Apply</span><span class="hf-dot-sep"></span><span class="hf-result-text" id="crCount">0 Results</span></button>
+  </div>
+</div>
+
 <!-- ANCHORED GLASS POPOVER -->
 <div class="hf-glass-popover" id="hfPopover" role="dialog">
   <div class="hf-pop-arrow top" id="hfPopArrow"></div>
@@ -4334,11 +4198,228 @@ body.ds-on .bbw{transform:translateY(105%)!important;pointer-events:none!importa
 
 <div class="bbw">
   <nav id="mainBar">
-    <button type="button" class="ni active" data-tab="study" onclick="go('study')"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v4l2.6 1.6M9.5 3h5"/></svg><svg class="i-s" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M9.5 2.5h5a.75.75 0 0 1 0 1.5h-1.75v1.6a8 8 0 1 1-1.5 0V4H9.5a.75.75 0 0 1 0-1.5zm3.25 8a.75.75 0 0 0-1.5 0v3.9c0 .27.14.52.37.65l2.4 1.45a.75.75 0 0 0 .78-1.28l-2.05-1.24z"/></svg></div><span class="lb">Flow</span></button>
+    <button type="button" class="ni active" data-tab="study" onclick="go('study')"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><path d="M4 10.6 12 4l8 6.6V19a1 1 0 0 1-1 1h-4.2v-5.2H9.2V20H5a1 1 0 0 1-1-1z"/></svg><svg class="i-s" viewBox="0 0 24 24"><path d="M11.4 3.3a1 1 0 0 1 1.2 0l8 6.6a1 1 0 0 1 .4.8V19a2 2 0 0 1-2 2h-3.7a.8.8 0 0 1-.8-.8V15.4a.2.2 0 0 0-.2-.2H9.7a.2.2 0 0 0-.2.2v4.8a.8.8 0 0 1-.8.8H5a2 2 0 0 1-2-2v-8.3a1 1 0 0 1 .4-.8z"/></svg></div><span class="lb">Home</span></button>
     <button type="button" class="ni" data-tab="ws" onclick="openWS(0, true)"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><ellipse cx="12" cy="6.5" rx="7.5" ry="2.8"/><path d="M4.5 6.5v11c0 1.5 3.36 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-11"/><path d="M4.5 12c0 1.5 3.36 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></svg><svg class="i-s" viewBox="0 0 24 24"><ellipse cx="12" cy="6.2" rx="8" ry="3"/><path d="M4 8.5v3.2c0 1.8 3.58 3.2 8 3.2s8-1.4 8-3.2V8.5c-1.8 1.3-4.7 2-8 2s-6.2-.7-8-2z"/><path d="M4 14v3.5c0 1.8 3.58 3.2 8 3.2s8-1.4 8-3.2V14c-1.8 1.3-4.7 2-8 2s-6.2-.7-8-2z"/></svg></div><span class="lb">Master Database</span></button>
     <button type="button" class="ni" data-tab="database" onclick="go('database')"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg><svg class="i-s" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="2"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="2"/><rect x="13" y="13" width="7.5" height="7.5" rx="2"/></svg></div><span class="lb">Tools</span></button>
   </nav>
 </div>
+
+<!-- ===== STUDY SESSION पेज (Home के + बटन से खुलता है): Select Lecture · Focus Timer · Session Review ===== -->
+<section class="sp" id="studyPage" role="dialog" aria-modal="true" aria-label="Study Session" aria-hidden="true">
+  <div class="sp-bar">
+    <button type="button" class="sp-back" onclick="closeStudyPage()" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="sp-ttl">Study Session</div>
+  </div>
+  <div class="sp-body" id="spBody">
+    <!-- STEP 1 -->
+    <div class="card" id="selectorCard">
+      <div class="card-head">
+        <div class="step-badge-wrap">
+          <span class="step-num">1</span>
+          <h2 class="card-title">Select Lecture</h2>
+        </div>
+        <div class="tg tg-micro" id="studyModeToggle">
+          <button type="button" class="tb active" id="modeRev" onclick="setMode('revision')">Revision</button>
+          <button type="button" class="tb" id="modeNew" onclick="setMode('first_study')">First Study</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">SUBJECT</label>
+        <select id="mSub" onchange="populateChapters('mSub', 'mChap', 'mLec'); updateSelectionSummary(); clearFlowError();">
+          <option value="">Select Subject...</option>
+        </select>
+      </div>
+
+      <div class="fr">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="field-label">CHAPTER</label>
+          <select id="mChap" onchange="populateLectures('mSub', 'mChap', 'mLec'); updateSelectionSummary(); clearFlowError();" disabled>
+            <option value="">Select Chapter...</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="field-label">LECTURE</label>
+          <select id="mLec" disabled onchange="updateSelectionSummary(); clearFlowError();">
+            <option value="">Select Lecture...</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="selSummary" class="selection-summary">
+        <span class="sel-dot" id="selDot"></span>
+        <span id="selSummaryTxt">Select Subject, Chapter & Lecture</span>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="card timer-card" id="timerPanelCard">
+      <div class="card-head" style="margin-bottom:8px;">
+        <div class="step-badge-wrap">
+          <span class="step-num">2</span>
+          <h2 class="card-title">Focus Timer</h2>
+        </div>
+        <div class="timer-mode-segment" id="flowModeToggle">
+          <button type="button" class="segment-btn active" id="btnModeStopwatch" onclick="setFlowMode('stopwatch')">Timer</button>
+          <button type="button" class="segment-btn" id="btnModeManual" onclick="setFlowMode('manual')">Manual</button>
+        </div>
+      </div>
+
+      <!-- STOPWATCH VIEW -->
+      <div id="stopwatchPane">
+        <div class="zen-indicator" id="zenIndicator">
+          <span class="status-dot" style="width:5px;height:5px;"></span>
+          <span id="zenTopicTxt">Focus Flow Study</span>
+        </div>
+
+        <div class="ring">
+          <svg viewBox="0 0 280 280">
+            <circle class="track" cx="140" cy="140" r="130"/>
+            <g class="ticks-group" id="ticksGroup"></g>
+            <circle class="arc" id="arc" cx="140" cy="140" r="130"/>
+          </svg>
+          <div class="ro">
+            <div class="clock" id="clock">00:00</div>
+            <div class="cs" id="clockState">Ready</div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-start" id="startBtn" onclick="toggleTimer()">
+          <svg class="ic"><use href="#i-play"/></svg>
+          <span>Start</span>
+        </button>
+
+        <div class="timer-secondary-row">
+          <button class="btn btn-secondary" id="endBtn" onclick="stopTimer()">
+            <svg class="ic"><use href="#i-stop"/></svg>
+            <span>End Session</span>
+          </button>
+          <button class="btn btn-secondary" id="resetBtn" onclick="resetTimer()">
+            <svg class="ic"><use href="#i-reload"/></svg>
+            <span>Reset</span>
+          </button>
+        </div>
+
+        <p id="stopwatchInlineError" class="form-error" style="display:none;"></p>
+        <div class="timer-quote">"गति से ज़्यादा ज़रूरी है, चलते रहना।"</div>
+      </div>
+
+      <!-- MANUAL ENTRY VIEW -->
+      <div id="manualPane" style="display:none; padding-top:4px;">
+        <label class="field-label">STUDY TIME (MINUTES)</label>
+        <input type="number" id="manualTime" placeholder="e.g. 45" min="1" max="1440" style="font-weight:700; font-size:15px; margin-bottom:8px;">
+
+        <div class="manual-presets" id="manualPresets">
+          <button type="button" class="preset-chip" onclick="setManualPreset(15, this)">15m</button>
+          <button type="button" class="preset-chip" onclick="setManualPreset(25, this)">25m</button>
+          <button type="button" class="preset-chip" onclick="setManualPreset(45, this)">45m</button>
+          <button type="button" class="preset-chip" onclick="setManualPreset(60, this)">60m</button>
+        </div>
+
+        <label class="field-label">DIFFICULTY LEVEL</label>
+        <div class="tg diff-tg">
+          <div class="tb diff-btn" data-val="Easy" onclick="setDiff('Easy')">
+            <span class="diff-main">Easy</span>
+            <span class="diff-sub">आसान</span>
+          </div>
+          <div class="tb diff-btn active" data-val="Medium" onclick="setDiff('Medium')">
+            <span class="diff-main">Medium</span>
+            <span class="diff-sub">ठीक-ठाक</span>
+          </div>
+          <div class="tb diff-btn" data-val="Hard" onclick="setDiff('Hard')">
+            <span class="diff-main">Hard</span>
+            <span class="diff-sub">दोहराना है</span>
+          </div>
+        </div>
+
+        <div class="note-toggle-wrap nt-wrap">
+          <div class="ntb">
+            <div class="ntb-h" role="button" tabindex="0" onclick="ntOpen('Manual',1)"><span class="ntb-ic"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><div class="ntb-t"><b>Notes</b><span id="ntMetaManual">Quick add below, or open the full page</span></div><span class="ntb-go">Open<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></div>
+            <div class="ntb-pills" id="ntPillsManual"></div>
+            <div class="ntb-np" id="ntNpManual"><input id="ntNnManual" type="text" maxlength="14" autocomplete="off" placeholder="Pill name" onkeydown="if(event.key==='Enter'){event.preventDefault();ntPillSave('Manual')}"><div class="ntb-cols" id="ntNcManual"></div><div class="ntb-npr"><button type="button" class="ntb-qb" onclick="ntPillClose('Manual')">Cancel</button><button type="button" class="ntb-qb" onclick="ntPillSave('Manual')">Add</button></div></div>
+            <div class="ntb-qi" id="ntQiManual"><i id="ntQdManual"></i><input id="ntQtManual" type="text" autocomplete="off" placeholder="Write here" onkeydown="if(event.key==='Enter'){event.preventDefault();ntQuickAdd('Manual')}"><button type="button" class="ntb-qb" onclick="ntQuickAdd('Manual')">Add</button></div>
+            <div id="ntMiniManual"></div>
+            <div class="ntb-sep"></div>
+            <div class="ntb-lr"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><input id="ntLuManual" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="Paste a link" onkeydown="if(event.key==='Enter'){event.preventDefault();ntLinkAdd('Manual')}"><button type="button" class="ntb-qb" onclick="ntLinkAdd('Manual')">Add</button></div>
+            <div class="ntb-lk" id="ntLkManual"></div>
+          </div>
+          <textarea id="notesManual" aria-hidden="true" tabindex="-1" style="display:none"></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveManualSession()" style="margin-top:8px;">
+          <svg class="ic"><use href="#i-save"/></svg>
+          <span>Save Locally</span>
+        </button>
+
+        <p id="manualInlineError" class="form-error" style="display:none;"></p>
+        <div class="timer-quote">"गति से ज़्यादा ज़रूरी है, चलते रहना।"</div>
+      </div>
+    </div>
+
+    <!-- SESSION REVIEW -->
+    <div class="card session-review-card" id="saveCard" style="display:none;">
+      <div class="card-head" style="margin-bottom:4px;">
+        <div>
+          <h2 class="card-title"><svg class="ic" style="color:var(--primary);"><use href="#i-save"/></svg> Session Review</h2>
+          <p class="card-subtitle">अपनी सीख और कठिनाई सहेजें</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="finalTimeTxt" class="final-time-badge">0 Min</span>
+          <button class="icon-btn-dismiss" onclick="closeSaveCard()" title="Dismiss">
+            <svg class="ic"><use href="#i-close"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <label class="field-label" style="margin-top:4px;">DIFFICULTY LEVEL</label>
+      <div class="tg diff-tg" style="margin-bottom:10px;">
+        <div class="tb diff-btn" data-val="Easy" onclick="setDiff('Easy')">
+          <span class="diff-main">Easy</span>
+          <span class="diff-sub">आसान</span>
+        </div>
+        <div class="tb diff-btn active" data-val="Medium" onclick="setDiff('Medium')">
+          <span class="diff-main">Medium</span>
+          <span class="diff-sub">ठीक-ठाक</span>
+        </div>
+        <div class="tb diff-btn" data-val="Hard" onclick="setDiff('Hard')">
+          <span class="diff-main">Hard</span>
+          <span class="diff-sub">दोहराना है</span>
+        </div>
+      </div>
+
+      <div class="note-toggle-wrap nt-wrap">
+          <div class="ntb">
+            <div class="ntb-h" role="button" tabindex="0" onclick="ntOpen('',1)"><span class="ntb-ic"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><div class="ntb-t"><b>Notes</b><span id="ntMeta">Quick add below, or open the full page</span></div><span class="ntb-go">Open<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></div>
+            <div class="ntb-pills" id="ntPills"></div>
+            <div class="ntb-np" id="ntNp"><input id="ntNn" type="text" maxlength="14" autocomplete="off" placeholder="Pill name" onkeydown="if(event.key==='Enter'){event.preventDefault();ntPillSave('')}"><div class="ntb-cols" id="ntNc"></div><div class="ntb-npr"><button type="button" class="ntb-qb" onclick="ntPillClose('')">Cancel</button><button type="button" class="ntb-qb" onclick="ntPillSave('')">Add</button></div></div>
+            <div class="ntb-qi" id="ntQi"><i id="ntQd"></i><input id="ntQt" type="text" autocomplete="off" placeholder="Write here" onkeydown="if(event.key==='Enter'){event.preventDefault();ntQuickAdd('')}"><button type="button" class="ntb-qb" onclick="ntQuickAdd('')">Add</button></div>
+            <div id="ntMini"></div>
+            <div class="ntb-sep"></div>
+            <div class="ntb-lr"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><input id="ntLu" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="Paste a link" onkeydown="if(event.key==='Enter'){event.preventDefault();ntLinkAdd('')}"><button type="button" class="ntb-qb" onclick="ntLinkAdd('')">Add</button></div>
+            <div class="ntb-lk" id="ntLk"></div>
+          </div>
+          <textarea id="notes" aria-hidden="true" tabindex="-1" style="display:none"></textarea>
+        </div>
+
+      <button class="btn btn-primary" onclick="saveSession()" style="margin-top:8px;">
+        <svg class="ic"><use href="#i-save"/></svg>
+        <span>Save Locally</span>
+      </button>
+
+      <button class="btn btn-secondary btn-full" onclick="continueStudying()" style="margin-top:6px; height:34px; font-size:11.5px;">
+        <svg class="ic" style="width:12px;height:12px;"><use href="#i-play"/></svg>
+        <span>Keep Studying (Resume)</span>
+      </button>
+
+      <p id="saveCardInlineError" class="form-error" style="display:none;"></p>
+    </div>
+  </div>
+</section>
+
+<button type="button" class="sp-fab hide" id="spFab" onclick="openStudyPage()" aria-label="Study Session शुरू करें">
+  <svg class="sp-fab-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+  <span class="sp-fab-live"><i class="sp-fab-dot"></i><span id="spFabT">00:00</span></span>
+</button>
 
 <script>
 // --- CORE HELPERS & CONSTANTS ---
@@ -4492,6 +4573,7 @@ function setManualPreset(mins, btn) {
 }
 
 function updateTimerLockState() {
+  spFabPaint();
   const isLocked = state.run || state.elapsed > 0;
   const mSub = g('mSub'), mChap = g('mChap'), mLec = g('mLec');
   if (mSub) mSub.disabled = isLocked;
@@ -5663,6 +5745,7 @@ function restoreSession() {
 
 // --- FLOW LOGIC ---
 function go(tab) {
+  spCloseNow();   // Study Session पेज खुला हो तो पहले उसे बंद करो
   if (tab === 'history') { openWS(0); return; }
   if (wsOpen) { wsAfterExit = () => go(tab); wsExitAll(); return; }
   navShow();
@@ -5674,6 +5757,49 @@ function go(tab) {
   if (tab === 'database') { syncU(); updateBakStats(); }
   window.scrollTo(0, 0);
 }
+
+// --- STUDY SESSION पेज + Home का + (FAB) ---
+var spOpen = false, spPushed = false;
+function spFabPaint() {   // टाइमर चालू / पॉज़ हो तो + बटन की जगह लाइव समय दिखे
+  const f = document.getElementById('spFab'); if (!f) return;
+  const act = !!(state.run || state.elapsed > 0);
+  f.classList.toggle('live', act); f.classList.toggle('run', !!state.run);
+  document.body.classList.toggle('sp-live', act);
+  f.setAttribute('aria-label', act ? 'चालू टाइमर पर वापस जाएँ' : 'Study Session शुरू करें');
+  if (act) { const t = document.getElementById('spFabT'), sec = totalT(); if (t) t.textContent = p2(Math.floor(sec / 60)) + ':' + p2(sec % 60); }
+}
+function openStudyPage() {
+  const el = document.getElementById('studyPage'); if (!el || spOpen) return;
+  spOpen = true; el.classList.add('open'); el.setAttribute('aria-hidden', 'false'); document.body.classList.add('sp-open');
+  try { haptic('light'); } catch (e) {}
+  try { history.pushState({ sp: 1 }, ''); spPushed = true; } catch (e) { spPushed = false; }
+}
+function spFinish() {
+  const el = document.getElementById('studyPage');
+  spOpen = false; if (el) { el.classList.remove('open'); el.setAttribute('aria-hidden', 'true'); }
+  document.body.classList.remove('sp-open'); spFabPaint();
+}
+function closeStudyPage() {   // टाइमर पीछे चलता रहता है; बस पेज बंद होता है
+  if (!spOpen) return;
+  if (spPushed) { try { history.back(); setTimeout(function () { if (spOpen) { spPushed = false; spFinish(); } }, 450); return; } catch (e) {} }
+  spPushed = false; spFinish();
+}
+function spCloseNow() { if (spOpen) { spPushed = false; spFinish(); } }
+window.addEventListener('popstate', function () {
+  if (!spOpen) return;
+  if (typeof ncIsOpen !== 'undefined' && ncIsOpen) return;   // नोट्स पेज खुला हो तो पहले वही बंद होगा
+  spPushed = false; spFinish();
+});
+(function () {   // + बटन सिर्फ़ Home टैब पर दिखे (Master Database / Study Session खुले हों तो नहीं)
+  const fab = document.getElementById('spFab'), vs = document.getElementById('view-study'); if (!fab || !vs) return;
+  const sync = function () {
+    const show = vs.classList.contains('active') && !document.body.classList.contains('in-ws') && !document.body.classList.contains('sp-open');
+    fab.classList.toggle('hide', !show);
+  };
+  new MutationObserver(sync).observe(vs, { attributes: true, attributeFilter: ['class'] });
+  new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  sync();
+})();
 
 function setMode(m) {
   if (state.run || state.elapsed > 0) {
@@ -5700,6 +5826,7 @@ function paintT() {
   const s = totalT();
   g('clock').textContent = p2(Math.floor(s / 60)) + ':' + p2(s % 60);
   g('arc').style.strokeDashoffset = String(RADIUS * (1 - Math.min(1, s / 3600)));
+  spFabPaint();
 }
 
 function toggleTimer() {
@@ -6131,7 +6258,7 @@ function closeFSheet() {
   fsOpen = false; document.body.style.overflow = '';
   g('fxBk').classList.remove('open');
   const s = g('fx'); s.classList.remove('open'); s.style.transform = '';
-  HF.close();
+  HF.close(); CR.close();
   if (chReopen) { chReopen = false; if (wsOpen && chShOpen && chSt.chap && !chSt.lec) chSheetOpen('recs'); }   // फ़िल्टर बंद: रिकॉर्ड शीट में नई सूची
 }
 
@@ -7224,7 +7351,7 @@ var chShKeep = null;
 function chRecFilter() { chReopen = true; openFSheet(); }   // रिकॉर्ड शीट अपनी जगह खुली रहे, फ़िल्टर उसके ऊपर खुले
 function wsPush() { try { history.pushState({ wd: wsDepth + 1 }, ''); wsDepth++; } catch (e) {} }
 function chSubOpen(s) {
-  chSt.sy = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = null; chSt.lec = null; chSt.direct = false; chF = { sort: 'recent', stat: 'all', sub: 'all' }; haptic('light');
+  chSt.sy = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = null; chSt.lec = null; chSt.direct = false; chPopMem = null; chF = { sort: 'recent', stat: 'all', sub: 'all' }; haptic('light');
   wsPush(); wsRender(); wsSetScroll(1, 0);
 }
 // ---------- चैप्टर टच: पॉपअप (All + Lec सूची) ----------
@@ -7236,16 +7363,20 @@ function chPopClose() {
   e.classList.remove('on'); e.style.pointerEvents = 'none';
   setTimeout(() => e.remove(), 180);
 }
-function chPopOpen(row, ev) {
-  if (chPopEl && chPopRow === row) { chPopClose(); return; }   // उसी चैप्टर पर दोबारा टच: बंद
+var chPopMem = null, chPopTm = 0;   // याद: किस चैप्टर का पॉपअप खुला था और किस विकल्प ('all' या लेक्चर का नाम) पर टैप हुआ
+var CH_PEND = '<svg class="chp-pend" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 1-8.48 6"/><circle cx="5.2" cy="6.2" r="0.8" fill="currentColor"/><circle cx="8.2" cy="3.8" r="0.8" fill="currentColor"/><path d="M12 7v5l3 2"/></svg>';
+function chPopOpen(row, ev, restore) {
+  if (!restore && chPopEl && chPopRow === row) { chPopClose(); chPopMem = null; return; }   // उसी चैप्टर पर दोबारा टच: बंद
   const sub = row.dataset.cs, chap = row.dataset.cc, o = chData().find(x => x.sub === sub && x.chap === chap);
-  if (!o || !o.all.length) { chPopClose(); chOpen(sub, chap, false); return; }   // कोई लेक्चर नहीं: सीधे चैप्टर पेज
-  chPopClose(); haptic('light');
-  const sc = g('wsScreen'), p = document.createElement('div');
+  if (!o || !o.all.length) { chPopClose(); chPopMem = null; chOpen(sub, chap, false); return; }   // कोई लेक्चर नहीं: सीधे चैप्टर पेज
+  chPopClose(); if (!restore) haptic('light');
+  const cur = (restore && chPopMem && chPopMem.sub === sub && chPopMem.chap === chap) ? chPopMem.item : null;   // वापस आने पर जो विकल्प चुना था वही Highlight
+  const tot = o.recs.length, sc = g('wsScreen'), p = document.createElement('div');
   p.className = 'chp'; p.setAttribute('role', 'menu');
-  p.innerHTML = '<div class="chp-h">' + esc(chap) + '</div><div class="chp-l">' +
-    '<button type="button" class="chp-i all" data-a="all"><span>All</span></button><div class="chp-sep"></div>' +
-    o.all.map((l, i) => '<button type="button" class="chp-i" data-a="' + i + '"><span>' + esc(l) + '</span>' + (o.cnt[l] ? '<small>' + o.cnt[l] + '</small>' : '') + '</button>').join('') + '</div>';
+  // All Lectures + विभाजक लाइन स्क्रॉल वाली सूची (.chp-l) से बाहर: चैप्टर के नाम के नीचे स्थिर
+  p.innerHTML = '<div class="chp-h">' + esc(chap) + '</div>' +
+    '<div class="chp-top"><button type="button" class="chp-i all' + (cur === 'all' ? ' cur' : '') + '" data-a="all"><span class="chp-nm">' + (cur === 'all' ? '<i class="chp-cd"></i>' : '') + 'All Lectures</span>' + (tot ? '<small>' + tot + '</small>' : CH_PEND) + '</button><div class="chp-sep"></div></div>' +
+    '<div class="chp-l">' + o.all.map((l, i) => '<button type="button" class="chp-i' + (cur === l ? ' cur' : '') + '" data-a="' + i + '"><span class="chp-nm">' + (cur === l ? '<i class="chp-cd"></i>' : '') + esc(l) + '</span>' + (o.cnt[l] ? '<small>' + o.cnt[l] + '</small>' : CH_PEND) + '</button>').join('') + '</div>';
   sc.appendChild(p);
   row.classList.add('chp-src');   // कौन सा चैप्टर खुला है, यह पंक्ति पर निशान से भी दिखे
   const r = row.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, m = 12;
@@ -7261,18 +7392,37 @@ function chPopOpen(row, ev) {
   p.style.left = left + 'px'; p.style.top = Math.max(m, top) + 'px';
   p.style.setProperty('--ox', Math.round(x - left) + 'px'); p.style.setProperty('--oy', up ? '100%' : '0');
   if (up) p.classList.add('up');
+  if (cur && cur !== 'all') {   // चुना हुआ लेक्चर सूची में दिखे (ज़रूरत हो तो वहाँ तक स्क्रॉल)
+    const L = p.querySelector('.chp-l'), C = p.querySelector('.chp-l .cur');
+    if (L && C) L.scrollTop = Math.max(0, C.offsetTop - (L.clientHeight - C.offsetHeight) / 2);
+  }
   chPopEl = p; chPopRow = row;
   requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('on')));
   p.addEventListener('click', e => {
     const b = e.target.closest('.chp-i'); if (!b) return;
-    const a = b.dataset.a; chPopClose();
+    const a = b.dataset.a; chPopMem = { sub: sub, chap: chap, item: a === 'all' ? 'all' : o.all[+a] }; chPopClose();
     if (a === 'all') chOpen(sub, chap, false); else chOpenLec(sub, chap, o.all[+a]);
   });
+}
+// Back करके चैप्टर सूची पर लौटने पर वही पॉपअप उसी चैप्टर पर दोबारा खुले (स्लाइड ख़त्म होने के बाद)
+function chPopSchedule(n) {
+  clearTimeout(chPopTm); if (!chPopMem) return;
+  n = n || 0;
+  chPopTm = setTimeout(function () {
+    if (!chPopMem) return;
+    if (!(wsOpen && wsTab === 1 && chSt.sub === chPopMem.sub && !chSt.chap)) return;   // सिर्फ़ चैप्टर सूची (plvl 1) पर
+    if ((wsSliding || wsGliding || wsIgnore) && n < 14) { chPopSchedule(n + 1); return; }
+    const row = Array.from(g('wsPane1').querySelectorAll('[data-cs]')).find(x => x.dataset.cs === chPopMem.sub && x.dataset.cc === chPopMem.chap);
+    if (!row) { chPopMem = null; return; }
+    const rc = row.getBoundingClientRect();
+    if (rc.top < 70 || rc.bottom > window.innerHeight - 70) { row.scrollIntoView({ block: 'center' }); setTimeout(function () { if (chPopMem && !chPopEl) chPopOpen(row, null, true); }, 140); return; }
+    chPopOpen(row, null, true);
+  }, n ? 110 : 380);
 }
 // बाहर कहीं भी टच (दूसरे चैप्टर पर भी): सिर्फ़ पॉपअप बंद होगा, और कुछ नहीं; खोलने के लिए दोबारा टच
 document.addEventListener('click', e => {
   if (!chPopEl || chPopEl.contains(e.target)) return;
-  chPopClose(); e.stopPropagation(); e.preventDefault();
+  chPopClose(); chPopMem = null; e.stopPropagation(); e.preventDefault();   // बाहर टैप: पॉपअप बंद + याद साफ़
 }, true);
 // History में सर्च खुला हो तो टैब पर पहला टच सिर्फ़ सर्च बंद करे (बाकी पॉपअप की तरह), दूसरा टच टैब बदले
 document.addEventListener('click', e => {
@@ -7291,6 +7441,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') chPopClose()
 function chOpen(s, c, fromSearch) {
   chSt.y = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = c; chSt.lec = null; chSt.direct = false; chRF = { d: [], m: [], l: [] }; haptic('light');
   if (fromSearch) {
+    chPopMem = null;
     chF = { sort: 'recent', stat: 'all', sub: 'all' };
     try { while (wsDepth < 3) { history.pushState({ wd: wsDepth + 1 }, ''); wsDepth++; } history.replaceState({ wd: wsDepth }, ''); } catch (e) {}
   } else wsPush();
@@ -7300,10 +7451,10 @@ function chLecOpen(l) {
   chSt.cy = g('wsPane1').scrollTop; chSt.lec = l; chSt.direct = false; haptic('light'); wsPush(); wsRender(); wsSetScroll(1, 0);
 }
 function chBackDo() {
-  if (chSt.lec && chSt.direct) { chSt.direct = false; chSt.lec = null; chSt.chap = null; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.y)); return; }   // पॉपअप से सीधे आए थे: Back से सीधे चैप्टर सूची
+  if (chSt.lec && chSt.direct) { chSt.direct = false; chSt.lec = null; chSt.chap = null; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.y)); chPopSchedule(); return; }   // पॉपअप से सीधे आए थे: Back से सीधे चैप्टर सूची + पॉपअप दोबारा
   if (chSt.lec) { chSt.lec = null; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.cy)); return; }
-  if (chSt.chap) { chSt.chap = null; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.y)); return; }
-  if (chSt.sub) { chSt.sub = null; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.sy || 0)); }
+  if (chSt.chap) { chSt.chap = null; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.y)); chPopSchedule(); return; }   // All Lectures पेज से Back: चैप्टर सूची + पॉपअप दोबारा
+  if (chSt.sub) { chSt.sub = null; chPopMem = null; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.sy || 0)); }   // विषय सूची: पॉपअप की याद साफ़
 }
 function chJump(k) {
   if (chSt.direct && chSt.lec) {
@@ -7320,12 +7471,19 @@ function wsSetPane(id, html) {   // लिस्ट बदलो पर हे�
   if (had) pn.insertBefore(ch, pn.firstChild);
 }
 var wsOv = null, wsOvT = 0;
+function wsHdrFade(c, off, anim) {   // क्लोन का ऊपरी बार (.ws-top) भी असली हेडर जितना फीका; लगभग पूरा छिपा हो तो visibility:hidden (स्टेटस बार में ब्लिंक नहीं)
+  const tp = c && c.querySelector('.ws-top'); if (!tp) return;
+  const o = Math.max(0, Math.min(1, 1 - off / 52));
+  tp.style.setProperty('transition', anim ? 'opacity .28s cubic-bezier(.22,1,.36,1), border-color .38s ease' : 'none');
+  tp.style.setProperty('opacity', String(o));
+  tp.style.setProperty('visibility', off >= 50 ? 'hidden' : 'visible');
+}
 function wsOvStart() {   // टैब बदलने से पहले: हेडर की स्थिर कॉपी स्क्रीन पर टिका दो
   clearTimeout(wsOvT); if (wsOv) { wsOv.remove(); wsOv = null; }
   const sc = g('wsScreen'), c = wsHeaderClone();
   c.classList.add('ws-ov'); c.style.transition = 'none';
   const S = Math.max(0, g('wsPane' + wsTab).scrollTop), off = wsCollapsible() ? Math.max(0, Math.min(52, -wsHdrY(S))) : 0;
-  c.style.transform = 'translate3d(0,' + (-off) + 'px,0)';
+  c.style.transform = 'translate3d(0,' + (-off) + 'px,0)'; wsHdrFade(c, off, false);
   sc.appendChild(c); sc.classList.add('ws-swiping'); wsOv = c;
 }
 function wsOvLine(prog) {   // टैब की नीली लाइन उंगली के साथ चले
@@ -7340,15 +7498,16 @@ function wsOvFinish(i) {   // स्लाइड खत्म होने त�
   const c = wsOv, S = Math.max(0, g('wsPane' + i).scrollTop), off = wsCollapsible() ? Math.max(0, Math.min(52, -wsHdrY(S))) : 0;
   const tp = c.querySelector('.ws-top'); if (tp) tp.innerHTML = g('wsTop').innerHTML.replace(/ id="[^"]*"/g, '');
   const ease = 'transform .28s cubic-bezier(.22,1,.36,1)';
-  c.style.transition = ease; c.style.transform = 'translate3d(0,' + (-off) + 'px,0)';
+  c.style.transition = ease; c.style.transform = 'translate3d(0,' + (-off) + 'px,0)'; wsHdrFade(c, off, true);
   const ln = c.querySelector('.ws-tab-line'); if (ln) { ln.style.transition = ease; ln.style.transform = 'translate3d(' + (i * 100) + '%,0,0)'; }
   c.querySelectorAll('.ws-tab').forEach((b, k) => b.classList.toggle('active', k === i));
   clearTimeout(wsOvT); wsOvT = setTimeout(wsOvEnd, 360);
 }
 function wsStaticHdr(pane, tabIdx) {   // दूसरे पेज पर हेडर की सिर्फ़ दिखने वाली कॉपी (स्लाइड के समय)
   pane.querySelectorAll(':scope > .ws-hclone').forEach(x => x.remove());
-  const c = wsHeaderClone();
-  if (wsCollapsible()) { const yo = wsHdrY(Math.max(0, pane.scrollTop)); if (yo > -WS_TOPH) c.style.setProperty('top', yo + 'px', 'important'); }
+  const c = wsHeaderClone(); let hoff = 0;
+  if (wsCollapsible()) { const yo = wsHdrY(Math.max(0, pane.scrollTop)); hoff = Math.max(0, Math.min(WS_TOPH, -yo)); if (yo > -WS_TOPH) c.style.setProperty('top', yo + 'px', 'important'); }
+  wsHdrFade(c, hoff, false);
   c.querySelectorAll('.ws-tab').forEach((b, i) => b.classList.toggle('active', i === tabIdx));
   const ln = c.querySelector('.ws-tab-line'); if (ln) { ln.style.transition = 'none'; ln.style.transform = 'translate3d(' + (tabIdx * 100) + '%,0,0)'; }
   pane.insertBefore(c, pane.firstChild);
@@ -7377,8 +7536,9 @@ function wsRender() {
   const k1 = plvl + '|' + chSt.sub + '|' + chSt.chap + '|' + chSt.lec;
   let wsGh = null;
   if (wsK1 !== undefined && k1 !== wsK1 && wsOpen && wsTab === 1 && wsTp === 1 && wsPl !== undefined && plvl !== wsPl && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) wsGh = wsGhostMake();   // पुराना पेज सँभालकर रखो
+  if (plvl !== 2) CR.forget();
   if (plvl === 3) wsSetPane('wsPane1', chLecHTML(o, chSt.lec));
-  else if (plvl === 2) wsSetPane('wsPane1', chLecListHTML(o));
+  else if (plvl === 2) wsSetPane('wsPane1', CR.page(o));   // All Lectures: सीधे चैप्टर के सारे रिकॉर्ड
   else if (plvl === 1) { chList = chFiltered(chF, chSt.sub); wsSetPane('wsPane1', wsBuild(chList.map(c => chapItem(c, true)), 1, WS_H_CHAP)); }
   else { subs = subItems(); wsSetPane('wsPane1', wsBuild(subs, 1, WS_H_SUBS)); }
   wsPlaceChrome();
@@ -7395,14 +7555,14 @@ function wsRender() {
   g('wsTop').classList.toggle('no-back', lvl === 0);
   g('wsViewIcon').innerHTML = WS_VIEWS[wsViewIdx].icon;
   const deep = lvl >= 2;
-  g('wsVw').style.display = lvl >= 3 ? 'none' : '';
+  g('wsVw').style.display = lvl >= 2 ? 'none' : '';
   g('wsSearchBtn').style.display = wsTab === 1 ? 'none' : '';   // search only in History
-  const showF = wsTab === 0 || lvl === 1;
+  const showF = wsTab === 0 || lvl === 1 || lvl === 2;
   g('wsFilterBtn').style.display = showF ? '' : 'none';
   g('wsClose').style.display = 'none';
-  g('wsMore').style.display = (wsTab === 1 && lvl === 2) ? '' : 'none';
+  g('wsMore').style.display = 'none';   // आंकड़े और रिकॉर्ड अब सीधे पेज पर हैं
   if (chShOpen && !(wsTab === 1 && plvl === 2)) chSheetClose();
-  const n = wsTab === 0 ? fsActiveCount() : chActive();
+  const n = wsTab === 0 ? fsActiveCount() : (lvl === 2 ? CR.count() : chActive());
   g('wsFilterBtn').classList.toggle('has', n > 0); g('wsBadge').textContent = n;
   const wsDeep = wsTab === 1 && plvl >= 1;
   document.body.classList.toggle('ws-deep', wsOpen && wsDeep);   // chapter / lecture pages: no tab bar, header stays open
@@ -7633,7 +7793,7 @@ function openWS(tab, viaNav) {
 function exitWSDirect() {
   if (!wsOpen) return;
   wsPopClose(); chReopen = false; chSheetClose(); if (fsOpen) closeFSheet(); if (selMode) exitSel();
-  chSt.chap = null; chSt.sub = null; chSt.lec = null; chSt.direct = false; wsOpen = false;
+  chSt.chap = null; chSt.sub = null; chSt.lec = null; chSt.direct = false; chPopMem = null; wsOpen = false;
   document.body.classList.remove('in-ws', 'ws-deep', 'ws-sel');
   wsHdrOff = 0; wsApplyHdr(0, false);
   navAfterWS();
@@ -7797,6 +7957,203 @@ function chSheetSync() {
 }
 function chD(k, v) { if (!chDraft) return; if (k === 'sort') chDraft.sort = v; else chDraft[k] = chDraft[k] === v ? 'all' : v; haptic('light'); chSheetSync(); }
 
+
+// ===================== चैप्टर पेज (All Lectures): सारे रिकॉर्ड + Filter & Sort (HF जैसा) =====================
+const CR = (function () {
+  const $ = id => document.getElementById(id);
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const SORTS = [['newest', 'नया पहले'], ['oldest', 'पुराना पहले'], ['lec', 'लेक्चर क्रम से (Lec 1 → Lec 2...)'], ['most', 'ज़्यादा समय'], ['least', 'कम समय'], ['hard', 'दोहराना है पहले']];
+  const DL = { Hard: 'दोहराना है', Medium: 'ठीक-ठाक', Easy: 'आसान' }, TL = { Revision: 'रिवीजन', New: 'नया' };
+  const TIME_LBL = { month: 'Month', year: 'Year', range: 'Date Range', exact: 'Date', relative: 'Past Days' };
+  const CHEV = '<svg class="hf-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+  const CK = '<svg class="hf-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>';
+  const XI = '<svg class="hf-remove-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+  const CAL = '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+  const SRT = '<svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M10 18h4"/></svg>';
+  const MINUS = '<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>', PLUS = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
+  function def() { return { sort: 'newest', timeMode: '', month: null, monthYear: 'all', year: '', dateFrom: '', dateTo: '', exactDate: '', relDays: 7, relType: 'last', lecs: [], status: '', priority: '' }; }
+  function clone(x) { return Object.assign({}, x, { lecs: x.lecs.slice() }); }
+  let applied = def(), draft = def(), key = null, isOpen = false, tOpen = '', cur = null;
+  const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const ago = n => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - n); return ymd(d); };
+  const short = v => { if (!v) return ''; const p = v.split('-').map(Number), y = new Date().getFullYear(); return p[2] + ' ' + MONTHS[p[1] - 1] + (p[0] === y ? '' : " '" + String(p[0]).slice(-2)); };
+  function timeOn(x) {
+    if (!x.timeMode) return false;
+    if (x.timeMode === 'month') return x.month !== null && x.month !== undefined;
+    if (x.timeMode === 'year') return !!x.year;
+    if (x.timeMode === 'range') return !!(x.dateFrom || x.dateTo);
+    if (x.timeMode === 'exact') return !!x.exactDate;
+    if (x.timeMode === 'relative') return Number(x.relDays) > 0;
+    return false;
+  }
+  function timeLabel(x) {
+    if (!timeOn(x)) return '';
+    if (x.timeMode === 'month') return MONTHS[x.month] + (x.monthYear === 'all' ? '' : " '" + String(x.monthYear).slice(-2));
+    if (x.timeMode === 'year') return String(x.year);
+    if (x.timeMode === 'range') return x.dateFrom && x.dateTo ? short(x.dateFrom) + ' – ' + short(x.dateTo) : x.dateFrom ? 'From ' + short(x.dateFrom) : 'Until ' + short(x.dateTo);
+    if (x.timeMode === 'exact') return x.exactDate === ago(0) ? 'Today' : x.exactDate === ago(1) ? 'Yesterday' : short(x.exactDate);
+    return x.relType === 'ago' ? x.relDays + 'd ago' : 'Last ' + x.relDays + 'd';
+  }
+  function nActive(x, withSort) { return (timeOn(x) ? 1 : 0) + x.lecs.length + (x.status ? 1 : 0) + (x.priority ? 1 : 0) + (withSort && x.sort !== 'newest' ? 1 : 0); }
+  function rows(o, x) {
+    const today = ago(0), tOn = timeOn(x);
+    const out = o.recs.filter(r => {
+      if (x.lecs.length && !x.lecs.includes(r.lec)) return false;
+      if (x.status && (r.mode === 'revision' ? 'Revision' : 'New') !== x.status) return false;
+      if (x.priority && r.diff !== x.priority) return false;
+      if (tOn) {
+        const d = parseLogDate(r.date); if (!d) return false;
+        const k = ymd(d), iy = d.getFullYear(), im = d.getMonth();
+        if (x.timeMode === 'month') { if (im !== Number(x.month)) return false; if (x.monthYear !== 'all' && iy !== Number(x.monthYear)) return false; }
+        else if (x.timeMode === 'year') { if (iy !== Number(x.year)) return false; }
+        else if (x.timeMode === 'range') { let f = x.dateFrom, t = x.dateTo; if (f && t && f > t) { const z = f; f = t; t = z; } if (f && k < f) return false; if (t && k > t) return false; }
+        else if (x.timeMode === 'exact') { if (k !== x.exactDate) return false; }
+        else if (x.timeMode === 'relative') { const n = Math.max(1, Number(x.relDays) || 1), tg = ago(n); if (x.relType === 'ago') { if (k !== tg) return false; } else if (k < tg || k > today) return false; }
+      }
+      return true;
+    });
+    const tm = r => Number(r.time) || 0;
+    if (x.sort === 'oldest') out.reverse();
+    else if (x.sort === 'most') out.sort((a, b) => tm(b) - tm(a));
+    else if (x.sort === 'least') out.sort((a, b) => tm(a) - tm(b));
+    else if (x.sort === 'hard') { const rk = { Hard: 0, Medium: 1, Easy: 2 }; out.sort((a, b) => (rk[a.diff] ?? 1) - (rk[b.diff] ?? 1)); }
+    else if (x.sort === 'lec') { const ix = r => { const i = o.all.indexOf(r.lec); return i < 0 ? 9999 : i; }; out.sort((a, b) => ix(a) - ix(b)); }   // Lec 1 के सारे, फिर Lec 2 के...
+    return out;   // o.recs पहले से नया-पहले है, इसलिए बराबरी पर भी वही क्रम
+  }
+  function ensure(o) { const k = o.sub + '\u0001' + o.chap; if (k !== key) { key = k; applied = def(); } }
+  function forget() { key = null; applied = def(); }
+  function tagsHTML(x) {
+    let t = '';
+    const mini = (call, ic, txt, v) => '<button type="button" class="hf-mini-tag active-filter"' + (v !== undefined ? ' data-v="' + esc(v) + '"' : '') + ' onclick="' + call + '">' + ic + '<span>' + esc(txt) + '</span>' + XI + '</button>';
+    if (x.sort !== 'newest') t += '<button type="button" class="hf-mini-tag active-filter" onclick="CR.open()">' + SRT + '<span>' + esc(SORTS.find(z => z[0] === x.sort)[1]) + '</span></button>';
+    if (timeOn(x)) t += mini("CR.rm('time')", CAL, timeLabel(x));
+    x.lecs.forEach(l => { t += mini("CR.rm('lec',this.dataset.v)", '', l, l); });
+    if (x.status) t += mini("CR.rm('status')", '', TL[x.status]);
+    if (x.priority) t += mini("CR.rm('priority')", '', DL[x.priority]);
+    if (nActive(x, true) > 1) t += '<button type="button" class="hf-mini-tag clear-all" onclick="CR.rm(\'all\')"><span>Clear</span></button>';
+    return t ? '<div class="cr-tags">' + t + '</div>' : '';
+  }
+  function page(o) {
+    ensure(o);
+    const x = applied, list = rows(o, x), nf = nActive(x, false);
+    let h = '<div class="chd-stats">' + chStat(o.recs.length, 'रिवीजन') + chStat(chMin(o.time), 'कुल समय') + chStat(o.done + '/' + o.all.length, 'लेक्चर') + chStat(o.last ? chDate(o.last) : '—', 'आख़िरी') + '</div>';
+    h += tagsHTML(x);
+    h += '<div class="ws-dv"></div><div class="ch-sh"><span>सारे रिकॉर्ड</span><span class="ch-rc">' + (nf ? list.length + ' of ' + o.recs.length : o.recs.length) + '</span></div>';
+    if (!list.length) return h + '<div class="wv-empty">' + (nf ? 'इस फ़िल्टर से कोई रिकॉर्ड नहीं मिला' : 'इस चैप्टर का अभी कोई रिवीजन नहीं') + '</div>';
+    if (x.sort === 'lec') {   // हर लेक्चर का अलग समूह, लेक्चर के क्रम में
+      const groups = [], idx = {};
+      list.forEach(r => { const k = r.lec || '—'; if (!(k in idx)) { idx[k] = groups.length; groups.push([k, []]); } groups[idx[k]][1].push(r); });
+      return h + groups.map(gr => '<div class="ch-sh cr-gh"><span>' + esc(gr[0]) + '</span><small>' + gr[1].length + ' रिकॉर्ड</small></div><div class="chr-list">' + gr[1].map(r => chRec(r)).join('') + '</div>').join('');
+    }
+    return h + '<div class="chr-list">' + list.map(r => chRec(r)).join('') + '</div>';
+  }
+  /* ---------- Filter & Sort शीट ---------- */
+  function timePanel(d, o) {
+    const m = tOpen; if (!m) return '';
+    const cy = new Date().getFullYear();
+    const yrs = [...new Set([cy].concat(o.recs.map(r => { const z = parseLogDate(r.date); return z ? z.getFullYear() : null; }).filter(Boolean)))].sort((a, b) => b - a);
+    let h = '';
+    if (m === 'month') {
+      const am = d.timeMode === 'month' ? d.month : null;
+      h = '<div class="hf-inline-pills"><button type="button" class="hf-tiny-pill ' + (d.monthYear === 'all' ? 'sel' : '') + '" data-cr-my="all">All</button>' + yrs.map(y => '<button type="button" class="hf-tiny-pill ' + (String(d.monthYear) === String(y) ? 'sel' : '') + '" data-cr-my="' + y + '">' + y + '</button>').join('') + '</div>' +
+        '<div class="hf-month-grid">' + MONTHS.map((n, i) => '<button type="button" class="hf-grid-pill ' + (am === i ? 'sel' : '') + '" data-cr-m="' + i + '">' + n + '</button>').join('') + '</div>';
+    } else if (m === 'year') {
+      const ay = d.timeMode === 'year' ? String(d.year) : '';
+      h = '<div class="hf-year-grid">' + yrs.map(y => '<button type="button" class="hf-grid-pill ' + (ay === String(y) ? 'sel' : '') + '" data-cr-yr="' + y + '">' + y + '</button>').join('') + '</div>';
+    } else if (m === 'range') {
+      const f = d.timeMode === 'range' ? d.dateFrom : '', t = d.timeMode === 'range' ? d.dateTo : '';
+      h = '<div class="hf-range-grid"><label class="hf-field-lbl"><span>From</span><input type="date" class="hf-dark-input" data-cr-from value="' + f + '" ' + (t ? 'max="' + t + '"' : '') + '></label>' +
+        '<label class="hf-field-lbl"><span>To</span><input type="date" class="hf-dark-input" data-cr-to value="' + t + '" ' + (f ? 'min="' + f + '"' : '') + '></label></div>';
+    } else if (m === 'exact') {
+      const cd = d.timeMode === 'exact' ? d.exactDate : '', t0 = ago(0), t1 = ago(1);
+      h = '<div class="hf-inline-pills"><button type="button" class="hf-tiny-pill ' + (cd === t0 ? 'sel' : '') + '" data-cr-qd="' + t0 + '">Today</button><button type="button" class="hf-tiny-pill ' + (cd === t1 ? 'sel' : '') + '" data-cr-qd="' + t1 + '">Yesterday</button></div>' +
+        '<input type="date" class="hf-dark-input" data-cr-exact value="' + cd + '">';
+    } else if (m === 'relative') {
+      const isRel = d.timeMode === 'relative', n = Number(d.relDays) || 7;
+      h = '<div class="hf-month-grid">' + [3, 7, 15, 30].map(v => '<button type="button" class="hf-grid-pill ' + (isRel && n === v ? 'sel' : '') + '" data-cr-rd="' + v + '">' + v + 'd</button>').join('') + '</div>' +
+        '<div class="hf-rel-controls"><div class="hf-stepper"><button type="button" class="hf-step-btn" data-cr-step="-1" aria-label="Decrease">' + MINUS + '</button><input type="number" min="1" max="365" class="hf-step-num" data-cr-relnum value="' + n + '"><button type="button" class="hf-step-btn" data-cr-step="1" aria-label="Increase">' + PLUS + '</button></div>' +
+        '<div class="hf-seg-switch"><button type="button" class="hf-seg-opt ' + (isRel && d.relType === 'last' ? 'sel' : '') + '" data-cr-rt="last">Last ' + n + 'd</button><button type="button" class="hf-seg-opt ' + (isRel && d.relType === 'ago' ? 'sel' : '') + '" data-cr-rt="ago">' + n + 'd ago</button></div></div>';
+    }
+    return '<div class="cr-tp">' + h + '</div>';
+  }
+  function build() {
+    const body = $('crBody'), st = body.scrollTop, o = cur, d = draft; if (!o) return;
+    const sortH = SORTS.map(z => '<button type="button" class="hf-sort-card' + (d.sort === z[0] ? ' sel' : '') + '" data-cr-sort="' + z[0] + '"><span>' + z[1] + '</span><span class="hf-sort-dot"></span></button>').join('');
+    const strip = ['month', 'year', 'range', 'exact', 'relative'].map(m => { const act = d.timeMode === m && timeOn(d); return '<button type="button" class="hf-chip' + (act ? ' sel' : '') + (tOpen === m ? ' pop-open' : '') + '" data-cr-tm="' + m + '"><span class="hf-t-lbl">' + esc(act ? timeLabel(d) : TIME_LBL[m]) + '</span>' + CHEV + '</button>'; }).join('');
+    const chip = (attr, v, label, on) => '<button type="button" class="hf-chip' + (on ? ' sel' : '') + '" ' + attr + '="' + esc(v) + '">' + CK + '<span>' + esc(label) + '</span></button>';
+    const lecs = o.all.length ? o.all.map(l => chip('data-cr-lec', l, l, d.lecs.includes(l))).join('') : '<span class="fs-empty">कोई लेक्चर नहीं</span>';
+    const nf = nActive(d, false), list = rows(o, d);
+    body.innerHTML =
+      '<div><div class="hf-main-heading-row"><div class="hf-main-heading">' + SRT + '<span>Sort By</span></div></div><div class="hf-sort-grid">' + sortH + '</div></div>' +
+      '<div class="hf-divider"></div>' +
+      '<div><div class="hf-main-heading-row"><div class="hf-main-heading"><svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg><span>Filter By</span></div><span class="hf-selected-tag' + (nf ? ' show' : '') + '">' + nf + ' Selected</span></div>' +
+        '<div class="hf-filter-box">' +
+          '<div><div class="hf-sub-head"><span class="hf-sub-label">Time</span><button type="button" class="hf-sec-clear' + (timeOn(d) ? ' show' : '') + '" data-cr-clr="time">Clear</button></div><div class="hf-chip-scroll">' + strip + '</div>' + timePanel(d, o) + '</div>' +
+          '<div><div class="hf-sub-head"><span class="hf-sub-label">Lectures</span><button type="button" class="hf-sec-clear' + (d.lecs.length ? ' show' : '') + '" data-cr-clr="lecs">Clear</button></div><div class="hf-chip-group">' + lecs + '</div></div>' +
+          '<div><div class="hf-sub-head"><span class="hf-sub-label">Type</span></div><div class="hf-chip-group">' + chip('data-cr-st', 'Revision', 'रिवीजन', d.status === 'Revision') + chip('data-cr-st', 'New', 'नया', d.status === 'New') + '</div></div>' +
+          '<div><div class="hf-sub-head"><span class="hf-sub-label">Difficulty</span></div><div class="hf-chip-group">' + chip('data-cr-pr', 'Hard', 'दोहराना है', d.priority === 'Hard') + chip('data-cr-pr', 'Medium', 'ठीक-ठाक', d.priority === 'Medium') + chip('data-cr-pr', 'Easy', 'आसान', d.priority === 'Easy') + '</div></div>' +
+        '</div></div>';
+    body.scrollTop = st;
+    $('crCount').textContent = list.length === 1 ? '1 Result' : list.length + ' Results';
+  }
+  function openSheet() {
+    const o = chCurObj(); if (!o || !wsOpen) return;
+    ensure(o); cur = o; draft = clone(applied); tOpen = ''; $('crBody').scrollTop = 0; build();
+    fsOpen = true; isOpen = true; haptic('light'); document.body.style.overflow = 'hidden';
+    $('crBackdrop').classList.add('open'); $('crSheet').classList.add('open');
+  }
+  function closeSheet() {
+    if (!isOpen) return; isOpen = false;
+    $('crBackdrop').classList.remove('open'); const sh = $('crSheet'); sh.classList.remove('open'); sh.style.transform = '';
+  }
+  function rm(kind, val) {
+    if (kind === 'all') applied = def();
+    else if (kind === 'time') applied.timeMode = '';
+    else if (kind === 'lec') applied.lecs = applied.lecs.filter(z => z !== val);
+    else if (kind === 'status') applied.status = '';
+    else if (kind === 'priority') applied.priority = '';
+    haptic('light'); wsRender();
+  }
+  $('crBody').addEventListener('click', e => {
+    const t = e.target.closest('button'); if (!t) return; const D = t.dataset, d = draft;
+    if ('crSort' in D) d.sort = D.crSort;
+    else if ('crTm' in D) tOpen = tOpen === D.crTm ? '' : D.crTm;
+    else if ('crClr' in D) { if (D.crClr === 'time') { d.timeMode = ''; tOpen = ''; } else d.lecs = []; }
+    else if ('crSt' in D) d.status = d.status === D.crSt ? '' : D.crSt;
+    else if ('crPr' in D) d.priority = d.priority === D.crPr ? '' : D.crPr;
+    else if ('crLec' in D) { const i = d.lecs.indexOf(D.crLec); if (i > -1) d.lecs.splice(i, 1); else d.lecs.push(D.crLec); }
+    else if ('crMy' in D) { d.monthYear = D.crMy; if (d.month === null) d.month = new Date().getMonth(); d.timeMode = 'month'; }
+    else if ('crM' in D) { d.timeMode = 'month'; d.month = Number(D.crM); }
+    else if ('crYr' in D) { d.timeMode = 'year'; d.year = D.crYr; }
+    else if ('crQd' in D) { d.timeMode = 'exact'; d.exactDate = D.crQd; }
+    else if ('crRd' in D) { d.timeMode = 'relative'; d.relDays = Number(D.crRd); }
+    else if ('crStep' in D) { d.timeMode = 'relative'; d.relDays = Math.max(1, Math.min(365, (Number(d.relDays) || 1) + Number(D.crStep))); }
+    else if ('crRt' in D) { d.timeMode = 'relative'; d.relType = D.crRt; }
+    else return;
+    haptic('light'); build();
+  });
+  $('crBody').addEventListener('change', e => {
+    const t = e.target, D = t.dataset, d = draft;
+    if ('crFrom' in D) { d.dateFrom = t.value; d.timeMode = (d.dateFrom || d.dateTo) ? 'range' : ''; }
+    else if ('crTo' in D) { d.dateTo = t.value; d.timeMode = (d.dateFrom || d.dateTo) ? 'range' : ''; }
+    else if ('crExact' in D) { d.exactDate = t.value; d.timeMode = d.exactDate ? 'exact' : ''; }
+    else if ('crRelnum' in D) { d.relDays = Math.max(1, Math.min(365, Number(t.value) || 1)); d.timeMode = 'relative'; }
+    else return;
+    build();
+  });
+  $('crReset').addEventListener('click', () => { draft = def(); tOpen = ''; haptic('light'); build(); });
+  $('crApply').addEventListener('click', () => { applied = clone(draft); closeFSheet(); haptic('medium'); wsRender(); });
+  $('crClose').addEventListener('click', () => closeFSheet());
+  $('crBackdrop').addEventListener('click', () => closeFSheet());
+  (function () {   // ऊपर की पट्टी खींचकर नीचे सरकाओ तो शीट बंद
+    const dz = $('crDrag'), sh = $('crSheet'); let y0 = 0, dy = 0, drag = false;
+    dz.addEventListener('touchstart', e => { y0 = e.touches[0].clientY; dy = 0; drag = true; sh.style.transition = 'none'; }, { passive: true });
+    dz.addEventListener('touchmove', e => { if (!drag) return; dy = Math.max(0, e.touches[0].clientY - y0); sh.style.transform = 'translateY(' + dy + 'px)'; }, { passive: true });
+    dz.addEventListener('touchend', () => { if (!drag) return; drag = false; sh.style.transition = ''; if (dy > 90) closeFSheet(); else sh.style.transform = ''; });
+  })();
+  return { page: page, open: openSheet, close: closeSheet, rm: rm, forget: forget, count: function () { return nActive(applied, true); } };
+})();
+
 // ===================== GOOGLE-DRIVE STYLE FULL-SCREEN SEARCH =====================
 let dsQ = '', dsSubs = [], dsC2 = '', dsC3 = '', dsMod = '', dsModal = null, dsModalQ = '', dsTab = -1, dsRecent = [];
 try { dsRecent = JSON.parse(localStorage.getItem('ru_ws_recent') || '[]'); } catch (e) { dsRecent = []; }
@@ -7911,7 +8268,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !g('ds').c
   const _sync = fsSheetSync, _reset = fsReset, _apply = fsApply, _open = openFSheet, _renderFS = renderFS;
   const show = () => { fsOpen = true; haptic('light'); document.body.style.overflow = 'hidden'; g('fxBk').classList.add('open'); g('fx').classList.add('open'); };
   fsSheetSync = function () {
-    if (fsRecMode()) { chRecSync(); return; }
+    if (fsRecMode()) { return; }   // रिकॉर्ड पेज का फ़िल्टर अब CR शीट है
     if (fsChapMode()) { chSheetSync(); return; }
     _sync();
   };
@@ -7926,7 +8283,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !g('ds').c
     _apply(); wsRefresh();
   };
   openFSheet = function () {
-    if (fsRecMode()) { chRD = { d: [...chRF.d], m: [...chRF.m], l: [...chRF.l] }; chRecSync(); show(); return; }
+    if (fsRecMode()) { CR.open(); return; }
     if (fsChapMode()) { chDraft = Object.assign({}, chF); chSheetSync(); show(); return; }
     _open();
   };
@@ -8299,6 +8656,7 @@ function wsExitAll() {
   const A = C && C.Plugins && C.Plugins.App;
   if (!A || !C.isNativePlatform || !C.isNativePlatform()) return;
   A.addListener('backButton', () => {
+    if (typeof spOpen !== 'undefined' && spOpen && !(typeof ncIsOpen !== 'undefined' && ncIsOpen)) { closeStudyPage(); return; }
     if (wsOpen || g('ds').classList.contains('open')) { wsBack(); return; }
     if (wsPop()) return;
     const act = document.querySelector('.ni.active');
