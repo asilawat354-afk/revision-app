@@ -3703,18 +3703,11 @@ body.chp-on .bbw{transform:translateY(105%)!important;pointer-events:none!import
 </svg>
 
 <!-- ===== Tools Control Hub overlays (sub-page, bottom sheet, popover, safety modal) ===== -->
-<div class="tl-sub" id="tlSub" aria-hidden="true">
-  <header class="tl-sub-bar">
-    <button type="button" class="tl-back tl-hit" id="tlBackBtn" aria-label="Back"><svg viewBox="0 0 24 24" class="tl-i"><path d="M15 18l-6-6 6-6"/></svg></button>
-    <h2 id="tlSubTitle">Tools</h2>
-    <span class="tl-sub-badge" id="tlSubBadge"></span>
-  </header>
-  <div class="tl-sub-body" id="tlSubBody"></div>
-</div>
+<div class="tl-sub" id="tlSub" aria-hidden="true"></div>
 <div class="tl-bk" id="tlBk"></div>
 <div class="tl-sheet" id="tlSheet" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="tl-sheet-h" id="tlSheetH"><i></i></div>
-  <div class="tl-sheet-t" id="tlSheetT"></div>
+  <div class="tl-sheet-top" id="tlSheetTop"><span class="tl-sheet-ic" id="tlSheetIc"></span><div class="tl-sheet-t" id="tlSheetT"></div><button type="button" class="tl-x" id="tlSheetX" aria-label="Close"><svg viewBox="0 0 24 24" class="tl-i"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
   <div class="tl-sheet-b" id="tlSheetB"></div>
 </div>
 <div class="tl-pop" id="tlPop" role="menu"></div>
@@ -5229,6 +5222,7 @@ function setBakTab(k) {
 
 function syncU() {
   if (!g('totStat')) return;
+  if (window.tlSubBadge) tlSubBadge();
   clearTimeout(uSt.tm); uSt.arm = false; uSt.sel.clear();
 
   if (uSt.superSec === 'bak') {
@@ -5781,6 +5775,7 @@ async function handleFileImport(input) {
       updateBakStats();
       renderHistory();
       g('impReport').textContent = 'इम्पोर्ट पूर्ववत किया गया।';
+      if (window.tlRender) tlRender();
       showIsland('इम्पोर्ट पूर्ववत किया गया');
     }
   });
@@ -6081,6 +6076,7 @@ function saveSession() {
   paintT();
   updateTimerLockState();
   setDiff(window.tlDefDiff ? tlDefDiff() : 'Medium');
+  if (window.tlApplyDefMode) tlApplyDefMode();
   clearSession();
   haptic('success');
   showIsland('Saved to History');
@@ -6118,6 +6114,7 @@ function saveManualSession() {
   document.querySelectorAll('#manualPresets .preset-chip').forEach(b => b.classList.remove('active'));
   resetNoteField('Manual');
   setDiff(window.tlDefDiff ? tlDefDiff() : 'Medium');
+  if (window.tlApplyDefMode) tlApplyDefMode();
   if (state.elapsed > 0) {
     persistSession();
   } else {
@@ -9056,7 +9053,7 @@ function cxState(dotId, txId, kind, text) {
   if (d) d.className = 'cx-dot ' + kind;
   if (t) t.textContent = text;
 }
-function fbState(kind, text) { cxState('fbDot', 'fbStatus', kind, text); }
+function fbState(kind, text) { cxState('fbDot', 'fbStatus', kind, text); if (window.tlRender) tlRender(); }
 
 function fbUI(user) {
   fbUser = user || null;
@@ -9187,6 +9184,7 @@ function fbSchedule(delay) {
   if (!fbAutoOn || fbRestoring) return;
   fbDirty = true;
   try { localStorage.setItem('ru_fb_dirty', '1'); } catch (e) {}
+  if (window.tlRender) tlRender();
   clearTimeout(fbTimer);
   const wait = Math.max(delay || 8000, 20000 - (Date.now() - fbLastUpload));
   fbTimer = setTimeout(() => fbDoBackup(true), wait);
@@ -9289,7 +9287,7 @@ function shCfg() {
   try { u = localStorage.getItem(SH_URL) || ''; k = localStorage.getItem(SH_KEY) || ''; } catch (e) {}
   return { url: u, key: k };
 }
-function shState(kind, text) { cxState('shDot', 'shStatus', kind, text); }
+function shState(kind, text) { cxState('shDot', 'shStatus', kind, text); if (window.tlRender) tlRender(); }
 function shUI() {
   const c = shCfg();
   const u = g('shUrl'), k = g('shKey');
@@ -9374,6 +9372,7 @@ async function shPush(manual) {
 function shSchedule() {
   if (fbRestoring || !shCfg().url) return;
   try { localStorage.setItem('ru_sh_dirty', '1'); } catch (e) {}
+  if (window.tlRender) tlRender();
   clearTimeout(shTimer);
   shTimer = setTimeout(() => shPush(false), 15000);
 }
@@ -11988,7 +11987,7 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
   function isPageScroller(el) {
     if (!el || el.nodeType !== 1) return false;
     if (PAGE_SCROLLERS.has(el.id)) return true;
-    return el.classList.contains('wrap') || el.classList.contains('fx-body') || el.classList.contains('chp-l') || el.classList.contains('chm-b') || el.id === 'hfPopBody';
+    return el.classList.contains('wrap') || el.classList.contains('fx-body') || el.classList.contains('chp-l') || el.classList.contains('chm-b') || el.classList.contains('tl-sub-body') || el.id === 'hfPopBody';
   }
 
   function findScroller(target) {
@@ -12028,8 +12027,6 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
 
   let activeScroller = null;
   let targets = [];
-  let baseOffsets = [];
-  let contH = 500;
   let startX = 0, startY = 0, lastY = 0, anchorY = 0;
   let edge = 0; // 1 = Top pull-down (+Y), -1 = Bottom pull-up (-Y)
   let axis = '';
@@ -12041,7 +12038,7 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
       const tok = t.__ebTok = (t.__ebTok || 0) + 1;   // नई खिंचाई शुरू होते ही पुरानी वापसी का cleanup बेअसर
       if (animate) {
         t.style.transition = 'transform 0.36s cubic-bezier(0.22, 1, 0.36, 1)';
-        t.style.transform = 'translate3d(0, 0, 0) scaleY(1)';
+        t.style.transform = 'translate3d(0, 0, 0)';
         const done = () => {
           if (t.__ebTok !== tok) { t.removeEventListener('transitionend', done); return; }
           t.style.transition = '';
@@ -12065,17 +12062,10 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
     const list = getTargets(scroller);
     if (!list.length) return false;
     targets = list;
-    const rects = list.map(t => t.getBoundingClientRect());
-    const top0 = rects[0].top;
-    const bot1 = rects[rects.length - 1].bottom;
-    contH = Math.max(200, bot1 - top0);
-    baseOffsets = rects.map(r => dirEdge === 1 ? Math.max(0, r.top - top0) : Math.max(0, bot1 - r.bottom));
-    const origin = dirEdge === 1 ? '50% 0%' : '50% 100%';
     list.forEach(t => {
       t.__ebTok = (t.__ebTok || 0) + 1;
       t.style.transition = 'none';
       t.style.willChange = 'transform';
-      t.style.transformOrigin = origin;
     });
     return true;
   }
@@ -12085,22 +12075,14 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
     const sign = edge === 1 ? 1 : -1;
     const d = Math.abs(rawDelta);
 
-    // 16% Ultra-Soft रबड़ स्ट्रेच फ़ॉर्मूला (overscroll_demo_v3 से)
+    // 16% Ultra-Soft रबड़ शिफ्ट: सिर्फ़ translate, कोई खिंचाव/स्केल नहीं — कार्ड और अक्षर कभी विकृत नहीं होते
     const curve = 1 - Math.exp(-d / 160);
-    const viewH = activeScroller.clientHeight || window.innerHeight || 500;
-    const heightRatio = Math.min(1, viewH / Math.max(viewH, contH));
-
-    const maxStretch = 0.10 * K * (0.45 + 0.55 * heightRatio);
     const maxShift = 28 * K;
-
-    const stretch = maxStretch * curve;
     const shift = sign * maxShift * curve;
-    const scStr = (1 + stretch).toFixed(4);
+    const tf = 'translate3d(0,' + shift.toFixed(2) + 'px,0)';
 
     for (let i = 0; i < targets.length; i++) {
-      const extraY = sign * baseOffsets[i] * stretch;
-      const totalY = shift + extraY;
-      targets[i].style.transform = 'translate3d(0,' + totalY.toFixed(2) + 'px,0) scaleY(' + scStr + ')';
+      targets[i].style.transform = tf;
     }
   }
 
@@ -12110,7 +12092,6 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
       clearTransforms(targets, true);
     }
     targets = [];
-    baseOffsets = [];
     edge = 0;
   }
 
@@ -12119,7 +12100,6 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
     if (targets.length) clearTransforms(targets, false);
     targets = [];
-    baseOffsets = [];
     edge = 0;
     axis = '';
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { activeScroller = null; return; }
@@ -12188,7 +12168,7 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
       anchorY = y;
       if ((edge === 1 && st > 1) || (edge === -1 && st < maxS - 1)) {   // सामान्य scroll शुरू हो गई
         clearTransforms(targets, false);
-        targets = []; baseOffsets = []; edge = 0;
+        targets = []; edge = 0;
         return;
       }
       applyPhysics(0);
@@ -12215,7 +12195,7 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
   const hardReset = () => {
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
     if (targets.length) clearTransforms(targets, false);
-    targets = []; baseOffsets = []; edge = 0; activeScroller = null;
+    targets = []; edge = 0; activeScroller = null;
   };
   document.addEventListener('visibilitychange', () => { if (document.hidden) hardReset(); });
   window.addEventListener('pagehide', hardReset);
@@ -12271,12 +12251,17 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
 <style id="tools-hub-css">
 /* ===== Tools: Control Hub ===== */
 #tlHub{display:flex;flex-direction:column;gap:16px;padding-bottom:8px}
-.tl-bento{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tl-bn{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;padding:12px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);color:var(--text);min-width:0;font-family:inherit}
-.tl-bn b{font-size:17px;font-weight:700;line-height:1.2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-bn span{font-size:11px;font-weight:600;color:var(--muted);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-bn .tl-bar{height:4px;border-radius:4px;background:var(--surface-hover);width:100%;overflow:hidden;margin-top:4px}
-.tl-bn .tl-bar i{display:block;height:100%;background:var(--primary);border-radius:4px;transition:width .4s}
+.tl-goal{display:flex;flex-direction:column;gap:12px;width:100%;text-align:left;padding:16px;border-radius:calc(var(--radius) + 4px);background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 16%,var(--surface)),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--primary) 38%,var(--border));color:var(--text);min-width:0;font-family:inherit;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.tl-goal-top{display:flex;align-items:center;gap:12px;min-width:0}
+.tl-goal-txt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px}
+.tl-goal-lbl{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-goal-main{font-size:17px;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-goal-sub{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-goal-pct{flex:0 0 auto;min-width:56px;height:56px;padding:0 8px;box-sizing:border-box;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;background:var(--primary);color:#000}
+[data-theme="light"] .tl-goal-pct{color:#fff}
+.tl-goal-pct.off{background:var(--surface-elevated);color:var(--muted);border:1px dashed var(--border);font-size:13px}
+.tl-goal .tl-bar{height:8px;border-radius:8px;background:var(--surface-hover);width:100%;overflow:hidden}
+.tl-goal .tl-bar i{display:block;height:100%;background:var(--primary);border-radius:8px;transition:width .6s cubic-bezier(.22,1,.36,1)}
 .tl-sec{display:flex;flex-direction:column;gap:8px}
 .tl-sec-h{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tl-sec.danger .tl-sec-h{color:var(--d-hard)}
@@ -12291,7 +12276,7 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
 .tl-row.danger .tl-ic{background:rgba(248,113,113,.14);color:var(--d-hard)}
 .tl-row.danger .tl-nm{color:var(--d-hard)}
 .tl-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.tl-row svg,.tl-bn svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tl-row svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 /* sub-page */
 .tl-sub{position:fixed;inset:0;z-index:1500;background:var(--bg,var(--surface));display:flex;flex-direction:column;transform:translateX(100%);visibility:hidden;transition:transform .32s cubic-bezier(.22,1,.36,1),visibility 0s .32s;max-width:520px;margin:0 auto}
 .tl-sub.open{transform:none;visibility:visible;transition:transform .32s cubic-bezier(.22,1,.36,1),visibility 0s}
@@ -12300,12 +12285,9 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
 .tl-sub-badge{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap}
 .tl-back{width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--text);display:flex;align-items:center;justify-content:center;flex:0 0 40px}
 .tl-sub-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 14px calc(24px + var(--sab,0px));-webkit-overflow-scrolling:touch}
-#tlSub .super-switch{display:none}
+.tl-note{font-size:12px;line-height:1.4;color:var(--muted)}
 body.tl-open .bbw{transform:translateY(105%)!important;pointer-events:none}
 body.tl-open .sp-fab{display:none!important}
-.tl-insp-row{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
-.tl-insp-row span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tl-insp-row span:last-child{color:var(--muted);white-space:nowrap}
 /* bottom sheet */
 .tl-bk,.tl-mbk{position:fixed;inset:0;z-index:1600;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s}
 .tl-mbk{z-index:1700}
@@ -12336,7 +12318,7 @@ body.tl-open .sp-fab{display:none!important}
 .tl-pop{position:fixed;z-index:1650;min-width:176px;max-width:calc(100vw - 24px);background:var(--surface-elevated);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.35);padding:4px;opacity:0;transform:scale(.96);transform-origin:top right;pointer-events:none;visibility:hidden;transition:opacity .16s,transform .16s,visibility 0s .16s;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 .tl-pop.open{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition:opacity .16s,transform .16s,visibility 0s}
 .tl-pi{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;padding:0 12px;border:0;background:transparent;color:var(--text);font:600 14px inherit;font-family:inherit;border-radius:10px;text-align:left;white-space:nowrap}
-.tl-pi svg{width:18px;height:18px;flex:0 0 18px}
+.tl-pi svg{width:18px;height:18px;flex:0 0 18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tl-pi.active{background:var(--surface-hover)}
 .tl-pi .tl-ck{margin-left:auto;color:var(--primary);width:16px;height:16px;opacity:0}
 .tl-pi.active .tl-ck{opacity:1}
@@ -12349,42 +12331,310 @@ body.tl-open .sp-fab{display:none!important}
 .tl-modal p{margin:0 0 16px;font-size:14px;line-height:1.5;color:var(--muted)}
 .tl-hit{position:relative}
 .tl-hit::after{content:"";position:absolute;inset:-4px}
+/* ===== Page-by-Page architecture (tlSub stack) ===== */
+.tl-sub{overflow:hidden}
+.tl-pg{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg,var(--surface));transform:translateX(100%);transition:transform .34s cubic-bezier(.22,1,.36,1),filter .34s,opacity .34s;will-change:transform}
+.tl-pg.in{transform:none}
+.tl-pg.noanim{transition:none}
+.tl-pg.under{transform:translateX(-24%);filter:brightness(.72)}
+.tl-pg-h{flex:0 0 auto}
+.tl-pg .tl-sub-bar{display:flex;align-items:center;gap:6px}
+.tl-sub-tt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
+.tl-pg-title{margin:0;font-size:17px;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-pg-sub{font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-pg-sub:empty{display:none}
+.tl-sub-acts{display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.tl-sub-badge:empty{display:none}
+.tl-act{position:relative;width:40px;height:40px;border-radius:12px;border:0;background:transparent;color:var(--text);display:flex;align-items:center;justify-content:center;font-family:inherit}
+.tl-act svg{width:20px;height:20px}
+.tl-act.on{background:var(--surface-hover);color:var(--primary)}
+.tl-act.danger.on{background:rgba(248,113,113,.16);color:var(--d-hard)}
+.tl-act-b{position:absolute;top:2px;right:0;min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:8px;background:var(--primary);color:#000;font-size:11px;font-weight:700;font-style:normal;display:flex;align-items:center;justify-content:center}
+[data-theme="light"] .tl-act-b{color:#fff}
+.tl-pg-search{padding:8px 14px;border-bottom:1px solid var(--border)}
+.tl-pg-search[hidden]{display:none}
+.tl-pg-search label{display:flex;align-items:center;gap:8px;padding:0 12px;min-height:42px;border-radius:12px;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.tl-pg-search svg{width:18px;height:18px;flex:0 0 18px}
+.tl-pg-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:500 15px inherit;font-family:inherit}
+.tl-pg .tl-sub-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 14px 20px}
+.tl-pg-foot{flex:0 0 auto;display:flex;gap:8px;padding:10px 14px calc(10px + var(--sab,0px));background:var(--surface);border-top:1px solid var(--border)}
+.tl-pg-foot[hidden]{display:none}
+.tl-pg-foot .tl-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px}
+.tl-fab{flex:1;min-height:48px;border-radius:14px;border:0;background:var(--primary);color:#000;font:700 15px inherit;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+[data-theme="light"] .tl-fab{color:#fff}
+.tl-fab svg{width:18px;height:18px}
+.tl-li{position:relative;display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 12px 10px 18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);margin-bottom:8px;cursor:pointer;overflow:hidden;box-sizing:border-box}
+.tl-li::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sc,var(--primary))}
+.tl-li-t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tl-li-t b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-li-t span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-li .tl-ch{flex:0 0 16px;width:16px;height:16px;color:var(--muted)}
+.tl-li.sel{border-color:var(--d-hard);background:rgba(248,113,113,.10)}
+.tl-cb{flex:0 0 22px;width:22px;height:22px;border-radius:7px;border:2px solid var(--border);box-sizing:border-box;display:flex;align-items:center;justify-content:center;color:transparent}
+.tl-cb svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.tl-cb.on{background:var(--d-hard);border-color:var(--d-hard);color:#fff}
+.tl-cb.pri.on,.tl-cb.pri.part{background:var(--primary);border-color:var(--primary);color:#000}
+.tl-cb.part{border-color:var(--primary);color:var(--primary)}
+.tl-no{flex:0 0 32px;height:32px;border-radius:10px;background:var(--surface-elevated);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted)}
+.tl-pill{flex:0 0 auto;min-height:36px;padding:0 12px;border-radius:99px;border:1px solid color-mix(in srgb,var(--primary) 45%,var(--border));background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary);font:700 12px inherit;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.tl-pill svg{width:14px;height:14px}
+.tl-qa{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.tl-qa button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;padding:8px 2px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit}
+.tl-qa b{font-size:17px;display:flex}
+.tl-qa b svg{width:20px;height:20px}
+.tl-qa span{font-size:11px;color:var(--muted);font-weight:600}
+.tl-qa .cu{border-style:dashed;color:var(--primary)}
+.tl-lecgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tl-lec{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 8px;border-radius:12px;background:var(--surface);border:1px solid var(--border);font-size:13px;font-weight:600;overflow:hidden;box-sizing:border-box}
+.tl-lec span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-lec.dl{cursor:pointer;justify-content:flex-start}
+.tl-lec.sel{border-color:var(--d-hard);background:rgba(248,113,113,.10)}
+.tl-empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:48px 16px;color:var(--muted);text-align:center;font-size:14px}
+.tl-empty svg{width:36px;height:36px}
+.tl-rg{border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);margin-bottom:10px;overflow:hidden;border-left:4px solid var(--sc,var(--primary))}
+.tl-rg-h{display:flex;align-items:center;gap:12px;padding:12px;cursor:pointer}
+.tl-rc{display:flex;align-items:center;gap:4px;padding:2px 8px 2px 28px;border-top:1px solid var(--border)}
+.tl-rc-m{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer}
+.tl-rx{flex:0 0 40px;height:40px;border:0;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.tl-rx.on{transform:rotate(90deg)}
+.tl-rlecs{display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 12px 28px}
+.tl-rl{min-height:34px;padding:0 10px;border-radius:99px;border:1px solid var(--border);background:var(--surface-elevated);color:var(--text);font:600 12px inherit;font-family:inherit}
+.tl-rl.on{background:var(--primary);border-color:var(--primary);color:#000}
+.tl-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:16px;background:var(--surface);border:1px solid var(--border);margin-bottom:16px}
+.tl-seg button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;padding:6px;border:0;border-radius:12px;background:transparent;color:var(--muted);font:700 14px inherit;font-family:inherit}
+.tl-seg button small{font-size:11px;font-weight:600;opacity:.85}
+.tl-seg button.on{background:var(--primary);color:#000}
+[data-theme="light"] .tl-seg button.on{color:#fff}
+.tl-card{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:calc(var(--radius) + 4px);background:var(--surface);border:1px solid var(--border);margin-bottom:16px;box-sizing:border-box}
+.tl-imp{align-items:center;text-align:center;border:1.5px dashed color-mix(in srgb,var(--primary) 50%,var(--border))}
+.tl-imp-t{font-size:16px}
+.tl-imp-s{font-size:12px;color:var(--muted);line-height:1.4}
+.tl-ib{flex:0 0 auto;width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--primary) 16%,var(--surface-elevated));color:var(--primary)}
+.tl-ib svg{width:24px;height:24px}
+.tl-wide{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px}
+.tl-report{width:100%;box-sizing:border-box;display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:12px;background:rgba(52,211,153,.12);color:var(--d-easy);font-size:12px;font-weight:600;text-align:left;line-height:1.4}
+.tl-report svg{flex:0 0 16px;width:16px;height:16px;opacity:1;fill:none;stroke:currentColor;stroke-width:2.4}
+.tl-report span{flex:1;min-width:0;word-break:break-word}
+.tl-rep-x{flex:0 0 28px;height:28px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;margin:-4px -6px 0 0}
+.tl-rep-x svg{width:14px;height:14px}
+.tl-sech{margin:4px 2px 10px}
+.tl-tiles2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.tl-xt{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:inherit;text-align:left;min-width:0}
+.tl-xt .tl-ib{width:40px;height:40px;border-radius:12px;margin-bottom:4px}
+.tl-xt .tl-ib svg{width:20px;height:20px}
+.tl-xt b{font-size:14px}
+.tl-xt .s{font-size:12px;color:var(--muted)}
+.tl-shc-h{display:flex;align-items:center;gap:12px}
+.tl-st{display:flex !important;align-items:center;gap:6px}
+.tl-shc-url{padding:10px 12px;border-radius:12px;background:var(--surface-elevated);color:var(--muted);font-size:12px;font-family:ui-monospace,Menlo,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-btns{display:flex;gap:8px}
+.tl-btns .tl-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px}
+.tl-bkslot .cx-card{margin-bottom:16px}
+.tl-swg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.tl-sw{position:relative;display:flex;flex-direction:column;gap:8px;padding:8px;border-radius:16px;background:var(--surface);border:2px solid var(--border);color:var(--text);font-family:inherit;text-align:left;min-width:0}
+.tl-sw.wide{grid-column:1/-1}
+.tl-sw.on{border-color:var(--primary)}
+.tl-sw .nm{font-size:12px;font-weight:600;padding:0 4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-ckb{position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;background:var(--primary);color:#000;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+[data-theme="light"] .tl-ckb{color:#fff}
+.tl-ckb svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.tl-sw.on .tl-ckb{display:flex}
+.tl-bgp{position:relative;height:76px;border-radius:12px;overflow:hidden;background:var(--bg,#0b1220);border:1px solid var(--border)}
+.tl-bgp[data-p="1"]{background:radial-gradient(circle at 22% 18%,rgba(56,189,248,.38),transparent 55%),radial-gradient(circle at 82% 92%,rgba(139,92,246,.34),transparent 55%),var(--bg,#0b1220)}
+.tl-bgp[data-p="1"]::after,.tl-bgp[data-p="2"]::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.3) .7px,transparent .9px);background-size:4px 4px;opacity:.45}
+.tl-bgp[data-p="2"]::after{opacity:.2}
+[data-theme="light"] .tl-bgp[data-p="1"]::after,[data-theme="light"] .tl-bgp[data-p="2"]::after{background-image:radial-gradient(rgba(15,23,42,.35) .7px,transparent .9px)}
+.tl-bgp[data-p="4"]{background-image:radial-gradient(rgba(255,255,255,.3) 1.1px,transparent 1.3px);background-size:10px 10px}
+[data-theme="light"] .tl-bgp[data-p="4"]{background-image:radial-gradient(rgba(15,23,42,.28) 1.1px,transparent 1.3px)}
+.tl-bgp i{position:absolute;border-radius:50%;filter:blur(14px)}
+.tl-bgp .o1{width:70px;height:70px;left:-10px;top:-14px;background:var(--orb1)}
+.tl-bgp .o2{width:80px;height:80px;right:-12px;bottom:-24px;background:var(--orb2)}
+.tl-bgp .o3{width:54px;height:54px;left:42%;top:26%;background:var(--orb3)}
+.tl-gp{position:relative;height:76px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#38bdf8,#8b5cf6 55%,#f472b6);display:flex;align-items:center;justify-content:center}
+.tl-gp i{display:block;width:72%;height:44px;border-radius:12px;background:var(--gbg);-webkit-backdrop-filter:var(--gbl);backdrop-filter:var(--gbl);border:1px solid var(--gbd);box-shadow:var(--ghi)}
+.tl-gp[data-g="1"]{--gbg:rgba(17,24,39,.34);--gbl:blur(14px) saturate(1.7);--gbd:rgba(255,255,255,.2);--ghi:inset 0 1px 0 rgba(255,255,255,.25)}
+.tl-gp[data-g="2"]{--gbg:rgba(17,24,39,.6);--gbl:blur(8px);--gbd:rgba(255,255,255,.1);--ghi:none}
+.tl-gp[data-g="3"]{--gbg:rgba(255,255,255,.08);--gbl:blur(6px) saturate(1.3);--gbd:rgba(255,255,255,.3);--ghi:inset 0 1px 0 rgba(255,255,255,.35)}
+.tl-gp[data-g="4"]{--gbg:#111827;--gbl:none;--gbd:rgba(255,255,255,.08);--ghi:none}
+[data-theme="light"] .tl-gp[data-g="1"]{--gbg:rgba(255,255,255,.42);--gbd:rgba(255,255,255,.85);--ghi:inset 0 1px 0 rgba(255,255,255,.95)}
+[data-theme="light"] .tl-gp[data-g="2"]{--gbg:rgba(255,255,255,.75);--gbd:rgba(0,0,0,.08)}
+[data-theme="light"] .tl-gp[data-g="3"]{--gbg:rgba(255,255,255,.22);--gbd:rgba(255,255,255,.9);--ghi:inset 0 1px 0 #fff}
+[data-theme="light"] .tl-gp[data-g="4"]{--gbg:#fff;--gbd:rgba(0,0,0,.08)}
+#tlSub #fbBox{border-radius:calc(var(--radius) + 4px);padding:16px;box-sizing:border-box}
+#tlSub #fbBox .cx-ico{width:48px;height:48px;border-radius:16px}
+/* sheets */
+.tl-sheet-top{display:flex;align-items:center;gap:12px;padding:0 16px 12px}
+.tl-sheet-top .tl-sheet-t{flex:1;min-width:0;padding:0;font-size:17px;font-weight:700}
+.tl-sheet-ic{flex:0 0 36px;width:36px;height:36px;border-radius:12px;display:none;align-items:center;justify-content:center;background:color-mix(in srgb,var(--primary) 16%,var(--surface));color:var(--primary)}
+.tl-sheet-ic.on{display:flex}
+.tl-sheet-ic svg{width:20px;height:20px}
+.tl-x{flex:0 0 36px;width:36px;height:36px;border-radius:50%;border:0;background:var(--surface-hover);color:var(--text);display:flex;align-items:center;justify-content:center}
+.tl-x svg{width:18px;height:18px}
+.tl-field{width:100%;box-sizing:border-box;min-height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:500 15px inherit;font-family:inherit;outline:0}
+.tl-field:focus{border-color:var(--primary)}
+.tl-field.shake{animation:tlShake .35s}
+@keyframes tlShake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.tl-chipnote{padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-weight:600}
+.tl-prev{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--border)}
+.tl-prev-l{display:flex;flex-direction:column;gap:2px}
+.tl-prev-l b{font-size:22px}
+.tl-prev-r{font-size:13px;font-weight:600;color:var(--muted)}
+.tl-prev .tl-bar{width:100%;height:6px;border-radius:6px;background:var(--surface-hover);overflow:hidden}
+.tl-prev .tl-bar i{display:block;height:100%;background:var(--primary);border-radius:6px}
+.tl-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tl-grid3 .tl-chip{width:100%;justify-content:center}
+.tl-step{display:flex;align-items:center;gap:8px}
+.tl-step button{flex:0 0 46px;height:46px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center}
+.tl-step button svg{width:18px;height:18px}
+.tl-step .tl-field{text-align:center}
+.tl-opts{display:grid;gap:8px}
+.tl-opts.c2{grid-template-columns:1fr 1fr}
+.tl-opts.c3{grid-template-columns:repeat(3,1fr)}
+.tl-opt{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;text-align:left;min-width:0}
+.tl-opt b{font-size:14px}
+.tl-opt .s{font-size:11px;color:var(--muted);font-weight:600;line-height:1.3}
+.tl-opt-ic{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--surface-elevated);color:var(--oc,var(--primary));margin-bottom:2px}
+.tl-opt-ic svg{width:18px;height:18px}
+.tl-dot{display:block;width:12px;height:12px;border-radius:50%;background:var(--oc,var(--primary))}
+.tl-opt.on{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--surface))}
+.tl-opt.on::after{content:"✓";position:absolute;top:8px;right:10px;font-size:13px;font-weight:700;color:var(--primary)}
+.tl-pop-h{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 12px 4px}
+.tl-pi.active{background:color-mix(in srgb,var(--primary) 14%,transparent)}
+/* ===== polish round 2 ===== */
+.tl-i{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tl-btn svg,.tl-fab svg{flex:0 0 auto;width:18px;height:18px}
+.tl-modal .tl-btns .tl-btn,.tl-sheet .tl-btn,.tl-pg-foot .tl-btn{display:flex;align-items:center;justify-content:center;gap:8px}
+.tl-modal .tl-btn svg{width:18px;height:18px}
+.tl-row .tl-ic{width:34px;flex-basis:34px;height:34px;border-radius:10px}
+.tl-row .tl-ic svg{width:20px;height:20px}
+.tl-goal-top{align-items:center}
+.tl-goal-ic{flex:0 0 44px;width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--primary) 20%,var(--surface-elevated));color:var(--primary)}
+.tl-goal-ic svg{width:24px;height:24px}
+.tl-li:active,.tl-xt:active,.tl-sw:active,.tl-opt:active,.tl-drop:active,.tl-row:active{transform:scale(.985)}
+.tl-li,.tl-xt,.tl-sw,.tl-opt,.tl-drop{transition:transform .12s,background .2s,border-color .2s}
+.tl-li:focus-visible,.tl-act:focus-visible,.tl-btn:focus-visible,.tl-xt:focus-visible,.tl-sw:focus-visible,.tl-drop:focus-visible,.tl-rg-h:focus-visible,.tl-rc-m:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.tl-li.flash{animation:tlFlash 1.4s ease-out}
+@keyframes tlFlash{0%,40%{background:color-mix(in srgb,var(--primary) 26%,var(--surface))}100%{background:var(--surface)}}
+.tl-empty svg{width:44px;height:44px;opacity:.55;stroke-width:1.6}
+.tl-empty{padding:56px 16px;gap:12px}
+.tl-seg button{flex-direction:row;gap:10px;justify-content:flex-start;padding:8px 12px;text-align:left}
+.tl-seg button svg{flex:0 0 22px;width:22px;height:22px}
+.tl-seg-t{display:flex;flex-direction:column;gap:1px;min-width:0}
+.tl-seg-t b{font-size:14px;font-weight:700;white-space:nowrap}
+.tl-seg-t small{font-size:11px;font-weight:600;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-drop{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 16px;border-radius:calc(var(--radius) + 6px);border:1.5px dashed color-mix(in srgb,var(--primary) 55%,var(--border));background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 10%,var(--surface)),var(--surface));text-align:center;cursor:pointer;margin-bottom:12px}
+.tl-drop.over{border-style:solid;border-color:var(--primary);background:color-mix(in srgb,var(--primary) 18%,var(--surface));transform:scale(1.015)}
+.tl-drop.busy{pointer-events:none}
+.tl-drop-ic{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--primary);color:#000;box-shadow:0 8px 22px color-mix(in srgb,var(--primary) 38%,transparent)}
+[data-theme="light"] .tl-drop-ic{color:#fff}
+.tl-drop-ic svg{width:26px;height:26px}
+.tl-drop b{font-size:16px;font-weight:700}
+.tl-fmts{display:flex;gap:6px}
+.tl-fmts i{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:99px;background:var(--surface-elevated);color:var(--muted);border:1px solid var(--border)}
+.tl-spin{animation:tlSpin .9s linear infinite}
+@keyframes tlSpin{to{transform:rotate(360deg)}}
+.tl-xt .tl-ib{background:color-mix(in srgb,var(--ac,var(--primary)) 18%,var(--surface-elevated));color:var(--ac,var(--primary))}
+.tl-shc .tl-ib{background:color-mix(in srgb,var(--ac,var(--primary)) 18%,var(--surface-elevated));color:var(--ac,var(--primary))}
+.tl-shc-url{display:flex;align-items:center;gap:8px}
+.tl-shc-url svg{flex:0 0 16px;width:16px;height:16px}
+.tl-shc-url span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-sub-badge{padding:4px 10px;border-radius:99px;background:var(--surface-elevated);border:1px solid var(--border);margin-left:2px}
+.tl-opt-ic svg{width:20px;height:20px}
+.tl-report svg{fill:none;stroke:currentColor}
+/* keyboard: bars never ride above the keyboard */
+html.tl-kb .tl-pg-foot{display:none!important}
+html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
+.tl-sheet{max-height:min(88vh,calc(var(--tl-vvh,100vh) - 12px))}
+.tl-sheet-top,.tl-sheet-h{flex:0 0 auto}
+.tl-sheet-b{flex:1 1 auto;min-height:0;scroll-padding-bottom:24px}
+.tl-sheet.on{transform:translateY(calc(-1 * var(--tl-kb,0px)))}
+@media (prefers-reduced-motion:reduce){.tl-pg,.tl-sheet,.tl-li,.tl-drop{transition:none!important}.tl-li.flash,.tl-spin{animation:none!important}}
+.tl-ch{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tl-li .tl-ch,.tl-rx .tl-ch{width:18px;height:18px}
 </style>
 <script>
 /* ===== Tools tab: Control Hub (progressive disclosure) ===== */
 (function toolsHub() {
   const $ = id => document.getElementById(id);
-  const K = { goal: 'ru_goal_min', diff: 'ru_def_diff', fmt: 'ru_exp_fmt' };
+  const K = { goal: 'ru_goal_min', diff: 'ru_def_diff', mode: 'ru_def_mode', fmt: 'ru_exp_fmt' };
   const ls = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
   const P = d => '<svg viewBox="0 0 24 24" class="tl-i">' + d + '</svg>';
   const IC = {
-    book: P('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
-    target: P('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>'),
-    timer: P('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>'),
-    cloud: P('<path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.7 1.5A3.8 3.8 0 0 0 6.5 19z"/>'),
-    swap: P('<path d="M7 4v14M3 8l4-4 4 4M17 20V6M13 16l4 4 4-4"/>'),
-    bolt: P('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
-    db: P('<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'),
-    moon: P('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'),
-    image: P('<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/>'),
-    list: P('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'),
-    trash: P('<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>'),
-    warn: P('<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/>'),
-    chev: '<svg viewBox="0 0 24 24" class="tl-ch"><path d="M9 6l6 6-6 6"/></svg>',
-    check: '<svg viewBox="0 0 24 24" class="tl-ck"><path d="M5 12l5 5 9-10"/></svg>',
-    sun: P('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
-    x: P('<path d="M18 6L6 18M6 6l12 12"/>')
+    book: P('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>'),
+    bookopen: P('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>'),
+    library: P('<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>'),
+    target: P('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'),
+    timer: P('<line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/>'),
+    sliders: P('<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>'),
+    cloud: P('<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>'),
+    cloudup: P('<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/>'),
+    swap: P('<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>'),
+    bolt: P('<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>'),
+    db: P('<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>'),
+    moon: P('<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>'),
+    sun: P('<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>'),
+    palette: P('<circle cx="13.5" cy="6.5" r=".6"/><circle cx="17.5" cy="10.5" r=".6"/><circle cx="8.5" cy="7.5" r=".6"/><circle cx="6.5" cy="12.5" r=".6"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>'),
+    image: P('<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>'),
+    layout: P('<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7"/><path d="M14 9h7"/><path d="M14 15h7"/><path d="M14 20h7"/>'),
+    list: P('<path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>'),
+    trash: P('<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>'),
+    warn: P('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'),
+    chev: '<svg viewBox="0 0 24 24" class="tl-ch"><path d="m9 18 6-6-6-6"/></svg>',
+    check: '<svg viewBox="0 0 24 24" class="tl-ck"><path d="M20 6 9 17l-5-5"/></svg>',
+    x: P('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+    back: P('<path d="m15 18-6-6 6-6"/>'),
+    plus: P('<path d="M5 12h14"/><path d="M12 5v14"/>'),
+    minus: P('<path d="M5 12h14"/>'),
+    search: P('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
+    restore: P('<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'),
+    history: P('<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>'),
+    upload: P('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>'),
+    download: P('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>'),
+    fileup: P('<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/>'),
+    filetext: P('<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>'),
+    sheet: P('<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/>'),
+    share: P('<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>'),
+    copy: P('<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>'),
+    sync: P('<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>'),
+    settings: P('<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>'),
+    link: P('<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'),
+    checks: P('<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>'),
+    circlecheck: P('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'),
+    loader: P('<path d="M21 12a9 9 0 1 1-6.219-8.56"/>'),
+    layers: P('<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>'),
+    sprout: P('<path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>'),
+    sigLow: P('<path d="M6 20v-5"/><path d="M12 20v-9" opacity=".25"/><path d="M18 20V6" opacity=".25"/>'),
+    sigMed: P('<path d="M6 20v-5"/><path d="M12 20v-9"/><path d="M18 20V6" opacity=".25"/>'),
+    sigHigh: P('<path d="M6 20v-5"/><path d="M12 20v-9"/><path d="M18 20V6"/>'),
+    tick: P('<path d="M20 6 9 17l-5-5"/>'),
+    flame: P('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>')
   };
   const FMT = [['xlsx', 'Excel (.xlsx)'], ['csv', 'CSV (.csv)'], ['share', 'Share'], ['copy', 'Copy']];
   const DIFF = [['Easy', 'आसान'], ['Medium', 'ठीक-ठाक'], ['Hard', 'दोहराना है']];
+  const MODES = [['revision', 'Revision'], ['first_study', 'First Study']];
   const hap = t => { try { haptic(t || 'light'); } catch (e) {} };
   const toast = m => { try { showIsland(m); } catch (e) {} };
   const theme = () => document.documentElement.getAttribute('data-theme') || 'dark';
   const goalMin = () => { const v = parseFloat(ls(K.goal, '')); return v > 0 ? Math.round(v) : 0; };
   const fmtHM = m => { const h = Math.floor(m / 60), r = m % 60; return h ? (h + 'h' + (r ? ' ' + r + 'm' : '')) : r + 'm'; };
   const defDiff = () => { const v = ls(K.diff, 'Medium'); return DIFF.some(d => d[0] === v) ? v : 'Medium'; };
-  const fmtLabel = () => (FMT.find(f => f[0] === ls(K.fmt, 'xlsx')) || FMT[0])[1];
+  const cloudOn = () => { try { return !!((typeof fbUser !== 'undefined' && fbUser) || localStorage.getItem('ru_fb_uid')); } catch (e) { return false; } };
+  const sheetOn = () => { try { return typeof shCfg === 'function' && !!shCfg().url; } catch (e) { return false; } };
+  const syncBadge = () => {
+    const c = cloudOn(), h = sheetOn();
+    if (!c && !h) return 'Connect';
+    let d = false;
+    try { d = (c && !!localStorage.getItem('ru_fb_dirty')) || (h && !!localStorage.getItem('ru_sh_dirty')); } catch (e) {}
+    return d ? 'Syncing...' : (c && h ? 'Cloud + Sheet' : 'Saved');
+  };
+  const subBadge = kind => {
+    if (kind === 'subjects') { const k = Object.keys(masterData || {}); const c = k.reduce((a, x) => a + Object.keys(masterData[x] || {}).length, 0); return k.length + ' विषय · ' + c + ' चैप्टर'; }
+    if (kind === 'backup') return syncBadge();
+    return '';
+  };
+  const defMode = () => { const v = ls(K.mode, 'revision'); return MODES.some(m => m[0] === v) ? v : 'revision'; };
+  const applyDefMode = () => { try { if (!state.run && !(state.elapsed > 0)) setMode(defMode()); } catch (e) {} };
   const viewLabel = () => { let k = 'list'; try { k = localStorage.getItem(WS_KEY) || 'list'; } catch (e) {} const m = WS_VIEWS.find(v => v.key === k) || WS_VIEWS[0]; return m.label.replace(' View', ''); };
 
   function stats() {
@@ -12399,33 +12649,34 @@ body.tl-open .sp-fab{display:none!important}
   function render() {
     const hub = $('tlHub'); if (!hub) return;
     const s = stats(), gm = goalMin(), pct = gm ? Math.min(100, Math.round(s.today / gm * 100)) : 0;
+    const goalMain = gm ? 'Today: ' + fmtHM(s.today) + ' / ' + fmtHM(gm) + ' Goal' : 'Tap to set daily goal';
+    const goalSub = gm ? (s.today >= gm ? 'Goal complete 🎉' : fmtHM(gm - s.today) + ' to go') : 'Today: ' + fmtHM(s.today);
+    const sessBadge = (DIFF.find(d => d[0] === defDiff()) || DIFF[1]);
+    const modeBadge = (MODES.find(m => m[0] === defMode()) || MODES[0])[1];
     hub.innerHTML =
-      '<div class="tl-bento">' +
-        '<button type="button" class="tl-bn" data-tl="goal"><b>' + fmtHM(s.today) + '</b><span>Today</span></button>' +
-        '<button type="button" class="tl-bn" data-tl="goal"><b>' + (gm ? pct + '%' : '—') + '</b><span>' + (gm ? 'Goal · ' + fmtHM(gm) : 'Set goal') + '</span><div class="tl-bar"><i style="width:' + pct + '%"></i></div></button>' +
-        '<button type="button" class="tl-bn" data-tl="hist"><b>' + s.logs.length + '</b><span>Sessions</span></button>' +
-        '<button type="button" class="tl-bn" data-tl="subjects"><b>' + s.subs + '</b><span>Subjects</span></button>' +
-      '</div>' +
+      '<button type="button" class="tl-goal" data-tl="goal" aria-label="Daily Study Goal">' +
+        '<div class="tl-goal-top"><span class="tl-goal-ic">' + IC.target + '</span><div class="tl-goal-txt"><span class="tl-goal-lbl">Daily Study Goal</span><span class="tl-goal-main">' + goalMain + '</span><span class="tl-goal-sub">' + goalSub + '</span></div>' +
+        '<div class="tl-goal-pct' + (gm ? '' : ' off') + '">' + (gm ? pct + '%' : 'Set') + '</div></div>' +
+        '<div class="tl-bar"><i style="width:' + pct + '%"></i></div>' +
+      '</button>' +
       '<div class="tl-sec"><div class="tl-sec-h">Study Configuration</div><div class="tl-group">' +
-        row('subjects', 'book', 'Subjects &amp; Chapters', s.subs + ' Subjects') +
-        row('goal', 'target', 'Daily Goal', gm ? fmtHM(gm) + ' / day' : 'Not set') +
-        row('sess', 'timer', 'Session Defaults', (DIFF.find(d => d[0] === defDiff()) || DIFF[1])[1]) +
+        row('subjects', 'library', 'Subjects &amp; Chapters', s.subs + ' Subjects') +
+        row('sess', 'sliders', 'Session Defaults', modeBadge + ' · ' + sessBadge[1]) +
       '</div></div>' +
       '<div class="tl-sec"><div class="tl-sec-h">Data &amp; Backup</div><div class="tl-group">' +
-        row('backup', 'cloud', 'Backup &amp; Sync', (function () { const u = s.logs.filter(l => !l.synced).length; return u ? u + ' pending' : 'Saved'; })()) +
-        row('eximp', 'swap', 'Export / Import', s.logs.length + ' sessions') +
-        row('qexp', 'bolt', 'Quick Export', fmtLabel()) +
-        row('inspect', 'db', 'Data Inspector', (function () { try { return localStorage.length + ' keys'; } catch (e) { return ''; } })()) +
+        row('eximp', 'swap', 'Export &amp; Import', s.logs.length + ' sessions') +
+        row('backup', 'cloudup', 'Cloud &amp; Sheet Sync', syncBadge()) +
       '</div></div>' +
       '<div class="tl-sec"><div class="tl-sec-h">Appearance &amp; Preferences</div><div class="tl-group">' +
         row('theme', 'moon', 'Theme', theme() === 'light' ? 'Light' : 'Dark') +
-        row('bg', 'image', 'Background &amp; Cards', 'BG ' + (document.documentElement.getAttribute('data-bg') || '1')) +
-        row('view', 'list', 'Default View', viewLabel()) +
+        row('bg', 'palette', 'Background &amp; Cards', 'BG ' + (document.documentElement.getAttribute('data-bg') || '1')) +
+        row('view', 'layout', 'Default View', viewLabel()) +
       '</div></div>' +
       '<div class="tl-sec danger"><div class="tl-sec-h">Danger Zone</div><div class="tl-group">' +
         row('clearhist', 'trash', 'Clear History', s.logs.length + ' sessions', 'danger') +
         row('reset', 'warn', 'Reset All Data', '', 'danger') +
       '</div></div>';
+    refreshPages();
   }
   window.tlRender = render;
 
@@ -12445,57 +12696,403 @@ body.tl-open .sp-fab{display:none!important}
     return closeTop(false);
   };
 
-  /* ---- sub-page (Fix 3: clear pending return timer so rapid close/reopen never blanks out) ---- */
-  let subNode = null, subBack = null, subRetTimer = 0;
-  function flushSubNode() {
-    clearTimeout(subRetTimer); subRetTimer = 0;
-    if (subNode && subBack) {
-      subBack.appendChild(subNode);
-      subNode = null; subBack = null;
-    }
+  /* ================= Multi-level page stack (#tlSub) ================= */
+  const pages = []; let dead = [], pushLock = 0, refreshing = false;
+  const KINDS = {};
+  const NM3 = { s: 'विषय', c: 'चैप्टर', l: 'लेक्चर' };
+  const sylNums = () => { let c = 0, l = 0; const k = Object.keys(masterData || {}); k.forEach(s => Object.keys(masterData[s] || {}).forEach(ch => { c++; l += (masterData[s][ch] || []).length; })); return { s: k.length, c: c, l: l }; };
+  const subNums = s => { const m = (masterData || {})[s] || {}, ks = Object.keys(m); return { c: ks.length, l: ks.reduce((a, k) => a + m[k].length, 0) }; };
+  const missTree = scope => {
+    scope = scope || {}; let m = {}; try { m = missing(); } catch (e) {}
+    const t = [];
+    Object.keys(m).sort().forEach(s => {
+      if (scope.sub && s !== scope.sub) return;
+      const chs = [];
+      Object.keys(m[s]).forEach(c => { if (scope.chap && c !== scope.chap) return; if (m[s][c].length) chs.push({ c: c, lecs: m[s][c] }); });
+      if (chs.length) t.push({ s: s, chs: chs });
+    });
+    return t;
+  };
+  const missCount = scope => { const t = missTree(scope); if (!scope.sub) return t.length; if (!scope.chap) return t[0] ? t[0].chs.length : 0; return t[0] && t[0].chs[0] ? t[0].chs[0].lecs.length : 0; };
+  let flashName = ''; const setFlash = n => { flashName = n; setTimeout(() => { flashName = ''; }, 2500); };
+  const emptyHtml = (ic, t) => '<div class="tl-empty">' + ic + '<span>' + t + '</span></div>';
+  const cbH = (on, cls) => '<span class="tl-cb' + (on === true ? ' on' : (on === 'part' ? ' part' : '')) + (cls ? ' ' + cls : '') + '"><svg viewBox="0 0 24 24">' + (on === 'part' ? '<path d="M6 12h12"/>' : '<path d="M5 12l5 5 9-10"/>') + '</svg></span>';
+  const gapOf = (items, sel) => { const idx = []; items.forEach((x, i) => { if (sel.has(x)) idx.push(i); }); if (idx.length < 2) return null; const a = idx[0], b = idx[idx.length - 1]; for (let i = a + 1; i < b; i++) if (!sel.has(items[i])) return [a, b]; return null; };
+  const smartSel = (pg, items) => { const sel = pg.st.sel, gp = gapOf(items, sel); if (!sel.size) items.forEach(x => sel.add(x)); else if (gp) { for (let i = gp[0]; i <= gp[1]; i++) sel.add(items[i]); } else sel.clear(); };
+  const guardTimer = (lvl, tg, s, c) => {
+    if (!(state.run || state.elapsed > 0)) return false;
+    const ms = g('mSub').value, mc = g('mChap').value, ml = g('mLec').value;
+    return (lvl === 's' && tg.includes(ms)) || (lvl === 'c' && s === ms && tg.includes(mc)) || (lvl === 'l' && s === ms && c === mc && tg.includes(ml));
+  };
+  const selbarHtml = (pg, items, nm) => {
+    const n = pg.st.sel.size, gp = gapOf(items, pg.st.sel);
+    const lbl = !n ? 'सभी चुनें' : (gp ? '↔ बीच के भरें' : 'साफ़ करें');
+    return '<button type="button" class="tl-btn" data-a="smart"' + (items.length ? '' : ' disabled') + '>' + IC.checks + '<span>' + lbl + '</span></button>' +
+      '<button type="button" class="tl-btn dng" data-a="delgo"' + (n ? '' : ' disabled') + '>' + IC.trash + '<span>' + (n ? n + ' हटाएँ' : 'चुनें') + '</span></button>';
+  };
+  const fabHtml = label => '<button type="button" class="tl-fab" data-a="add">' + IC.plus + '<span>' + label + '</span></button>';
+
+  function buildPageEl(def) {
+    const el = document.createElement('section'); el.className = 'tl-pg';
+    el.innerHTML = '<div class="tl-pg-h"></div>' +
+      (def.search ? '<div class="tl-pg-search" hidden><label>' + IC.search + '<input type="search" data-search placeholder="' + def.search + '" autocomplete="off"></label></div>' : '') +
+      '<div class="tl-sub-body"></div><div class="tl-pg-foot" hidden></div>';
+    return el;
   }
-  function openSub(kind) {
-    const sub = $('tlSub'), body = $('tlSubBody'), store = $('tlStore'); if (!sub || sub.classList.contains('open')) return;
-    flushSubNode();
-    let title = '', badge = '';
-    body.innerHTML = '';
-    if (kind === 'subjects' || kind === 'backup') {
-      const card = store.querySelector('.card:not(#bgCard)'); if (!card) return;
-      try { setSuperSection(kind === 'subjects' ? 'syl' : 'bak'); } catch (e) {}
-      body.appendChild(card); subNode = card; subBack = store;
-      title = kind === 'subjects' ? 'Subjects & Chapters' : 'Backup & Sync';
-    } else if (kind === 'bg') {
-      const card = $('bgCard'); if (!card) return;
-      body.appendChild(card); subNode = card; subBack = store; title = 'Background & Cards';
-    } else if (kind === 'inspect') {
-      title = 'Data Inspector'; subNode = null;
-      let tot = 0, h = '';
-      try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i), n = (k.length + (localStorage.getItem(k) || '').length) * 2; tot += n; h += '<div class="tl-insp-row"><span>' + esc(k) + '</span><span>' + (n / 1024).toFixed(1) + ' KB</span></div>'; } } catch (e) {}
-      body.innerHTML = '<div class="tl-group" style="padding:4px 12px">' + (h || '<div class="tl-insp-row"><span>No data</span></div>') + '</div>';
-      badge = (tot / 1024).toFixed(1) + ' KB';
-    }
-    $('tlSubTitle').textContent = title; $('tlSubBadge').textContent = badge;
-    sub.setAttribute('aria-hidden', 'false'); void sub.offsetWidth; sub.classList.add('open');
-    document.body.classList.add('tl-open'); body.scrollTop = 0; hap();
-    pushOv(closeSubVisual);
+  function headHtml(h) {
+    const acts = (h.acts || []).map(a => '<button type="button" class="tl-act' + (a.cls ? ' ' + a.cls : '') + (a.on ? ' on' : '') + '" data-a="' + a.a + '" aria-label="' + a.l + '"' + (a.on != null ? ' aria-pressed="' + (!!a.on) + '"' : '') + '>' + a.ic + (a.badge ? '<i class="tl-act-b">' + a.badge + '</i>' : '') + '</button>').join('');
+    return '<header class="tl-sub-bar"><button type="button" class="tl-back tl-hit" data-a="back" aria-label="Back">' + IC.back + '</button>' +
+      '<div class="tl-sub-tt"><h2 class="tl-pg-title">' + esc(h.title) + '</h2><div class="tl-pg-sub">' + esc(h.sub || '') + '</div></div>' +
+      '<div class="tl-sub-acts">' + acts + '</div><span class="tl-sub-badge">' + esc(h.badge || '') + '</span></header>';
   }
-  function closeSubVisual() {
+  function setTopIds() {
+    ['tlBackBtn', 'tlSubTitle', 'tlSubSub', 'tlSubActs', 'tlSubBadge'].forEach(id => { const e = document.getElementById(id); if (e) e.removeAttribute('id'); });
+    const t = pages[pages.length - 1]; if (!t) return;
+    [['[data-a="back"]', 'tlBackBtn'], ['.tl-pg-title', 'tlSubTitle'], ['.tl-pg-sub', 'tlSubSub'], ['.tl-sub-acts', 'tlSubActs'], ['.tl-sub-badge', 'tlSubBadge']].forEach(p => { const e = t.el.querySelector(p[0]); if (e) e.id = p[1]; });
+  }
+  function renderPage(pg) {
+    const def = pg.def, el = pg.el, body = el.querySelector('.tl-sub-body'), foot = el.querySelector('.tl-pg-foot'), hd = el.querySelector('.tl-pg-h'), se = el.querySelector('.tl-pg-search');
+    hd.innerHTML = headHtml(def.head(pg));
+    if (se) se.hidden = !pg.st.searching;
+    if (def.static) { if (def.refresh) def.refresh(pg, body); }
+    else { const sc = body.scrollTop; body.innerHTML = def.body(pg); body.scrollTop = sc; const fl = body.querySelector('.flash'); if (fl) { try { fl.scrollIntoView({ block: 'center' }); } catch (e) {} flashName = ''; } }
+    const f = def.foot ? def.foot(pg) : ''; foot.innerHTML = f; foot.hidden = !f;
+    el.classList.toggle('delmode', pg.st.mode === 'del');
+    setTopIds();
+  }
+  function closeShell() { const sub = $('tlSub'); if (!sub) return; sub.classList.remove('open'); sub.setAttribute('aria-hidden', 'true'); document.body.classList.remove('tl-open'); }
+  function flushDead() { dead.forEach(d => { clearTimeout(d.t); try { if (d.cl) d.cl(); } catch (e) {} d.el.remove(); }); dead = []; }
+  function pushPage(kind, params) {
+    const sub = $('tlSub'), def = KINDS[kind]; if (!sub || !def) return null;
+    const now = Date.now(); if (now - pushLock < 320) return null; pushLock = now;
+    flushDead();
+    const first = pages.length === 0, prev = pages[pages.length - 1];
+    const pg = { kind: kind, def: def, st: def.init(params || {}), el: buildPageEl(def), items: [] };
+    sub.appendChild(pg.el);
+    if (def.mount) def.mount(pg);
+    pages.push(pg);
+    renderPage(pg);
+    if (first) {
+      pg.el.classList.add('in', 'noanim');
+      sub.setAttribute('aria-hidden', 'false'); void sub.offsetWidth; sub.classList.add('open'); document.body.classList.add('tl-open');
+      requestAnimationFrame(() => pg.el.classList.remove('noanim'));
+    } else {
+      void pg.el.offsetWidth; pg.el.classList.add('in'); if (prev) prev.el.classList.add('under');
+    }
+    pg.closer = () => removePage(pg);
+    pushOv(pg.closer); hap();
+    return pg;
+  }
+  function removePage(pg) {
+    const i = pages.indexOf(pg); if (i < 0) return;
+    const wasTop = i === pages.length - 1; pages.splice(i, 1);
+    const last = pages.length === 0, el = pg.el;
+    try { const ae = document.activeElement; if (ae && ae !== document.body && el.contains(ae)) ae.blur(); } catch (e) {}
+    el.classList.add('dead');
+    if (wasTop) {
+      if (last) el.classList.add('noanim'); else el.classList.remove('in');
+      const pv = pages[pages.length - 1]; if (pv) pv.el.classList.remove('under');
+    } else el.style.display = 'none';
+    const d = { el: el, cl: pg.def.unmount ? () => pg.def.unmount(pg) : null };
+    d.t = setTimeout(() => { dead = dead.filter(x => x !== d); try { if (d.cl) d.cl(); } catch (e) {} el.remove(); }, 380);
+    dead.push(d);
+    setTopIds();
+    if (last) { closeShell(); render(); }
+  }
+  function popViaOv(fn) {
+    const i = stack.indexOf(fn); if (i < 0) return;
+    if (i === stack.length - 1) closeTop(false);
+    else { stack.splice(i, 1); try { fn(); } catch (e) {} skip++; try { history.back(); } catch (e) { skip--; } }
+  }
+  function closeAllPages() { let guard = 40; while (pages.length && guard--) { const p = pages[pages.length - 1]; popViaOv(p.closer); if (pages.indexOf(p) >= 0) removePage(p); } }
+  function refreshPages() {
+    if (refreshing || !pages.length) return; refreshing = true;
+    try {
+      for (let i = 0; i < pages.length; i++) { const p = pages[i]; if (p.def.valid && !p.def.valid(p)) { pages.slice(i).reverse().forEach(x => popViaOv(x.closer)); break; } }
+      pages.slice().forEach(p => renderPage(p));
+    } finally { refreshing = false; }
+  }
+  window.tlSubBadge = refreshPages;
+  const toggleDel = pg => { pg.st.mode = pg.st.mode === 'del' ? 'view' : 'del'; pg.st.sel.clear(); hap(); renderPage(pg); };
+  function delSelected(pg) {
+    const k = pg.kind, tg = [...pg.st.sel], cnt = tg.length; if (!cnt) return;
+    const lvl = k === 'subjects' ? 's' : (k === 'chapters' ? 'c' : 'l'), s = pg.st.sub, c = pg.st.chap, nm = NM3[lvl];
+    if (guardTimer(lvl, tg, s, c)) { hap('warning'); return showIsland('टाइमर चालू है, अभी पढ़ाई वाला विषय न हटाएँ', 'error'); }
+    modal(cnt + ' ' + nm + ' हटाएँ?', 'हटाने के बाद "पूर्ववत" से वापस ला सकते हैं।', 'हटाएँ', () => {
+      runWithUndo(cnt + ' ' + nm + ' हटाए गए', () => {
+        if (lvl === 's') tg.forEach(x => delete masterData[x]);
+        else if (lvl === 'c') tg.forEach(x => { if (masterData[s]) delete masterData[s][x]; });
+        else { const set = new Set(tg); if (masterData[s] && masterData[s][c]) masterData[s][c] = masterData[s][c].filter(x => !set.has(x)); }
+      });
+      pg.st.sel.clear(); refreshPages();
+    }, IC.trash);
+  }
+  const searchToggle = pg => {
+    const st = pg.st; st.searching = !st.searching; hap();
+    const inp = pg.el.querySelector('[data-search]');
+    if (!st.searching) { st.q = ''; if (inp) inp.value = ''; }
+    renderPage(pg);
+    if (st.searching && inp) setTimeout(() => inp.focus(), 60);
+  };
+  const restoreAct = scope => { return { a: 'restore', ic: IC.restore, l: 'Restore Deleted', badge: missCount(scope) || '' }; };
+
+  /* ---- Level 1: Subjects ---- */
+  KINDS.subjects = {
+    search: 'विषय खोजें…',
+    init: () => ({ mode: 'view', sel: new Set(), searching: false, q: '' }),
+    list: pg => { const q = (pg.st.q || '').trim().toLowerCase(); return Object.keys(masterData || {}).sort().filter(s => !q || s.toLowerCase().indexOf(q) >= 0); },
+    head(pg) { const n = sylNums(); return { title: 'Subjects', sub: n.s + ' विषय · ' + n.c + ' चैप्टर', acts: [{ a: 'search', ic: IC.search, l: 'Search', on: pg.st.searching }, restoreAct({}), { a: 'del', ic: IC.trash, l: 'Delete Mode', on: pg.st.mode === 'del', cls: 'danger' }] }; },
+    body(pg) {
+      const items = pg.items = this.list(pg), del = pg.st.mode === 'del';
+      [...pg.st.sel].forEach(x => { if (!masterData[x]) pg.st.sel.delete(x); });
+      if (!items.length) return emptyHtml(pg.st.q ? IC.search : IC.library, pg.st.q ? 'कोई नतीजा नहीं' : 'कोई विषय नहीं');
+      return items.map((s, i) => { const n = subNums(s), on = pg.st.sel.has(s);
+        return '<div class="tl-li' + (on ? ' sel' : '') + (s === flashName ? ' flash' : '') + '" role="button" tabindex="0" data-a="open" data-i="' + i + '" style="--sc:' + subCol(s) + '">' + (del ? cbH(on) : '') +
+          '<div class="tl-li-t"><b>' + esc(s) + '</b><span>' + n.c + ' चैप्टर · ' + n.l + ' लेक्चर</span></div>' + (del ? '' : IC.chev) + '</div>'; }).join('');
+    },
+    foot(pg) { return pg.st.mode === 'del' ? selbarHtml(pg, pg.items, NM3.s) : fabHtml('नया विषय जोड़ें'); },
+    act(pg, a, el) {
+      if (a === 'open') { const s = pg.items[+el.dataset.i]; if (s == null) return; if (pg.st.mode === 'del') { pg.st.sel.has(s) ? pg.st.sel.delete(s) : pg.st.sel.add(s); hap(); renderPage(pg); } else pushPage('chapters', { sub: s }); }
+      else if (a === 'add') openAddSheet('subject');
+      else if (a === 'search') searchToggle(pg);
+      else if (a === 'restore') pushPage('restore', {});
+      else if (a === 'del') toggleDel(pg);
+      else if (a === 'smart') { smartSel(pg, pg.items); hap(); renderPage(pg); }
+      else if (a === 'delgo') delSelected(pg);
+    }
+  };
+
+  /* ---- Level 2: Subject → Chapters ---- */
+  KINDS.chapters = {
+    init: p => ({ sub: p.sub, mode: 'view', sel: new Set() }),
+    valid: pg => !!masterData[pg.st.sub],
+    head(pg) { const n = subNums(pg.st.sub); return { title: pg.st.sub, sub: n.c + ' चैप्टर · ' + n.l + ' लेक्चर', acts: [restoreAct({ sub: pg.st.sub }), { a: 'del', ic: IC.trash, l: 'Delete Mode', on: pg.st.mode === 'del', cls: 'danger' }] }; },
+    body(pg) {
+      const m = masterData[pg.st.sub] || {}, items = pg.items = Object.keys(m), del = pg.st.mode === 'del';
+      [...pg.st.sel].forEach(x => { if (!m[x]) pg.st.sel.delete(x); });
+      if (!items.length) return emptyHtml(IC.library, 'कोई चैप्टर नहीं');
+      return items.map((c, i) => { const on = pg.st.sel.has(c), n = m[c].length;
+        return '<div class="tl-li' + (on ? ' sel' : '') + (c === flashName ? ' flash' : '') + '" role="button" tabindex="0" data-a="open" data-i="' + i + '" style="--sc:' + subCol(pg.st.sub) + '">' +
+          (del ? cbH(on) : '<span class="tl-no">' + String(i + 1).padStart(2, '0') + '</span>') +
+          '<div class="tl-li-t"><b>' + esc(c) + '</b><span>' + n + ' लेक्चर</span></div>' +
+          (del ? '' : '<button type="button" class="tl-pill" data-a="plus" data-i="' + i + '" aria-label="+1 Lecture">' + IC.plus + '<span>1 Lec</span></button>' + IC.chev) + '</div>'; }).join('');
+    },
+    foot(pg) { return pg.st.mode === 'del' ? selbarHtml(pg, pg.items, NM3.c) : fabHtml('नया चैप्टर जोड़ें'); },
+    act(pg, a, el) {
+      const s = pg.st.sub;
+      if (a === 'open') { const c = pg.items[+el.dataset.i]; if (c == null) return; if (pg.st.mode === 'del') { pg.st.sel.has(c) ? pg.st.sel.delete(c) : pg.st.sel.add(c); hap(); renderPage(pg); } else pushPage('lectures', { sub: s, chap: c }); }
+      else if (a === 'plus') { const c = pg.items[+el.dataset.i]; if (c != null) runWithUndo(c + ' में +1 लेक्चर जुड़ा', () => appendLecs(s, c, 1)); }
+      else if (a === 'add') openAddSheet('chapter', s);
+      else if (a === 'restore') pushPage('restore', { sub: s });
+      else if (a === 'del') toggleDel(pg);
+      else if (a === 'smart') { smartSel(pg, pg.items); hap(); renderPage(pg); }
+      else if (a === 'delgo') delSelected(pg);
+    }
+  };
+
+  /* ---- Level 3: Chapter → Lectures ---- */
+  KINDS.lectures = {
+    init: p => ({ sub: p.sub, chap: p.chap, mode: 'view', sel: new Set() }),
+    valid: pg => !!(masterData[pg.st.sub] && masterData[pg.st.sub][pg.st.chap]),
+    head(pg) { const n = ((masterData[pg.st.sub] || {})[pg.st.chap] || []).length; return { title: pg.st.chap, sub: pg.st.sub + ' · ' + n + ' लेक्चर', acts: [restoreAct({ sub: pg.st.sub, chap: pg.st.chap }), { a: 'del', ic: IC.trash, l: 'Delete Mode', on: pg.st.mode === 'del', cls: 'danger' }] }; },
+    body(pg) {
+      const lecs = pg.items = ((masterData[pg.st.sub] || {})[pg.st.chap] || []).slice(), del = pg.st.mode === 'del';
+      [...pg.st.sel].forEach(x => { if (lecs.indexOf(x) < 0) pg.st.sel.delete(x); });
+      let h = '';
+      if (!del) h += '<div class="tl-qa">' + [1, 3, 5, 10].map(n => '<button type="button" data-a="q" data-n="' + n + '"><b>+' + n + '</b><span>लेक्चर</span></button>').join('') + '<button type="button" data-a="qc" class="cu"><b>' + IC.plus + '</b><span>Custom</span></button></div>';
+      if (!lecs.length) return h + emptyHtml(IC.bookopen, 'कोई लेक्चर नहीं');
+      return h + '<div class="tl-lecgrid">' + lecs.map((l, i) => { const on = pg.st.sel.has(l);
+        return '<div class="tl-lec' + (del ? ' dl' : '') + (on ? ' sel' : '') + '"' + (del ? ' role="button" tabindex="0" data-a="cell" data-i="' + i + '"' : '') + '>' + (del ? cbH(on) : '') + '<span>' + esc(l) + '</span></div>'; }).join('') + '</div>';
+    },
+    foot(pg) { return pg.st.mode === 'del' ? selbarHtml(pg, pg.items, NM3.l) : ''; },
+    act(pg, a, el) {
+      const s = pg.st.sub, c = pg.st.chap;
+      if (a === 'q') { const n = +el.dataset.n; runWithUndo(c + ' में +' + n + ' लेक्चर जुड़े', () => appendLecs(s, c, n)); }
+      else if (a === 'qc') openCustomLec(s, c);
+      else if (a === 'cell') { const l = pg.items[+el.dataset.i]; if (l == null) return; pg.st.sel.has(l) ? pg.st.sel.delete(l) : pg.st.sel.add(l); hap(); renderPage(pg); }
+      else if (a === 'restore') pushPage('restore', { sub: s, chap: c });
+      else if (a === 'del') toggleDel(pg);
+      else if (a === 'smart') { smartSel(pg, pg.items); hap(); renderPage(pg); }
+      else if (a === 'delgo') delSelected(pg);
+    }
+  };
+
+  /* ---- Restore Syllabus page ---- */
+  const LK = (s, c, l) => s + '\u0001' + c + '\u0001' + l;
+  KINDS.restore = {
+    init: p => ({ scope: { sub: p.sub || '', chap: p.chap || '' }, sel: new Set(), open: new Set() }),
+    head(pg) { const t = missTree(pg.st.scope); let n = 0; t.forEach(x => x.chs.forEach(c => { n += c.lecs.length; })); const sc = pg.st.scope; return { title: 'Restore Syllabus', sub: n ? n + ' गायब लेक्चर' + (sc.sub ? ' · ' + sc.sub + (sc.chap ? ' › ' + sc.chap : '') : '') : 'सब कुछ मौजूद है' }; },
+    body(pg) {
+      const t = pg.tree = missTree(pg.st.scope), sel = pg.st.sel, valid = new Set();
+      t.forEach(g2 => g2.chs.forEach(ch => ch.lecs.forEach(l => valid.add(LK(g2.s, ch.c, l)))));
+      [...sel].forEach(k => { if (!valid.has(k)) sel.delete(k); });
+      if (!t.length) return emptyHtml(IC.circlecheck, 'सब कुछ मौजूद है');
+      return t.map((g2, si) => {
+        const all = []; g2.chs.forEach(ch => ch.lecs.forEach(l => all.push(LK(g2.s, ch.c, l))));
+        const ns = all.filter(k => sel.has(k)).length, stt = ns === 0 ? false : (ns === all.length ? true : 'part');
+        let h = '<div class="tl-rg" style="--sc:' + subCol(g2.s) + '"><div class="tl-rg-h" role="button" tabindex="0" data-a="rs" data-si="' + si + '">' + cbH(stt, 'pri') +
+          '<div class="tl-li-t"><b>' + esc(g2.s) + '</b><span>' + g2.chs.length + ' चैप्टर · ' + all.length + ' लेक्चर गायब</span></div></div>';
+        g2.chs.forEach((ch, ci) => {
+          const ck = ch.lecs.map(l => LK(g2.s, ch.c, l)), nc = ck.filter(k => sel.has(k)).length, cs = nc === 0 ? false : (nc === ck.length ? true : 'part'), ok = pg.st.open.has(g2.s + '\u0001' + ch.c);
+          h += '<div class="tl-rc"><div class="tl-rc-m" role="button" tabindex="0" data-a="rc" data-si="' + si + '" data-ci="' + ci + '">' + cbH(cs, 'pri') + '<div class="tl-li-t"><b>' + esc(ch.c) + '</b><span>' + ch.lecs.length + ' लेक्चर</span></div></div>' +
+            '<button type="button" class="tl-rx' + (ok ? ' on' : '') + '" data-a="rx" data-si="' + si + '" data-ci="' + ci + '" aria-label="Lectures">' + IC.chev + '</button></div>';
+          if (ok) h += '<div class="tl-rlecs">' + ch.lecs.map((l, li) => '<button type="button" class="tl-rl' + (sel.has(LK(g2.s, ch.c, l)) ? ' on' : '') + '" data-a="rl" data-si="' + si + '" data-ci="' + ci + '" data-li="' + li + '">' + esc(l) + '</button>').join('') + '</div>';
+        });
+        return h + '</div>';
+      }).join('');
+    },
+    foot(pg) { const t = pg.tree || [], n = pg.st.sel.size; if (!t.length) return ''; return '<button type="button" class="tl-btn" data-a="rall">' + IC.checks + '<span>' + (n ? 'साफ़ करें' : 'सभी चुनें') + '</span></button><button type="button" class="tl-btn pri" data-a="rgo"' + (n ? '' : ' disabled') + '>' + IC.restore + '<span>' + (n ? n + ' वापस लाएँ' : 'चुनें') + '</span></button>'; },
+    act(pg, a, el) {
+      const t = pg.tree || [], sel = pg.st.sel, si = +el.dataset.si, ci = +el.dataset.ci;
+      const setKeys = (keys, on) => keys.forEach(k => on ? sel.add(k) : sel.delete(k));
+      if (a === 'rs') { const g2 = t[si]; if (!g2) return; const ks = []; g2.chs.forEach(ch => ch.lecs.forEach(l => ks.push(LK(g2.s, ch.c, l)))); setKeys(ks, !ks.every(k => sel.has(k))); hap(); renderPage(pg); }
+      else if (a === 'rc') { const g2 = t[si], ch = g2 && g2.chs[ci]; if (!ch) return; const ks = ch.lecs.map(l => LK(g2.s, ch.c, l)); setKeys(ks, !ks.every(k => sel.has(k))); hap(); renderPage(pg); }
+      else if (a === 'rx') { const g2 = t[si], ch = g2 && g2.chs[ci]; if (!ch) return; const k = g2.s + '\u0001' + ch.c; pg.st.open.has(k) ? pg.st.open.delete(k) : pg.st.open.add(k); hap(); renderPage(pg); }
+      else if (a === 'rl') { const g2 = t[si], ch = g2 && g2.chs[ci], l = ch && ch.lecs[+el.dataset.li]; if (l == null) return; const k = LK(g2.s, ch.c, l); sel.has(k) ? sel.delete(k) : sel.add(k); hap(); renderPage(pg); }
+      else if (a === 'rall') { if (sel.size) sel.clear(); else t.forEach(g2 => g2.chs.forEach(ch => ch.lecs.forEach(l => sel.add(LK(g2.s, ch.c, l))))); hap(); renderPage(pg); }
+      else if (a === 'rgo') {
+        const by = {}; sel.forEach(k => { const p = k.split('\u0001'); ((by[p[0]] = by[p[0]] || {})[p[1]] = by[p[0]][p[1]] || []).push(p[2]); });
+        const n = sel.size; if (!n) return;
+        runWithUndo(n + ' लेक्चर वापस आ गए', () => { Object.keys(by).forEach(s => Object.keys(by[s]).forEach(c => addBackLecs(s, c, by[s][c]))); });
+        sel.clear(); refreshPages();
+      }
+    }
+  };
+
+  /* ---- Export & Import page ---- */
+  let impReport = '', impBusy = false, impBusyT = 0;
+  const setImpBusy = on => { impBusy = on; clearTimeout(impBusyT); if (on) impBusyT = setTimeout(() => { impBusy = false; const pg = pages.find(p => p.kind === 'eximp'); if (pg) renderPage(pg); }, 15000); const pg = pages.find(p => p.kind === 'eximp'); if (pg) renderPage(pg); };
+  const IMP_IDLE = t => !t || t.indexOf('ऑफ़लाइन इंजन') === 0 || t.indexOf('कॉलम: Subject') === 0;
+  (function watchImpReport() {
+    const ir = $('impReport'); if (!ir) return;
+    try { new MutationObserver(() => { const t = (ir.textContent || '').trim(); if (IMP_IDLE(t)) return; impReport = t; impBusy = false; clearTimeout(impBusyT); const pg = pages.find(p => p.kind === 'eximp'); if (pg) renderPage(pg); }).observe(ir, { childList: true, characterData: true, subtree: true }); } catch (e) {}
+  })();
+  KINDS.eximp = {
+    init: () => ({}),
+    head() { return { title: 'Export & Import', sub: uSt.bakScope === 'syl' ? 'सिलेबस' : 'पढ़ाई हिस्ट्री' }; },
+    body() {
+      const syl = uSt.bakScope === 'syl', n = sylNums(); let ln = 0; try { ln = getLogs().length; } catch (e) {}
+      const X = [['xlsx', 'Excel (.xlsx)', 'Formatted Sheet', IC.sheet, '#34d399'], ['csv', 'CSV (.csv)', 'Universal CSV', IC.filetext, '#38bdf8'], ['share', 'Share', 'Send to Apps', IC.share, '#a78bfa'], ['copy', 'Copy', 'Copy to Clipboard', IC.copy, '#fbbf24']];
+      return '<div class="tl-seg" role="tablist"><button type="button" role="tab" data-a="sc" data-sc="hist" class="' + (syl ? '' : 'on') + '">' + IC.history + '<span class="tl-seg-t"><b>पढ़ाई हिस्ट्री</b><small>' + ln + ' सेशन</small></span></button><button type="button" role="tab" data-a="sc" data-sc="syl" class="' + (syl ? 'on' : '') + '">' + IC.library + '<span class="tl-seg-t"><b>सिलेबस</b><small>' + n.s + ' विषय · ' + n.l + ' लेक्चर</small></span></button></div>' +
+        '<div class="tl-lbl tl-sech">Import</div>' +
+        '<div class="tl-drop' + (impBusy ? ' busy' : '') + '" role="button" tabindex="0" data-a="imp"><span class="tl-drop-ic">' + (impBusy ? IC.loader.replace('class="tl-i"', 'class="tl-i tl-spin"') : IC.fileup) + '</span><b>' + (impBusy ? 'Importing…' : 'फ़ाइलें चुनें') + '</b><span class="tl-fmts"><i>CSV</i><i>XLSX</i></span></div>' +
+        (impReport ? '<div class="tl-report">' + IC.circlecheck + '<span>' + esc(impReport) + '</span><button type="button" class="tl-rep-x" data-a="repx" aria-label="Dismiss">' + IC.x + '</button></div>' : '') +
+        '<div class="tl-lbl tl-sech">Export</div><div class="tl-tiles2">' + X.map(x => '<button type="button" class="tl-xt" data-a="xp" data-f="' + x[0] + '" style="--ac:' + x[4] + '"><span class="tl-ib">' + x[3] + '</span><b>' + x[1] + '</b><span class="s">' + x[2] + '</span></button>').join('') + '</div>';
+    },
+    act(pg, a, el) {
+      if (a === 'sc') { try { setBakScope(el.dataset.sc); } catch (e) {} renderPage(pg); }
+      else if (a === 'imp') { const f = $('impFileIn'); if (f) f.click(); }
+      else if (a === 'xp') { try { toolsExport(el.dataset.f); } catch (e) {} }
+      else if (a === 'repx') { impReport = ''; renderPage(pg); }
+    }
+  };
+
+  /* ---- Cloud & Sheet Sync page ---- */
+  function shCardHtml() {
+    let c = { url: '', key: '' }; try { c = shCfg(); } catch (e) {}
+    const on = !!c.url, st = ($('shStatus') || {}).textContent || '';
+    let host = c.url.replace(/^https:\/\//, ''); host = host.replace(/(\/macros\/s\/)([^/]{6})[^/]*/, '$1$2…');
+    return '<div class="tl-card tl-shc"><div class="tl-shc-h"><span class="tl-ib" style="--ac:#34d399">' + IC.sheet + '</span><div class="tl-li-t"><b>Google Sheet Backup</b><span class="tl-st"><i class="cx-dot ' + (on ? 'ok' : 'off') + '"></i>' + (on ? 'Connected' : 'Not connected') + (on && st ? ' · ' + esc(st) : '') + '</span></div></div>' +
+      (on ? '<div class="tl-shc-url">' + IC.link + '<span>' + esc(host) + '</span></div>' : '') +
+      '<div class="tl-btns"><button type="button" class="tl-btn" data-a="shcfg">' + IC.settings + '<span>' + (on ? 'Configure Sheet' : 'Set up') + '</span></button><button type="button" class="tl-btn pri" data-a="shnow"' + (on ? '' : ' disabled') + '>' + IC.sync + '<span>Sync Now</span></button></div></div>';
+  }
+  KINDS.backup = {
+    static: true,
+    init: () => ({}),
+    head() { return { title: 'Cloud & Sheet Sync', sub: 'Google Cloud · Google Sheet', badge: syncBadge() }; },
+    mount(pg) {
+      const b = pg.el.querySelector('.tl-sub-body'), fb = $('fbBox'); pg.fbParent = fb ? fb.parentNode : null;
+      b.innerHTML = '<div class="tl-bkslot"></div><div class="tl-shslot"></div>';
+      if (fb) b.querySelector('.tl-bkslot').appendChild(fb);
+    },
+    unmount(pg) { const fb = $('fbBox'), par = pg.fbParent; if (fb && par && !par.contains(fb)) par.insertBefore(fb, $('shBox')); },
+    refresh(pg, body) { const sl = body.querySelector('.tl-shslot'); if (sl) sl.innerHTML = shCardHtml(); },
+    act(pg, a) {
+      if (a === 'shcfg') openShSheet();
+      else if (a === 'shnow') { if (!sheetOn()) openShSheet(); else { try { shPush(true); } catch (e) {} } }
+    }
+  };
+
+  /* ---- Background & Cards page (live swatches) ---- */
+  KINDS.bg = {
+    init: () => ({}),
+    head() { return { title: 'Background & Cards', sub: 'Live preview' }; },
+    body() {
+      const html = document.documentElement, curB = html.getAttribute('data-bg') || '5', curC = html.getAttribute('data-card') || '1';
+      const lab = (sel, d) => { const e = document.querySelector(sel + ' span:last-child'); return (e && e.textContent.trim()) || d; };
+      const BG = [['1', 'दानेदार + चमक'], ['2', 'हल्के दाने'], ['3', 'एकदम साफ़'], ['4', 'बिंदुओं वाली जाली'], ['5', 'तैरते रंगीन गोले']];
+      const CD = [['1', 'छना हुआ (फ़्रॉस्ट)'], ['2', 'सामान्य काँच'], ['3', 'पारदर्शी काँच'], ['4', 'ठोस (सादा)']];
+      const ck = '<span class="tl-ckb"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>';
+      return '<div class="tl-lbl tl-sech">Background</div><div class="tl-swg">' + BG.map(b => '<button type="button" class="tl-sw' + (b[0] === '5' ? ' wide' : '') + (curB === b[0] ? ' on' : '') + '" data-a="bg" data-n="' + b[0] + '" aria-pressed="' + (curB === b[0]) + '"><div class="tl-bgp" data-p="' + b[0] + '">' + (b[0] === '5' ? '<i class="o1"></i><i class="o2"></i><i class="o3"></i>' : '') + '</div><span class="nm">' + b[0] + ' · ' + esc(lab('#bgGrid [data-bg="' + b[0] + '"]', b[1])) + '</span>' + ck + '</button>').join('') + '</div>' +
+        '<div class="tl-lbl tl-sech">Card Glass</div><div class="tl-swg">' + CD.map(c => '<button type="button" class="tl-sw' + (curC === c[0] ? ' on' : '') + '" data-a="card" data-n="' + c[0] + '" aria-pressed="' + (curC === c[0]) + '"><div class="tl-gp" data-g="' + c[0] + '"><i></i></div><span class="nm">' + c[0] + ' · ' + esc(lab('#cardGrid [data-card="' + c[0] + '"]', c[1])) + '</span>' + ck + '</button>').join('') + '</div>';
+    },
+    act(pg, a, el) {
+      if (a === 'bg') { try { setBg(el.dataset.n); } catch (e) {} hap(); renderPage(pg); render(); }
+      else if (a === 'card') { try { setCard(el.dataset.n); } catch (e) {} hap(); renderPage(pg); }
+    }
+  };
+
+  /* ---- delegated events for all pages ---- */
+  (function pageEvents() {
     const sub = $('tlSub'); if (!sub) return;
-    sub.classList.remove('open'); sub.setAttribute('aria-hidden', 'true'); document.body.classList.remove('tl-open');
-    clearTimeout(subRetTimer);
-    subRetTimer = setTimeout(() => { if (!sub.classList.contains('open')) flushSubNode(); }, 340);
-    render();
-  }
+    const pgOf = el => { const pe = el.closest('.tl-pg'); return pages.find(p => p.el === pe); };
+    sub.addEventListener('click', e => {
+      const el = e.target.closest('[data-a]'); if (!el || !sub.contains(el)) return;
+      const pg = pgOf(el); if (!pg) return;
+      const a = el.dataset.a;
+      if (a === 'back') { hap(); if (!closeTop(false)) closeAllPages(); return; }
+      try { pg.def.act(pg, a, el, e); } catch (err) { try { console.error(err); } catch (x) {} }
+    });
+    const zoneOf = e => e.target && e.target.closest && e.target.closest('.tl-drop');
+    sub.addEventListener('dragover', e => { const z = zoneOf(e); if (!z) return; e.preventDefault(); z.classList.add('over'); });
+    sub.addEventListener('dragleave', e => { const z = zoneOf(e); if (z) z.classList.remove('over'); });
+    sub.addEventListener('drop', e => {
+      const z = zoneOf(e); if (!z) return; e.preventDefault(); z.classList.remove('over');
+      const f = e.dataTransfer && e.dataTransfer.files; if (!f || !f.length) return;
+      const inp = $('impFileIn'); if (!inp) return;
+      try { inp.files = f; } catch (x) { return; }
+      setImpBusy(true); try { toolsImport(inp); } catch (x) { setImpBusy(false); }
+    });
+    const fin = $('impFileIn'); if (fin) fin.addEventListener('change', () => { if (fin.files && fin.files.length) setImpBusy(true); });
+    sub.addEventListener('input', e => { const t = e.target; if (!t.matches || !t.matches('[data-search]')) return; const pg = pgOf(t); if (!pg) return; pg.st.q = t.value; renderPage(pg); });
+    sub.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[role="button"][tabindex]')) { e.preventDefault(); e.target.click(); } });
+  })();
+
+  /* ---- keyboard guard: fixed bars hide, sheets stay above the keyboard ---- */
+  (function kbGuard() {
+    const root = document.documentElement, vv = window.visualViewport; let tm = 0, base = innerHeight;
+    const isIn = t => !!(t && t.matches && t.matches('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=file]), textarea'));
+    const inTools = t => !!(t && t.closest && t.closest('#tlSub, #tlSheet, #tlModal'));
+    const upd = () => {
+      if (!vv) return;
+      const kb = Math.max(0, base - vv.height - vv.offsetTop), shrunk = innerHeight < base - 100;
+      if (!root.classList.contains('tl-kb') && !shrunk && kb < 80) base = Math.max(base, innerHeight);
+      root.style.setProperty('--tl-vvh', vv.height + 'px');
+      root.style.setProperty('--tl-kb', (!shrunk && kb > 100 ? kb : 0) + 'px');
+      if (kb < 80 && !shrunk && !isIn(document.activeElement)) root.classList.remove('tl-kb');
+    };
+    document.addEventListener('focusin', e => {
+      if (!isIn(e.target) || !inTools(e.target)) return;
+      clearTimeout(tm); root.classList.add('tl-kb');
+      if (e.target.closest('#tlSheet')) setTimeout(() => { try { e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (x) {} upd(); }, 320);
+    });
+    document.addEventListener('focusout', () => { clearTimeout(tm); tm = setTimeout(() => { if (!isIn(document.activeElement)) { root.classList.remove('tl-kb'); root.style.setProperty('--tl-kb', '0px'); } }, 150); });
+    if (vv) { vv.addEventListener('resize', upd); vv.addEventListener('scroll', upd); }
+    window.addEventListener('orientationchange', () => { setTimeout(() => { base = innerHeight; upd(); }, 400); });
+  })();
 
   /* ---- bottom sheet ---- */
-  function sheet(title, html, bind) {
-    $('tlSheetT').textContent = title; $('tlSheetB').innerHTML = html;
+  function sheet(title, html, bind, ic) {
+    $('tlSheetT').textContent = title;
+    const ie = $('tlSheetIc'); ie.innerHTML = ic || ''; ie.classList.toggle('on', !!ic);
+    $('tlSheetB').innerHTML = html;
     const sh = $('tlSheet'); sh.style.transform = ''; sh.classList.remove('drag');
     sh.setAttribute('aria-hidden', 'false'); $('tlBk').classList.add('on'); void sh.offsetWidth; sh.classList.add('on');
-    if (bind) bind($('tlSheetB'));
+    const sb = $('tlSheetB'); sb.onkeydown = e => { if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT') { const pb = sb.querySelector('.tl-btn.pri'); if (pb && !pb.disabled) { e.preventDefault(); pb.click(); } } };
+    if (bind) bind(sb);
     pushOv(closeSheetVisual); hap();
   }
-  function closeSheetVisual() { const sh = $('tlSheet'); sh.classList.remove('on', 'drag'); sh.style.transform = ''; sh.setAttribute('aria-hidden', 'true'); $('tlBk').classList.remove('on'); render(); }
+  function closeSheetVisual() { const sh = $('tlSheet'); try { const ae = document.activeElement; if (ae && ae !== document.body && sh.contains(ae)) ae.blur(); } catch (e) {} sh.classList.remove('on', 'drag'); sh.style.transform = ''; sh.setAttribute('aria-hidden', 'true'); $('tlBk').classList.remove('on'); render(); }
   function sheetClose() { if ($('tlSheet').classList.contains('on')) { const i = stack.indexOf(closeSheetVisual); if (i === stack.length - 1) closeTop(false); else if (i >= 0) { stack.splice(i, 1); closeSheetVisual(); skip++; try { history.back(); } catch (e) { skip--; } } } }
   window.__tlSheetClose = sheetClose;
   (function dragInit() {
@@ -12503,56 +13100,117 @@ body.tl-open .sp-fab{display:none!important}
     const start = e => { y0 = e.touches[0].clientY; dy = 0; sh.classList.add('drag'); };
     const move = e => { if (y0 === null) return; dy = Math.max(0, e.touches[0].clientY - y0); sh.style.transform = 'translateY(' + dy + 'px)'; };
     const end = () => { if (y0 === null) return; y0 = null; sh.classList.remove('drag'); if (dy > 80) sheetClose(); else sh.style.transform = ''; };
-    [hd, $('tlSheetT')].forEach(el => { el.addEventListener('touchstart', start, { passive: true }); el.addEventListener('touchmove', move, { passive: true }); el.addEventListener('touchend', end); el.addEventListener('touchcancel', end); });
+    [hd, $('tlSheetTop')].forEach(el => { el.addEventListener('touchstart', start, { passive: true }); el.addEventListener('touchmove', move, { passive: true }); el.addEventListener('touchend', end); el.addEventListener('touchcancel', end); });
     $('tlBk').addEventListener('click', sheetClose);
+    $('tlSheetX').addEventListener('click', () => { hap(); sheetClose(); });
   })();
 
+  const shake = el => { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); hap('warning'); };
+
   function openGoal() {
-    const gm = goalMin(), hrs = [1, 2, 3, 4, 6, 8];
-    sheet('Daily Goal',
-      '<div class="tl-lbl">Hours per day</div><div class="tl-chips">' + hrs.map(h => '<button type="button" class="tl-chip' + (gm === h * 60 ? ' active' : '') + '" data-h="' + h + '">' + h + 'h</button>').join('') + '</div>' +
-      '<input type="number" class="tl-field" id="tlGoalIn" min="0.5" max="24" step="0.5" inputmode="decimal" placeholder="Custom hours (e.g. 5.5)" value="' + (gm ? gm / 60 : '') + '">' +
-      '<div class="tl-btns"><button type="button" class="tl-btn" id="tlGoalClr"' + (gm ? '' : ' disabled') + '>Remove</button><button type="button" class="tl-btn pri" id="tlGoalSave">Save</button></div>',
+    const gm = goalMin(), hrs = [1, 2, 3, 4, 6, 8], s = stats(), pct = gm ? Math.min(100, Math.round(s.today / gm * 100)) : 0;
+    sheet('Daily Study Goal',
+      '<div class="tl-prev"><div class="tl-prev-l"><span class="tl-lbl">Today</span><b>' + fmtHM(s.today) + '</b></div><span class="tl-prev-r">' + (gm ? 'Goal ' + fmtHM(gm) + ' · ' + pct + '%' : 'No goal set') + '</span><div class="tl-bar"><i style="width:' + pct + '%"></i></div></div>' +
+      '<div class="tl-lbl">Hours</div><div class="tl-grid3">' + hrs.map(h => '<button type="button" class="tl-chip' + (gm === h * 60 ? ' active' : '') + '" data-h="' + h + '">' + h + 'h</button>').join('') + '</div>' +
+      '<div class="tl-lbl">Custom</div><div class="tl-step"><button type="button" id="tlGMinus" aria-label="कम करें">' + IC.minus + '</button><input type="number" class="tl-field" id="tlGoalIn" min="0.5" max="24" step="0.5" inputmode="decimal" placeholder="5.5" enterkeyhint="done" value="' + (gm ? gm / 60 : '') + '"><button type="button" id="tlGPlus" aria-label="बढ़ाएँ">' + IC.plus + '</button></div>' +
+      '<div class="tl-btns"><button type="button" class="tl-btn" id="tlGoalClr"' + (gm ? '' : ' disabled') + '>' + IC.trash + '<span>Remove</span></button><button type="button" class="tl-btn pri" id="tlGoalSave">' + IC.tick + '<span>Save Goal</span></button></div>',
       b => {
         const inp = b.querySelector('#tlGoalIn');
-        b.querySelectorAll('[data-h]').forEach(c => c.onclick = () => { inp.value = c.dataset.h; b.querySelectorAll('.tl-chip').forEach(x => x.classList.toggle('active', x === c)); hap(); });
-        inp.addEventListener('input', () => b.querySelectorAll('.tl-chip').forEach(x => x.classList.toggle('active', +x.dataset.h === parseFloat(inp.value))));
-        b.querySelector('#tlGoalSave').onclick = () => { const v = parseFloat(inp.value); if (!(v >= 0.5 && v <= 24)) { inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake'); hap('warning'); return; } lsSet(K.goal, String(Math.round(v * 60))); sheetClose(); toast('Daily goal saved'); };
+        const sync = () => b.querySelectorAll('.tl-chip').forEach(x => x.classList.toggle('active', +x.dataset.h === parseFloat(inp.value)));
+        b.querySelectorAll('[data-h]').forEach(c => c.onclick = () => { inp.value = c.dataset.h; sync(); hap(); });
+        inp.addEventListener('input', sync);
+        const step = d => { const v = parseFloat(inp.value) || 0; inp.value = String(Math.min(24, Math.max(0.5, Math.round((v + d) * 2) / 2))); sync(); hap(); };
+        b.querySelector('#tlGMinus').onclick = () => step(-0.5); b.querySelector('#tlGPlus').onclick = () => step(0.5);
+        b.querySelector('#tlGoalSave').onclick = () => { const v = parseFloat(inp.value); if (!(v >= 0.5 && v <= 24)) { shake(inp); return; } lsSet(K.goal, String(Math.round(v * 60))); sheetClose(); toast('Daily goal saved'); };
         b.querySelector('#tlGoalClr').onclick = () => { try { localStorage.removeItem(K.goal); } catch (e) {} sheetClose(); toast('Goal removed'); };
-      });
+      }, IC.target);
   }
   function openSess() {
-    const d = defDiff();
+    const MI = { revision: [IC.layers, 'दोहराना'], first_study: [IC.sprout, 'पहली बार'] };
+    const DI = { Easy: ['var(--d-easy)', 'हल्का', IC.sigLow], Medium: ['var(--d-med)', 'सामान्य', IC.sigMed], Hard: ['var(--d-hard)', 'कठिन', IC.sigHigh] };
     sheet('Session Defaults',
-      '<div class="tl-lbl">Default difficulty</div><div class="tl-chips">' + DIFF.map(x => '<button type="button" class="tl-chip' + (d === x[0] ? ' active' : '') + '" data-d="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>' +
-      '<div class="tl-lbl">Used for every new session and after each save.</div>',
-      b => b.querySelectorAll('[data-d]').forEach(c => c.onclick = () => {
-        lsSet(K.diff, c.dataset.d);
-        try { if (!state.run && !(state.elapsed > 0)) setDiff(c.dataset.d); } catch (e) {}
-        sheetClose(); toast('Default saved');
-      }));
-  }
-  function openExImp() {
-    const sc = uSt.bakScope === 'syl' ? 'syl' : 'hist';
-    sheet('Export / Import',
-      '<div class="tl-chips"><button type="button" class="tl-chip' + (sc === 'hist' ? ' active' : '') + '" data-sc="hist">हिस्ट्री</button><button type="button" class="tl-chip' + (sc === 'syl' ? ' active' : '') + '" data-sc="syl">सिलेबस</button></div>' +
-      '<button type="button" class="tl-btn pri" id="tlImp">Import CSV / XLSX</button>' +
-      '<div class="tl-lbl">Export</div><div class="tl-tiles">' + FMT.map(f => '<button type="button" class="tl-btn" data-f="' + f[0] + '">' + f[1] + '</button>').join('') + '</div>',
+      '<div class="tl-lbl">Default Study Mode</div><div class="tl-opts c2">' + MODES.map(x => '<button type="button" class="tl-opt' + (defMode() === x[0] ? ' on' : '') + '" data-m="' + x[0] + '"><span class="tl-opt-ic">' + MI[x[0]][0] + '</span><b>' + x[1] + '</b><span class="s">' + MI[x[0]][1] + '</span></button>').join('') + '</div>' +
+      '<div class="tl-lbl">Default Difficulty</div><div class="tl-opts c3">' + DIFF.map(x => '<button type="button" class="tl-opt' + (defDiff() === x[0] ? ' on' : '') + '" data-d="' + x[0] + '" style="--oc:' + DI[x[0]][0] + '"><span class="tl-opt-ic">' + DI[x[0]][2] + '</span><b>' + x[1] + '</b><span class="s">' + DI[x[0]][1] + '</span></button>').join('') + '</div>' +
+      '',
       b => {
-        b.querySelectorAll('[data-sc]').forEach(c => c.onclick = () => { try { setBakScope(c.dataset.sc); } catch (e) {} b.querySelectorAll('[data-sc]').forEach(x => x.classList.toggle('active', x === c)); });
-        b.querySelector('#tlImp').onclick = () => { const f = $('impFileIn'); if (f) f.click(); };
-        b.querySelectorAll('[data-f]').forEach(c => c.onclick = () => { try { toolsExport(c.dataset.f); } catch (e) {} sheetClose(); });
-      });
+        b.querySelectorAll('[data-m]').forEach(c => c.onclick = () => { lsSet(K.mode, c.dataset.m); applyDefMode(); hap(); b.querySelectorAll('[data-m]').forEach(x => x.classList.toggle('on', x === c)); toast('Default mode saved'); });
+        b.querySelectorAll('[data-d]').forEach(c => c.onclick = () => { lsSet(K.diff, c.dataset.d); try { if (!state.run && !(state.elapsed > 0)) setDiff(c.dataset.d); } catch (e) {} hap(); b.querySelectorAll('[data-d]').forEach(x => x.classList.toggle('on', x === c)); toast('Default difficulty saved'); });
+      }, IC.timer);
+  }
+  /* जोड़ने की शीट: नया विषय (kind='subject') या नया चैप्टर (kind='chapter', sub) */
+  function openAddSheet(kind, sub) {
+    const isS = kind === 'subject', cnts = [5, 10, 15, 20];
+    sheet(isS ? 'नया विषय जोड़ें' : 'नया चैप्टर जोड़ें',
+      (isS ? '<div class="tl-lbl">Subject Name</div><input type="text" class="tl-field" id="tlAddS" placeholder="English" autocomplete="off" enterkeyhint="next">' : '<div class="tl-lbl">Subject</div><div class="tl-note tl-chipnote">' + esc(sub) + '</div>') +
+      '<div class="tl-lbl">' + (isS ? 'First Chapter Name' : 'Chapter Name') + '</div><input type="text" class="tl-field" id="tlAddC" placeholder="Grammar" autocomplete="off" enterkeyhint="next">' +
+      '<div class="tl-lbl">Lectures Count</div><div class="tl-chips">' + cnts.map(n => '<button type="button" class="tl-chip' + (n === 5 ? ' active' : '') + '" data-n="' + n + '">' + n + '</button>').join('') + '</div>' +
+      '<input type="number" class="tl-field" id="tlAddN" min="1" max="200" step="1" inputmode="numeric" value="5" placeholder="Custom" enterkeyhint="done">' +
+      '<div class="tl-btns"><button type="button" class="tl-btn pri" id="tlAddGo">' + IC.tick + '<span>जोड़ें</span></button></div>',
+      b => {
+        const nIn = b.querySelector('#tlAddN'), cIn = b.querySelector('#tlAddC'), sIn = b.querySelector('#tlAddS');
+        const sync = () => b.querySelectorAll('.tl-chip').forEach(x => x.classList.toggle('active', +x.dataset.n === parseInt(nIn.value, 10)));
+        b.querySelectorAll('[data-n]').forEach(c => c.onclick = () => { nIn.value = c.dataset.n; sync(); hap(); });
+        nIn.addEventListener('input', sync);
+        b.querySelector('#tlAddGo').onclick = () => {
+          const n = parseInt(nIn.value, 10);
+          if (isNaN(n) || n < 1 || n > 200) { shake(nIn); return showIsland('1 से 200 के बीच लेक्चर संख्या लिखें', 'error'); }
+          const c = cIn.value.trim();
+          if (isS) {
+            const s = sIn.value.trim();
+            if (!s) { shake(sIn); return showIsland('नए विषय का नाम लिखें', 'error'); }
+            if (!c) { shake(cIn); return showIsland('पहले चैप्टर का नाम लिखें', 'error'); }
+            const isNew = !masterData[s];
+            sheetClose(); setFlash(s);
+            runWithUndo(isNew ? "नया विषय '" + s + ' › ' + c + "' (" + n + ' लेक्चर) जुड़ा' : "'" + s + ' › ' + c + "' में " + n + ' लेक्चर जुड़े', () => { appendLecs(s, c, n); });
+          } else {
+            if (!c) { shake(cIn); return showIsland('चैप्टर का नाम लिखें', 'error'); }
+            sheetClose(); setFlash(c);
+            runWithUndo("'" + sub + ' › ' + c + "' में " + n + ' लेक्चर जुड़े', () => { appendLecs(sub, c, n); });
+          }
+        };
+        setTimeout(() => { try { (sIn || cIn).focus(); } catch (e) {} }, 340);
+      }, IC.plus);
+  }
+  function openCustomLec(sub, chap) {
+    sheet('Custom +',
+      '<div class="tl-note tl-chipnote">' + esc(sub) + ' › ' + esc(chap) + '</div><div class="tl-lbl">Lectures Count</div>' +
+      '<div class="tl-step"><button type="button" id="tlCMinus" aria-label="कम करें">' + IC.minus + '</button><input type="number" class="tl-field" id="tlCn" min="1" max="200" step="1" inputmode="numeric" value="5"><button type="button" id="tlCPlus" aria-label="बढ़ाएँ">' + IC.plus + '</button></div>' +
+      '<div class="tl-btns"><button type="button" class="tl-btn pri" id="tlCGo">' + IC.tick + '<span>जोड़ें</span></button></div>',
+      b => {
+        const inp = b.querySelector('#tlCn');
+        const step = d => { const v = parseInt(inp.value, 10) || 0; inp.value = String(Math.min(200, Math.max(1, v + d))); hap(); };
+        b.querySelector('#tlCMinus').onclick = () => step(-1); b.querySelector('#tlCPlus').onclick = () => step(1);
+        b.querySelector('#tlCGo').onclick = () => { const n = parseInt(inp.value, 10); if (isNaN(n) || n < 1 || n > 200) { shake(inp); return showIsland('1 से 200 के बीच लेक्चर संख्या लिखें', 'error'); } sheetClose(); runWithUndo(chap + ' में +' + n + ' लेक्चर जुड़े', () => appendLecs(sub, chap, n)); };
+      }, IC.plus);
+  }
+  /* Google Sheet कनेक्शन सेटअप / बदलाव */
+  function openShSheet() {
+    let c = { url: '', key: '' }; try { c = shCfg(); } catch (e) {}
+    sheet('Configure Sheet',
+      '<div class="tl-lbl">Web App URL</div><input type="url" class="tl-field" id="tlShU" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/…/exec" value="' + esc(c.url) + '">' +
+      '<div class="tl-lbl">Secret Key (गुप्त शब्द)</div><input type="text" class="tl-field" id="tlShK" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Secret" enterkeyhint="done" value="' + esc(c.key) + '">' +
+            '<div class="tl-btns"><button type="button" class="tl-btn" id="tlShSave">' + IC.tick + '<span>सेव करें</span></button><button type="button" class="tl-btn pri" id="tlShSend">' + IC.sync + '<span>सेव करके भेजें</span></button></div>',
+      b => {
+        const u = b.querySelector('#tlShU'), k = b.querySelector('#tlShK');
+        const read = () => {
+          const uv = (u.value || '').trim(), kv = (k.value || '').trim();
+          if (uv.indexOf('https://script.google.com/') !== 0) { shake(u); showIsland('URL गलत है, यह https://script.google.com/ से शुरू होना चाहिए', 'warning'); return null; }
+          if (!kv) { shake(k); showIsland('गुप्त शब्द डालें', 'warning'); return null; }
+          return [uv, kv];
+        };
+        b.querySelector('#tlShSave').onclick = () => { const r = read(); if (!r) return; try { localStorage.setItem(SH_URL, r[0]); localStorage.setItem(SH_KEY, r[1]); } catch (e) {} try { shLastHash = null; } catch (e) {} try { g('shUrl').value = r[0]; g('shKey').value = r[1]; shUI(); } catch (e) {} sheetClose(); toast('Sheet कनेक्शन सेव हुआ'); refreshPages(); };
+        b.querySelector('#tlShSend').onclick = () => { const r = read(); if (!r) return; try { g('shUrl').value = r[0]; g('shKey').value = r[1]; shSaveCfg(); } catch (e) {} sheetClose(); refreshPages(); };
+      }, IC.sheet);
   }
 
   /* ---- compact popover ---- */
   let popRow = null;
   function popClose() { const p = $('tlPop'); p.classList.remove('open'); popRow = null; }
   window.__tlPopClose = popClose;
-  function openPop(row, items, cur, pick) {
+  function openPop(row, items, cur, pick, title) {
     const p = $('tlPop');
     if (popRow === row && p.classList.contains('open')) { popClose(); return; }
-    p.innerHTML = items.map(i => '<button type="button" class="tl-pi' + (i[0] === cur ? ' active' : '') + '" data-v="' + i[0] + '" role="menuitem">' + (i[2] || '') + '<span>' + i[1] + '</span>' + IC.check + '</button>').join('');
+    p.innerHTML = (title ? '<div class="tl-pop-h">' + title + '</div>' : '') + items.map(i => '<button type="button" class="tl-pi' + (i[0] === cur ? ' active' : '') + '" data-v="' + i[0] + '" role="menuitem">' + (i[2] || '') + '<span>' + i[1] + '</span>' + IC.check + '</button>').join('');
     p.querySelectorAll('.tl-pi').forEach(b => b.onclick = e => { e.stopPropagation(); popClose(); hap(); pick(b.dataset.v); render(); });
     p.classList.remove('open'); p.style.visibility = 'hidden'; p.classList.add('open');
     const r = row.getBoundingClientRect(), ph = p.offsetHeight, pw = p.offsetWidth;
@@ -12562,9 +13220,9 @@ body.tl-open .sp-fab{display:none!important}
   }
 
   /* ---- centered safety modal ---- */
-  function modal(title, text, label, fn) {
+  function modal(title, text, label, fn, ic) {
     const m = $('tlModal');
-    m.innerHTML = '<div class="tl-wi">' + IC.warn + '</div><h3>' + title + '</h3><p>' + text + '</p><div class="tl-btns"><button type="button" class="tl-btn" id="tlMNo">Cancel</button><button type="button" class="tl-btn dng" id="tlMYes">' + label + '</button></div>';
+    m.innerHTML = '<div class="tl-wi">' + (ic || IC.warn) + '</div><h3>' + title + '</h3><p>' + text + '</p><div class="tl-btns"><button type="button" class="tl-btn" id="tlMNo">' + IC.x + '<span>Cancel</span></button><button type="button" class="tl-btn dng" id="tlMYes">' + (ic || IC.tick) + '<span>' + label + '</span></button></div>';
     m.setAttribute('aria-hidden', 'false'); $('tlMbk').classList.add('on'); void m.offsetWidth; m.classList.add('on');
     $('tlMNo').onclick = () => modalClose();
     $('tlMYes').onclick = () => { modalClose(); setTimeout(fn, 180); };
@@ -12575,13 +13233,22 @@ body.tl-open .sp-fab{display:none!important}
   $('tlMbk').addEventListener('click', modalClose);
 
   function clearHistory() {
+    const prevLogs = getLogs(), prevCsv = jget(CSV_KEY, []);
     try { jset(HISTORY_KEY, []); localStorage.removeItem(CSV_KEY); } catch (e) {}
     try { selIds.clear(); selMode = false; openId = null; } catch (e) {}
     try { updateDailyStats(); renderHistory(); } catch (e) {}
-    render(); toast('History cleared');
+    render();
+    showIsland('सारी हिस्ट्री साफ़ की गई', 'success', {
+      label: 'पूर्ववत',
+      onClick: () => {
+        jset(HISTORY_KEY, prevLogs); jset(CSV_KEY, prevCsv);
+        try { updateDailyStats(); renderHistory(); } catch (e) {}
+        render(); showIsland('हिस्ट्री वापस आ गई');
+      }
+    });
   }
   function resetAll() {
-    [HISTORY_KEY, DB_KEY, CSV_KEY, 'nc_lib_v1', 'ru_ws_recent', SESS_KEY, 'ru_syl_synced', K.goal, K.diff, K.fmt].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    [HISTORY_KEY, DB_KEY, CSV_KEY, 'nc_lib_v1', 'ru_ws_recent', SESS_KEY, 'ru_syl_synced', K.goal, K.diff, K.mode, K.fmt].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
     location.reload();
   }
 
@@ -12589,25 +13256,29 @@ body.tl-open .sp-fab{display:none!important}
   function act(a, el) {
     hap();
     switch (a) {
-      case 'subjects': case 'backup': case 'bg': case 'inspect': openSub(a); break;
+      case 'subjects': case 'backup': case 'bg': case 'eximp': pushPage(a); break;
       case 'goal': openGoal(); break;
       case 'sess': openSess(); break;
-      case 'eximp': openExImp(); break;
       case 'hist': go('history'); break;
-      case 'qexp': openPop(el, FMT, ls(K.fmt, 'xlsx'), v => { lsSet(K.fmt, v); try { toolsExport(v); } catch (e) {} }); break;
-      case 'theme': openPop(el, [['dark', 'Dark', IC.moon], ['light', 'Light', IC.sun]], theme(), v => { if (v !== theme()) toggleTheme(); }); break;
-      case 'view': openPop(el, WS_VIEWS.map(v => [v.key, v.label.replace(' View', ''), v.icon]), (function () { try { return localStorage.getItem(WS_KEY) || 'list'; } catch (e) { return 'list'; } })(), v => { lsSet(WS_KEY, v); try { wsDefKey = v; } catch (e) {} toast('Default view saved'); }); break;
-      case 'clearhist': modal('Clear all history?', 'सारे सेशन रिकॉर्ड हमेशा के लिए हट जाएँगे। यह वापस नहीं हो सकता।', 'Confirm Delete', clearHistory); break;
+      case 'theme': openPop(el, [['dark', 'Dark', IC.moon], ['light', 'Light', IC.sun]], theme(), v => { if (v !== theme()) toggleTheme(); }, 'Theme'); break;
+      case 'view': openPop(el, WS_VIEWS.map(v => [v.key, v.label.replace(' View', '')]), (function () { try { return localStorage.getItem(WS_KEY) || 'list'; } catch (e) { return 'list'; } })(), v => {
+        lsSet(WS_KEY, v);
+        try { wsDefKey = v; wsViewIdx = Math.max(0, WS_VIEWS.findIndex(m => m.key === v)); } catch (e) {}
+        if (typeof wsRender === 'function') { try { wsRender(); } catch (e) {} }
+        toast('Default view saved');
+      }, 'Default View'); break;
+      case 'clearhist': modal('Clear all history?', 'सारे सेशन रिकॉर्ड हट जाएँगे। हटाने के बाद कुछ सेकंड तक "पूर्ववत" का विकल्प मिलेगा।', 'Confirm Delete', clearHistory); break;
       case 'reset': modal('Reset all data?', 'हिस्ट्री, सिलेबस, नोट्स और सेटिंग्स सब हट जाएँगे और ऐप फिर से शुरू होगा। यह वापस नहीं हो सकता।', 'Confirm Reset', resetAll); break;
     }
   }
   const hub = $('tlHub');
   if (hub) hub.addEventListener('click', e => { const b = e.target.closest('[data-tl]'); if (b) act(b.dataset.tl, b); });
-  $('tlBackBtn').addEventListener('click', () => { if (!closeTop(false)) closeSubVisual(); });
   window.tlDefDiff = defDiff;
+  window.tlDefMode = defMode;
+  window.tlApplyDefMode = applyDefMode;
   window.addEventListener('storage', render);
   render();
-  window.addEventListener('load', () => setTimeout(() => { try { if (!state.run && !(state.elapsed > 0) && !localStorage.getItem(SESS_KEY) && defDiff() !== 'Medium') setDiff(defDiff()); } catch (e) {} }, 80));
+  window.addEventListener('load', () => setTimeout(() => { try { if (!state.run && !(state.elapsed > 0) && !localStorage.getItem(SESS_KEY) && (defDiff() !== 'Medium' || defMode() !== 'revision')) { setDiff(defDiff()); setMode(defMode()); } } catch (e) {} }, 80));
 })();
 </script>
 <style id="ui-system-css">
@@ -12623,8 +13294,8 @@ body.tl-open .sp-fab{display:none!important}
 .btn{white-space:nowrap}
 .tb>span,.chip>span,.mini-tag>span,.sw-pill>span,.ws-ps>span,.btn>span,.one-btn>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* ===== UI-6: tactile states (cards don't shrink during scroll touch) ===== */
-.btn,.tb,.chip,.preset-chip,.exp-tile,.cx-btn,.mini-tag,.hf-mini-tag,.sw-pill,.one-btn,.bg-opt,.tl-row,.tl-bn,.tl-chip,.tl-btn,.tl-pi,.ws-ps,.habit-nav,.day-col,.ui-empty-btn{transition:transform 100ms cubic-bezier(.2,0,0,1),background-color .2s,border-color .2s,opacity .2s}
-.btn:active,.tb:active,.chip:active,.preset-chip:active,.exp-tile:active,.cx-btn:active,.mini-tag:active,.hf-mini-tag:active,.sw-pill:active,.one-btn:active,.bg-opt:active,.tl-row:active,.tl-bn:active,.tl-chip:active,.tl-btn:active,.tl-pi:active,.ws-ps:active,.ui-empty-btn:active{transform:scale(.96)}
+.btn,.tb,.chip,.preset-chip,.exp-tile,.cx-btn,.mini-tag,.hf-mini-tag,.sw-pill,.one-btn,.bg-opt,.tl-row,.tl-goal,.tl-chip,.tl-btn,.tl-pi,.ws-ps,.habit-nav,.day-col,.ui-empty-btn{transition:transform 100ms cubic-bezier(.2,0,0,1),background-color .2s,border-color .2s,opacity .2s}
+.btn:active,.tb:active,.chip:active,.preset-chip:active,.exp-tile:active,.cx-btn:active,.mini-tag:active,.hf-mini-tag:active,.sw-pill:active,.one-btn:active,.bg-opt:active,.tl-row:active,.tl-goal:active,.tl-chip:active,.tl-btn:active,.tl-pi:active,.ws-ps:active,.ui-empty-btn:active{transform:scale(.96)}
 .wv-item:active,.wv-gc:active,.wv-cr:active{background-color:var(--surface-hover)}
 .btn:disabled,.btn[disabled],.btn.disabled,.cx-btn:disabled{opacity:.45;filter:saturate(.6);cursor:not-allowed}
 .preset-chip.active,.tb.active,.chip.active{border-color:var(--primary)}
@@ -12640,7 +13311,7 @@ html[data-theme="light"]{--bg:#f1f5f9}
 html[data-theme="light"] body{background-color:#f1f5f9}
 html[data-theme="light"] .ws-pop,html[data-theme="light"] .hf-glass-popover,html[data-theme="light"] .tl-pop,html[data-theme="light"] .tl-sheet,html[data-theme="light"] .tl-modal{background:#fff;border:1px solid rgba(15,23,42,.1);box-shadow:0 12px 32px rgba(15,23,42,.18)}
 html:not([data-theme="light"]) :is(.ws-pop,.hf-glass-popover,.hf-sheet,.chm,.fs-pop,.tl-sheet,.tl-pop,.tl-modal){border:1px solid rgba(255,255,255,.12);box-shadow:0 16px 40px rgba(0,0,0,.55)}
-html[data-theme="light"] .tl-group,html[data-theme="light"] .tl-bn{background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+html[data-theme="light"] .tl-group,html[data-theme="light"] .tl-goal{background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.05)}
 /* ===== UI-9: 5-tier type scale (11px floor) ===== */
 .brand-title,.card-title,.tl-sub-bar h2,.tl-sheet-t,.sp-bar h2{font-size:17px;font-weight:700}
 .wv-t,.wv-t2,.chr-lec{font-size:15px;font-weight:600}
