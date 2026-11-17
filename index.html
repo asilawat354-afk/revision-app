@@ -3595,7 +3595,7 @@ body.ds-on .bbw{transform:translateY(105%)!important;pointer-events:none!importa
 .sp-fab{position:fixed;z-index:99;right:calc(max(0px,(100vw - 520px)/2) + 16px);bottom:calc(62px + var(--sab) + 16px);height:58px;min-width:58px;padding:0;border:0;border-radius:29px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#38bdf8,#8b5cf6);color:#fff;box-shadow:0 10px 28px rgba(99,102,241,.45),0 2px 6px rgba(0,0,0,.25);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .25s cubic-bezier(.22,1,.36,1),bottom .24s cubic-bezier(.22,1,.36,1),opacity .2s ease,padding .25s ease}
 .sp-fab svg{width:26px;height:26px;stroke:#fff;stroke-width:2.4;stroke-linecap:round;fill:none}
 .sp-fab:active{transform:scale(.92)}
-.sp-fab.hide,body.in-ws .sp-fab,body.sp-open .sp-fab{display:none!important}
+.sp-fab.hide,body.sp-open .sp-fab{display:none!important}
 body.nav-hide .sp-fab{bottom:calc(var(--sab) + 18px)}
 .sp-fab-live{display:none;align-items:center;gap:8px;font-weight:800;font-size:16px;letter-spacing:.3px;font-variant-numeric:tabular-nums}
 .sp-fab.live{padding:0 22px}
@@ -3660,6 +3660,77 @@ body.chp-on .bbw{transform:translateY(105%)!important;pointer-events:none!import
 .hf-chip{min-height:40px}
 @media (prefers-reduced-motion:reduce){.ws.chp-on::after{animation:none}.ws-top{transition:none}}
 </style>
+<style id="v3css">
+.wrap{display:none!important}.bbw{display:none!important}
+.ws-track{width:300%}.ws-pane{width:33.3333%}
+.ws-tabs{grid-template-columns:repeat(3,1fr)}.ws-tab-line{width:calc(100% / 3)}
+.ws-ghost,.ws-hd{left:66.6667%;width:33.3333%}
+.sp-fab,body.nav-hide .sp-fab{bottom:calc(20px + var(--sab))}
+.an-pill{height:34px;padding:0 12px;border:1px solid var(--border);border-radius:17px;background:var(--surface-hover);color:var(--primary);font:inherit;font-size:13px;font-weight:800;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+#anGoal{margin-bottom:12px}#anGoal .tl-goal{width:100%;text-align:left}
+#wsPane0 .stats-row{margin-bottom:12px}#wsPane0 .habit-card{margin-bottom:12px}
+.an-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius,16px);padding:14px;margin-bottom:12px}
+.an-h{font-size:12px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.an-r{margin-bottom:12px}.an-r:last-child{margin-bottom:0}
+.an-rt{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;margin-bottom:5px}.an-rt span:last-child{color:var(--muted);font-weight:600}
+.an-b{height:9px;border-radius:5px;background:var(--surface-hover);overflow:hidden}.an-b i{display:block;height:100%;border-radius:5px;background:var(--primary)}
+.an-d{display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:6px;gap:2px}.an-d i{display:block;height:100%}
+.an-lg{display:flex;gap:12px;font-size:11px;color:var(--muted);margin-top:4px}.an-empty{color:var(--muted);font-size:13px;text-align:center;padding:14px 0}
+</style>
+<style id="v3sb">
+#appSbScrim{position:fixed;inset:0;z-index:1390;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .26s}
+body.sb-open #appSbScrim{opacity:1;pointer-events:auto}
+#appSidebar{position:fixed;left:0;top:0;z-index:1400;width:min(320px,85vw);height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--surface);border-right:1px solid var(--border);transform:translateX(-102%);visibility:hidden;transition:transform .3s cubic-bezier(.22,1,.36,1),visibility 0s .3s;box-shadow:8px 0 30px rgba(0,0,0,.35)}
+body.sb-open #appSidebar{transform:none;visibility:visible;transition:transform .3s cubic-bezier(.22,1,.36,1),visibility 0s}
+.sb-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;border-bottom:1px solid var(--border)}
+.sb-brand{display:flex;align-items:center;gap:8px;min-width:0}.sb-brand b{font-size:15px;font-weight:800;white-space:nowrap}
+.sb-dot{width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 10px var(--primary);flex:none}
+.sb-pro{font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--primary);color:#000}
+.sb-x{width:34px;height:34px;border:0;border-radius:50%;background:var(--surface-hover);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:none}
+.sb-x svg,.sb-ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sb-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 12px 20px}
+.sb-sec{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:14px 4px 8px}.sb-sec:first-child{margin-top:2px}
+.sb-ctl{padding:10px 4px;display:flex;flex-direction:column;gap:7px}.sb-ctl>span{font-size:13px;font-weight:700}
+.sb-seg{display:flex;background:var(--surface-hover);border-radius:12px;padding:3px;gap:2px}
+.sb-seg button,.sb-chips button{flex:1;border:0;background:transparent;color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;padding:8px 4px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.sb-seg button.on{background:var(--primary);color:#000}
+.sb-chips{display:flex;flex-wrap:wrap;gap:6px}.sb-chips button{flex:none;padding:7px 12px;border:1px solid var(--border);border-radius:16px}.sb-chips button.on{background:var(--primary);color:#000;border-color:var(--primary)}
+.sb-row{width:100%;display:flex;align-items:center;gap:12px;padding:12px 8px;border:0;background:transparent;color:var(--text);font:inherit;font-size:14px;font-weight:700;border-radius:12px;cursor:pointer;text-align:left}
+.sb-row:active{background:var(--surface-hover)}.sb-row .sb-ic{color:var(--primary);display:grid;place-items:center}.sb-row .sb-nm{flex:1}
+.sb-row .sb-bd{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface-hover);padding:3px 9px;border-radius:10px}
+.sb-row.danger,.sb-row.danger .sb-ic{color:var(--d-hard,#f87171)}
+.sb-foot{flex:none;border-top:1px solid var(--border);padding:12px 14px calc(12px + var(--sab));display:flex;align-items:center;gap:10px;background:var(--surface)}
+.sb-av{width:40px;height:40px;border-radius:50%;background:var(--surface-hover);display:grid;place-items:center;overflow:hidden;flex:none;color:var(--primary)}
+.sb-av img{width:100%;height:100%;object-fit:cover}.sb-av svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.sb-fi{flex:1;min-width:0}.sb-fn{font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-fs{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sb-fs i{width:7px;height:7px;border-radius:50%;background:var(--muted-dim);flex:none}.sb-fs i.ok{background:#34d399}
+.sb-gl{flex:none;border:0;border-radius:20px;background:var(--primary);color:#000;font:inherit;font-size:12.5px;font-weight:800;padding:10px 14px;cursor:pointer}
+.sb-fa{display:flex;gap:6px;flex:none}.sb-fa button{width:36px;height:36px;border:0;border-radius:50%;background:var(--surface-hover);color:var(--text);display:grid;place-items:center;cursor:pointer}.sb-fa svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<style id="v3css2">
+.an-pill{width:36px;height:36px;padding:0;justify-content:center;border-radius:50%;background:transparent;border:0;color:var(--primary)}
+.an-pill:active{background:var(--surface-hover)}
+#anGoal{margin-bottom:10px}
+.an-goal{position:relative;width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px 15px;border:1px solid var(--border);border-radius:var(--radius,16px);background:var(--surface);color:var(--text);font:inherit;text-align:left;cursor:pointer;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.an-goal:active{background:var(--surface-hover)}
+.an-gi{width:36px;height:36px;border-radius:11px;background:color-mix(in srgb,var(--primary) 16%,transparent);color:var(--primary);display:grid;place-items:center;flex:none}
+.an-gi svg,.an-gc svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.an-gt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.an-gt b{font-size:14px;font-weight:800}.an-gt span{font-size:12.5px;color:var(--muted);font-weight:600}
+.an-gp{font-size:15px;font-weight:800;color:var(--primary);flex:none}.an-gc{color:var(--muted);display:grid;place-items:center;flex:none}
+.an-gbar{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--surface-hover)}.an-gbar u{display:block;height:100%;background:var(--primary);border-radius:0 3px 3px 0;text-decoration:none;transition:width .4s}
+/* sidebar: smoother, GPU layers */
+#appSidebar{will-change:transform;transform:translate3d(-102%,0,0);backface-visibility:hidden;contain:layout paint;box-shadow:none;transition:transform .28s cubic-bezier(.22,1,.36,1),visibility 0s .28s}
+body.sb-open #appSidebar{transform:translate3d(0,0,0);transition:transform .28s cubic-bezier(.22,1,.36,1),visibility 0s;box-shadow:6px 0 24px rgba(0,0,0,.28)}
+#appSbScrim{will-change:opacity;transition:opacity .28s}
+.sb-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -12px;padding:2px 12px;-webkit-overflow-scrolling:touch}.sb-chips::-webkit-scrollbar{display:none}.sb-chips button{flex:none}
+.sb-fa{position:relative}.sb-dots{width:36px;height:36px;border:0;border-radius:50%;background:var(--surface-hover);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:none}.sb-dots svg{width:18px;height:18px;fill:currentColor}
+#sbPop{position:absolute;right:14px;bottom:calc(100% - 6px);min-width:180px;background:var(--surface-elevated,var(--surface));border:1px solid var(--border);border-radius:14px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transform:translateY(6px) scale(.97);transform-origin:bottom right;pointer-events:none;transition:opacity .16s,transform .16s;z-index:2}
+#sbPop.on{opacity:1;transform:none;pointer-events:auto}
+#sbPop button{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;color:var(--text);font:inherit;font-size:14px;font-weight:700;padding:11px 10px;border-radius:10px;cursor:pointer;text-align:left}
+#sbPop button:active{background:var(--surface-hover)}#sbPop svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;color:var(--primary)}
+#sbPop button.out,#sbPop button.out svg{color:var(--d-hard,#f87171)}
+.sb-gl{padding:9px 18px}
+</style>
 </head>
 <body>
 <div id="bgOrbs" aria-hidden="true"><i class="bg-orb o1"></i><i class="bg-orb o2"></i><i class="bg-orb o3"></i></div>
@@ -3718,16 +3789,7 @@ body.chp-on .bbw{transform:translateY(105%)!important;pointer-events:none!import
 
 <div class="wrap">
   <!-- HEADER -->
-  <header class="app-header">
-    <div class="brand-wrap">
-      <span class="status-dot"></span>
-      <h1 class="brand-title">Revision Universe</h1>
-      <span class="brand-badge">OFFLINE PRO</span>
-    </div>
-    <button class="theme-toggle" id="btnThemeToggle" onclick="toggleTheme()" aria-label="Toggle Theme">
-      <svg class="ic" id="themeIcon"><use href="#i-sun"/></svg>
-    </button>
-  </header>
+  
 
   <!-- STUDY FLOW VIEW -->
   <main id="view-study" class="view active">
@@ -4242,10 +4304,11 @@ body.chp-on .bbw{transform:translateY(105%)!important;pointer-events:none!import
   <header class="ws-chrome" id="wsChrome">
   <div class="ws-top" id="wsTop">
     <div class="ws-hl">
-      <button type="button" class="ws-bi" id="wsBack" data-hold-label="Back" aria-label="Back" onclick="wsBack()"><svg viewBox="0 0 24 24"><path d="M20 12H4M10 18l-6-6 6-6"/></svg></button>
-      <div style="min-width:0;"><div class="ws-title" id="wsTitle">History</div><div class="ws-sub" id="wsSub"></div></div>
+      <button type="button" class="ws-bi" id="wsBack" data-hold-label="Menu" aria-label="Menu" onclick="wsBack()"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <div style="min-width:0;"><div class="ws-title" id="wsTitle">Analytics</div><div class="ws-sub" id="wsSub"></div></div>
     </div>
     <div class="ws-hr">
+      <button type="button" class="an-pill" id="wsGoalPill" style="display:none" onclick="window.__openGoal&&window.__openGoal()" aria-label="Daily Goal"></button>
       <button type="button" class="ws-bi" id="wsSearchBtn" data-hold-label="Search" aria-label="Search" onclick="openDS()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.35-4.35"/></svg></button>
       <div class="ws-vw" id="wsVw">
         <button type="button" class="ws-bi" id="wsViewBtn" aria-label="View Mode"><span id="wsViewIcon"></span></button>
@@ -4268,13 +4331,14 @@ body.chp-on .bbw{transform:translateY(105%)!important;pointer-events:none!import
     <button type="button" class="btn btn-secondary btn-sm" onclick="exitSel()"><svg class="ic"><use href="#i-close"/></svg></button>
   </div>
   <div class="ws-tabs" id="wsTabs" role="tablist">
-    <button type="button" class="ws-tab active" role="tab" onclick="wsSetTab(0)">History</button>
-    <button type="button" class="ws-tab" role="tab" onclick="wsSetTab(1)">Subjects</button>
+    <button type="button" class="ws-tab active" role="tab" onclick="wsSetTab(0)">Analytics</button>
+    <button type="button" class="ws-tab" role="tab" onclick="wsSetTab(1)">History</button>
+    <button type="button" class="ws-tab" role="tab" onclick="wsSetTab(2)">Subjects</button>
     <i class="ws-tab-line" id="wsTabLine"></i>
   </div>
   </header>
   <div class="fs-active" id="wsPills" style="display:none"></div>
-  <div class="ws-vp" id="wsVp"><div class="ws-track" id="wsTrack"><div class="ws-pane" id="wsPane0"></div><div class="ws-pane" id="wsPane1"></div></div></div>
+  <div class="ws-vp" id="wsVp"><div class="ws-track" id="wsTrack"><div class="ws-pane" id="wsPane0"></div><div class="ws-pane" id="wsPane1"></div><div class="ws-pane" id="wsPane2"></div></div></div>
 </section>
 
 <!-- ===== SEARCH OVERLAY ===== -->
@@ -4288,13 +4352,87 @@ body.chp-on .bbw{transform:translateY(105%)!important;pointer-events:none!import
 </div>
 <div class="ws-tip" id="wsTip"></div>
 
-<div class="bbw">
-  <nav id="mainBar">
-    <button type="button" class="ni active" data-tab="study" onclick="go('study')"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><path d="M4 10.6 12 4l8 6.6V19a1 1 0 0 1-1 1h-4.2v-5.2H9.2V20H5a1 1 0 0 1-1-1z"/></svg><svg class="i-s" viewBox="0 0 24 24"><path d="M11.4 3.3a1 1 0 0 1 1.2 0l8 6.6a1 1 0 0 1 .4.8V19a2 2 0 0 1-2 2h-3.7a.8.8 0 0 1-.8-.8V15.4a.2.2 0 0 0-.2-.2H9.7a.2.2 0 0 0-.2.2v4.8a.8.8 0 0 1-.8.8H5a2 2 0 0 1-2-2v-8.3a1 1 0 0 1 .4-.8z"/></svg></div><span class="lb">Home</span></button>
-    <button type="button" class="ni" data-tab="ws" onclick="openWS(0, true)"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><ellipse cx="12" cy="6.5" rx="7.5" ry="2.8"/><path d="M4.5 6.5v11c0 1.5 3.36 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-11"/><path d="M4.5 12c0 1.5 3.36 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></svg><svg class="i-s" viewBox="0 0 24 24"><ellipse cx="12" cy="6.2" rx="8" ry="3"/><path d="M4 8.5v3.2c0 1.8 3.58 3.2 8 3.2s8-1.4 8-3.2V8.5c-1.8 1.3-4.7 2-8 2s-6.2-.7-8-2z"/><path d="M4 14v3.5c0 1.8 3.58 3.2 8 3.2s8-1.4 8-3.2V14c-1.8 1.3-4.7 2-8 2s-6.2-.7-8-2z"/></svg></div><span class="lb">Master Database</span></button>
-    <button type="button" class="ni" data-tab="database" onclick="go('database')"><div class="pl"><svg class="i-o" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg><svg class="i-s" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="2"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="2"/><rect x="13" y="13" width="7.5" height="7.5" rx="2"/></svg></div><span class="lb">Tools</span></button>
-  </nav>
-</div>
+<!-- bottom nav removed (3-tab workspace) -->
+<div id="appSbScrim" onclick="sbClose()"></div>
+<aside id="appSidebar" aria-label="Menu" aria-hidden="true">
+  <div class="sb-head"><div class="sb-brand"><i class="sb-dot"></i><b>Revision Universe</b><span class="sb-pro">PRO</span></div><button type="button" class="sb-x" onclick="sbClose()" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <div class="sb-body" id="sbBody"></div>
+  <div class="sb-foot" id="sbFoot">
+    <div id="sbPop" role="menu">
+      <button type="button" data-f="bk"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Backup</button>
+      <button type="button" data-f="rs"><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>Restore</button>
+      <button type="button" data-f="lo" class="out"><svg viewBox="0 0 24 24"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg>Logout</button>
+    </div>
+    <div class="sb-av" id="sbAv"></div>
+    <div class="sb-fi"><div class="sb-fn" id="sbFn">Cloud Backup</div><div class="sb-fs" id="sbFs"><i id="sbFd"></i><span id="sbFt"></span></div></div>
+    <button type="button" class="sb-gl" id="sbLogin" onclick="fbLogin()">Login</button>
+    <div class="sb-fa" id="sbFa" style="display:none"><button type="button" class="sb-dots" id="sbDots" aria-label="More"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></div>
+  </div>
+</aside>
+<script id="v3sbjs">
+(function(){
+var $=function(i){return document.getElementById(i)},LS=function(k,v){try{localStorage.setItem(k,v)}catch(e){}},LG=function(k,d){try{return localStorage.getItem(k)||d}catch(e){return d}};
+var IC={sub:'<path d="M4 5h16M4 12h16M4 19h10"/>',goal:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/>',ex:'<path d="M7 4v13M3.5 13.5L7 17l3.5-3.5M17 20V7M13.5 10.5L17 7l3.5 3.5"/>',cl:'<path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5a4.8 4.8 0 0 1 0 9.5z"/>',sh:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/>',bg:'<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/>',up:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',dn:'<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',out:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>'};
+var sv=function(k){return '<svg viewBox="0 0 24 24">'+IC[k]+'</svg>'};
+function row(a,ic,nm,bd){return '<button type="button" class="sb-row" data-a="'+a+'"><span class="sb-ic">'+sv(ic)+'</span><span class="sb-nm">'+nm+'</span>'+(bd?'<span class="sb-bd">'+bd+'</span>':'')+'</button>';}
+function seg(id,arr,cur){return '<div class="sb-seg" id="'+id+'">'+arr.map(function(a){return '<button type="button" data-v="'+a[0]+'" class="'+(a[0]===cur?'on':'')+'">'+a[1]+'</button>'}).join('')+'</div>';}
+function build(){
+ var th=document.documentElement.getAttribute('data-theme')||'dark',md=LG('ru_def_mode','revision'),df=LG('ru_def_diff','Medium'),vw=LG('ru_ws_default_view','list');
+ var subs=0;try{subs=Object.keys(masterData||{}).length}catch(e){}
+ var gi=window.__goalInfo?window.__goalInfo():{gm:0},gb=gi.gm?(Math.round(gi.gm/6)/10)+'h / day':'';
+ var shOn=false;try{shOn=window.__tl&&window.__tl.sheetOn()}catch(e){}
+ var bgv=document.documentElement.getAttribute('data-bg')||'1',cd=document.documentElement.getAttribute('data-card')||'1';
+ $('sbBody').innerHTML='<div class="sb-sec">Quick Controls</div>'
+ +'<div class="sb-ctl"><span>Theme</span>'+seg('sbTh',[['dark','Dark'],['light','Light']],th)+'</div>'
+ +'<div class="sb-ctl"><span>Default Study Mode</span>'+seg('sbMd',[['revision','Revision'],['first_study','New']],md==='revision'?'revision':'first_study')+'</div>'
+ +'<div class="sb-ctl"><span>Default Difficulty</span>'+seg('sbDf',[['Easy','आसान'],['Medium','ठीक-ठाक'],['Hard','दोहराना']],df)+'</div>'
+ +'<div class="sb-ctl"><span>Default View Mode</span><div class="sb-chips" id="sbVw">'+WS_VIEWS.map(function(v){return '<button type="button" data-v="'+v.key+'" class="'+(v.key===vw?'on':'')+'">'+v.label.replace(' View','')+'</button>'}).join('')+'</div></div>'
+ +'<div class="sb-sec">Tools</div>'
+ +row('subjects','sub','Subjects &amp; Chapters',subs+' विषय')+row('goal','goal','Daily Study Goal',gb)+row('eximp','ex','Export &amp; Import','CSV · XLSX')+row('backup','sh','Google Sheet Backup',shOn?'Connected':'')+row('bg','bg','Background &amp; Cards','BG '+bgv+' · Card '+cd);
+}
+function fbSync(){
+ var t=$('fbTitle'),st=$('fbStatus'),d=$('fbDot'),av=$('fbAvatar'),ac=$('fbActions'),lb=$('fbLoginBtn');if(!t||!$('sbFn'))return;
+ var on=!!ac&&ac.style.display!=='none',canLogin=!!lb&&lb.style.display!=='none';
+ $('sbFn').textContent=on?(t.textContent||'Account'):'Cloud Backup';
+ $('sbFs').style.display=(on||canLogin)?'':'none';
+ $('sbFt').textContent=on?(st?st.textContent:''):'लॉगिन नहीं है';
+ $('sbFd').className=on&&d&&/(^|\s)ok(\s|$)/.test(d.className)?'ok':'';
+ $('sbLogin').style.display=(!on&&canLogin)?'':'none';$('sbFa').style.display=on?'flex':'none';
+ $('sbAv').innerHTML=(on&&av&&av.src&&av.style.display!=='none')?'<img alt="" referrerpolicy="no-referrer" src="'+av.src+'">':'<svg viewBox="0 0 24 24">'+IC.cl+'</svg>';
+ if(!on)popClose();
+}
+function popClose(){var p=$('sbPop');if(p)p.classList.remove('on')}
+var mo=new MutationObserver(fbSync),mi=setInterval(function(){var b=$('fbBox');if(b){mo.observe(b,{subtree:true,childList:true,attributes:true,characterData:true});clearInterval(mi);fbSync();}},400);
+var built=false;
+window.sbOpen=function(){
+ if(window.__sbIsOpen())return;
+ build();fbSync();popClose();var sb=$('appSidebar');sb.setAttribute('aria-hidden','false');
+ void sb.offsetWidth;                                  /* पहले लेआउट पक्का, फिर स्लाइड - पहली फ्रेम में झपक नहीं */
+ requestAnimationFrame(function(){document.body.classList.add('sb-open');});
+ try{haptic('light')}catch(e){}
+};
+window.sbClose=function(){popClose();document.body.classList.remove('sb-open');$('appSidebar').setAttribute('aria-hidden','true');};
+window.__sbIsOpen=function(){return document.body.classList.contains('sb-open')};
+$('sbBody').addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b)return;var p=b.parentNode,v=b.dataset.v,a=b.dataset.a;
+ if(p.id==='sbTh'){if(v!==(document.documentElement.getAttribute('data-theme')||'dark'))toggleTheme();p.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});return;}
+ if(p.id==='sbMd'){LS('ru_def_mode',v);try{if(!state.run&&!(state.elapsed>0))setMode(v)}catch(x){}}
+ else if(p.id==='sbDf'){LS('ru_def_diff',v);try{setDiff(v)}catch(x){}}
+ else if(p.id==='sbVw'){LS('ru_ws_default_view',v);try{wsDefKey=v;wsViewIdx=Math.max(0,WS_VIEWS.findIndex(function(m){return m.key===v}));wsRender();}catch(x){}}
+ else if(a){sbClose();setTimeout(function(){window.__tl&&window.__tl.act(a,b)},200);return;}
+ else return;
+ p.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});try{haptic('light')}catch(x){}
+});
+$('sbDots').addEventListener('click',function(e){e.stopPropagation();$('sbPop').classList.toggle('on')});
+$('sbPop').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var f=b.dataset.f;popClose();
+ if(f==='bk'){try{fbBackup()}catch(x){}}else{sbClose();setTimeout(function(){try{f==='rs'?fbRestore():fbLogout()}catch(x){}},200);}});
+$('sbFoot').addEventListener('click',function(e){if(!e.target.closest('#sbPop,#sbDots'))popClose()});
+var x0=0,y0=0,sb=$('appSidebar');
+sb.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+sb.addEventListener('touchend',function(e){var t=e.changedTouches[0];if(t.clientX-x0<-60&&Math.abs(t.clientY-y0)<50)sbClose()},{passive:true});
+})();
+</script>
+
 
 <!-- ===== STUDY SESSION पेज (Home के + बटन से खुलता है): Select Lecture · Focus Timer · Session Review ===== -->
 <section class="sp" id="studyPage" role="dialog" aria-modal="true" aria-label="Study Session" aria-hidden="true">
@@ -5868,7 +6006,9 @@ function restoreSession() {
 // --- FLOW LOGIC ---
 function go(tab) {
   spCloseNow();   // Study Session पेज खुला हो तो पहले उसे बंद करो
-  if (tab === 'history') { openWS(0); return; }
+  if (tab === 'database') { if (window.sbOpen) window.sbOpen(); return; }
+  if (tab === 'history') { if (wsOpen) wsSetTab(1); else openWS(1, true); return; }
+  if (tab === 'study') { if (wsOpen) { if (wsTab !== 0) wsSetTab(0); } else openWS(0, true); return; }
   if (wsOpen) { wsAfterExit = () => go(tab); wsExitAll(); return; }
   navShow();
   document.querySelectorAll('.ni').forEach(n => n.classList.toggle('active', n.getAttribute('data-tab') === tab));
@@ -5909,12 +6049,14 @@ function spCloseNow() { if (spOpen) spFinish(); }
 (function () {   // + बटन सिर्फ़ Home टैब पर दिखे (Master Database / Study Session खुले हों तो नहीं)
   const fab = document.getElementById('spFab'), vs = document.getElementById('view-study'); if (!fab || !vs) return;
   const sync = function () {
-    const show = vs.classList.contains('active') && !document.body.classList.contains('in-ws') && !document.body.classList.contains('sp-open');
+    const bc = document.body.classList, show = bc.contains('in-ws') && wsOpen && (wsTab === 0 || wsTab === 1) && !['sp-open', 'ws-deep', 'ws-sel', 'ds-on', 'tl-open', 'sb-open', 'chp-on'].some(c => bc.contains(c));
     fab.classList.toggle('hide', !show);
   };
   new MutationObserver(sync).observe(vs, { attributes: true, attributeFilter: ['class'] });
   new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-  sync();
+  sync(); window.__fabSync = sync; setInterval(sync, 600);
+  ['popstate', 'pageshow', 'resize', 'transitionend', 'touchend'].forEach(function (ev) { window.addEventListener(ev, function () { setTimeout(sync, 60); }, true); });
+  document.addEventListener('visibilitychange', sync);
 })();
 
 function setMode(m) {
@@ -7267,7 +7409,7 @@ const HF = (function () {
 })();
 
 // ===================== MASTER DATABASE : FULL-PAGE WORKSPACE =====================
-const WS_TABS = ['History', 'Subjects'];            // 3rd tab (Analytical Forecast) is reserved for later
+const WS_TABS = ['Analytics', 'History', 'Subjects'];            // 3rd tab (Analytical Forecast) is reserved for later
 const WS_VIEWS = [
   { key: 'list', label: 'List View', icon: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/></svg>' },
   { key: 'grid', label: 'Grid View', icon: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>' },
@@ -7351,7 +7493,7 @@ const WS_HEADS = [['Date', 'Subject', 'Chapter', 'Lecture', 'Time', 'Diff'], ['S
 const WS_H_SUBS = ['Subject', 'Chapters', 'Started', 'Revisions', 'Time', 'Last'], WS_H_CHAP = ['Chapter', 'Revisions', 'Time', 'Lectures', 'Last'];
 
 // ---------- modern empty state ----------
-function uiStartSession() { try { if (wsOpen) { go('study'); setTimeout(function () { try { openStudyPage(); } catch (e) {} }, 450); } else openStudyPage(); } catch (e) {} }
+function uiStartSession() { try { openStudyPage(); } catch (e) {} }
 function uiResetFilters(tab) { try { if (tab === 1) chRm('all'); else { HF.rm('all'); var q = g('histSearchInput'); if (q && q.value) { q.value = ''; q.dispatchEvent(new Event('input')); } } } catch (e) {} }
 function wsEmptyBox(t, d, act) {
   const ic = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
@@ -7534,7 +7676,7 @@ var chShKeep = null;
 function chRecFilter() { chReopen = true; openFSheet(); }   // रिकॉर्ड शीट अपनी जगह खुली रहे, फ़िल्टर उसके ऊपर खुले
 function wsPush() { try { history.pushState({ wd: wsDepth + 1 }, ''); wsDepth++; } catch (e) {} }
 function chSubOpen(s) {
-  chSt.sy = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = null; chSt.lec = null; chSt.direct = false; chSt.viaSub = false; chPopMem = null; chF = { sort: 'recent', stat: 'all', sub: 'all' }; haptic('light');
+  chSt.sy = g('wsPane2').scrollTop; chSt.sub = s; chSt.chap = null; chSt.lec = null; chSt.direct = false; chSt.viaSub = false; chPopMem = null; chF = { sort: 'recent', stat: 'all', sub: 'all' }; haptic('light');
   wsPush(); wsRender(); wsSetScroll(1, 0);
 }
 
@@ -7543,7 +7685,7 @@ var SP_CHEV = '<svg class="sp2-chev" viewBox="0 0 24 24" width="14" height="14" 
 function subPopGo(sub, chap, item) {   // item: 'all' या लेक्चर का नाम
   chPopMem = { via: 'sub', sub: sub, chap: chap, item: item };
   chPopClose();
-  chSt.sy = g('wsPane1').scrollTop; chF = { sort: 'recent', stat: 'all', sub: 'all' }; chRF = { d: [], m: [], l: [] };
+  chSt.sy = g('wsPane2').scrollTop; chF = { sort: 'recent', stat: 'all', sub: 'all' }; chRF = { d: [], m: [], l: [] };
   chSt.sub = sub; chSt.chap = chap; chSt.viaSub = true; haptic('light');
   if (item === 'all') { chSt.lec = null; chSt.direct = false; } else { chSt.lec = item; chSt.cy = 0; chSt.direct = true; }
   wsPush(); wsRender(); wsSetScroll(1, 0);
@@ -7689,9 +7831,9 @@ function chPopSchedule(n) {
   chPopTm = setTimeout(function () {
     if (!chPopMem) return;
     const viaS = chPopMem.via === 'sub';
-    if (viaS ? !(wsOpen && wsTab === 1 && !chSt.sub) : !(wsOpen && wsTab === 1 && chSt.sub === chPopMem.sub && !chSt.chap)) return;
+    if (viaS ? !(wsOpen && wsTab === 2 && !chSt.sub) : !(wsOpen && wsTab === 2 && chSt.sub === chPopMem.sub && !chSt.chap)) return;
     if ((wsSliding || wsGliding || wsIgnore) && n < 14) { chPopSchedule(n + 1); return; }
-    const row = Array.from(g('wsPane1').querySelectorAll(viaS ? '[data-ss]' : '[data-cs]')).find(x => viaS ? x.dataset.ss === chPopMem.sub : (x.dataset.cs === chPopMem.sub && x.dataset.cc === chPopMem.chap));
+    const row = Array.from(g('wsPane2').querySelectorAll(viaS ? '[data-ss]' : '[data-cs]')).find(x => viaS ? x.dataset.ss === chPopMem.sub : (x.dataset.cs === chPopMem.sub && x.dataset.cc === chPopMem.chap));
     if (!row) { chPopMem = null; return; }
     const go = function () { if (viaS) subPopOpen(row, null, true); else chPopOpen(row, null, true); };
     const rc = row.getBoundingClientRect();
@@ -7712,14 +7854,14 @@ document.addEventListener('click', e => {
   dsCloseNow(); e.stopPropagation(); e.preventDefault();
 }, true);
 function chOpenLec(sub, chap, lec) {   // सीधे Lecture के डेटा पर (बीच का सूची पेज छोड़कर); Back से सूची, फिर चैप्टर
-  chSt.y = g('wsPane1').scrollTop; chSt.sub = sub; chSt.chap = chap; chSt.lec = lec; chSt.cy = 0; chSt.direct = true; chSt.viaSub = false;
+  chSt.y = g('wsPane2').scrollTop; chSt.sub = sub; chSt.chap = chap; chSt.lec = lec; chSt.cy = 0; chSt.direct = true; chSt.viaSub = false;
   chRF = { d: [], m: [], l: [] }; haptic('light');
   wsPush(); wsRender(); wsSetScroll(1, 0);
 }
 window.addEventListener('popstate', () => chPopClose());
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { chPopClose(); chHdrRestore(); } });
 function chOpen(s, c, fromSearch) {
-  chSt.y = g('wsPane1').scrollTop; chSt.sub = s; chSt.chap = c; chSt.lec = null; chSt.direct = false; chSt.viaSub = false; chRF = { d: [], m: [], l: [] }; haptic('light');
+  chSt.y = g('wsPane2').scrollTop; chSt.sub = s; chSt.chap = c; chSt.lec = null; chSt.direct = false; chSt.viaSub = false; chRF = { d: [], m: [], l: [] }; haptic('light');
   if (fromSearch) {
     chPopMem = null;
     chF = { sort: 'recent', stat: 'all', sub: 'all' };
@@ -7728,7 +7870,7 @@ function chOpen(s, c, fromSearch) {
   wsRender(); wsSetScroll(1, 0);
 }
 function chLecOpen(l) {
-  chSt.cy = g('wsPane1').scrollTop; chSt.lec = l; chSt.direct = false; haptic('light'); wsPush(); wsRender(); wsSetScroll(1, 0);
+  chSt.cy = g('wsPane2').scrollTop; chSt.lec = l; chSt.direct = false; haptic('light'); wsPush(); wsRender(); wsSetScroll(1, 0);
 }
 function chBackDo() {
   if (chSt.viaSub) { chSt.viaSub = false; chSt.sub = null; chSt.chap = null; chSt.lec = null; chSt.direct = false; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.sy || 0)); chPopSchedule(); return; }   // विषय-पॉपअप से आए थे: Back से सीधे विषय सूची + पॉपअप दोबारा
@@ -7771,7 +7913,7 @@ function wsOvLine(prog) {   // टैब की नीली लाइन उं
   if (!wsOv) return;
   const ln = wsOv.querySelector('.ws-tab-line');
   if (ln) { ln.style.transition = 'none'; ln.style.transform = 'translate3d(' + (prog * 100) + '%,0,0)'; }
-  wsOv.querySelectorAll('.ws-tab').forEach((b, i) => b.classList.toggle('active', i === (prog > 0.5 ? 1 : 0)));
+  wsOv.querySelectorAll('.ws-tab').forEach((b, i) => b.classList.toggle('active', i === Math.round(prog)));
 }
 function wsOvEnd() { clearTimeout(wsOvT); if (wsOv) { wsOv.remove(); wsOv = null; } g('wsScreen').classList.remove('ws-swiping'); }
 function wsOvFinish(i) {   // स्लाइड खत्म होने तक कॉपी टिके, फिर असली हेडर दिखे (उसी जगह)
@@ -7809,55 +7951,59 @@ function wsRender() {
   chPopClose();
   if (!window.__wsReady || !g('wsScreen')) return;
   const hist = getVisibleLogs();
-  wsSetPane('wsPane0', wsHistHTML(hist));
+  wsSetPane('wsPane1', wsHistHTML(hist));
   let o = null, chList = [], subs = [];
   if (chSt.sub && !subList().some(x => x[0] === chSt.sub)) { chSt.sub = null; chSt.chap = null; chSt.lec = null; }
   if (chSt.chap) { o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap); if (!o) { chSt.chap = null; chSt.lec = null; } }
   const plvl = chSt.sub ? (o ? (chSt.lec ? 3 : 2) : 1) : 0;      // 0 subjects, 1 chapters of a subject, 2 chapter, 3 lecture
   const k1 = plvl + '|' + chSt.sub + '|' + chSt.chap + '|' + chSt.lec;
   let wsGh = null;
-  if (wsK1 !== undefined && k1 !== wsK1 && wsOpen && wsTab === 1 && wsTp === 1 && wsPl !== undefined && plvl !== wsPl && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) wsGh = wsGhostMake();   // पुराना पेज सँभालकर रखो
+  if (wsK1 !== undefined && k1 !== wsK1 && wsOpen && wsTab === 2 && wsTp === 2 && wsPl !== undefined && plvl !== wsPl && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) wsGh = wsGhostMake();   // पुराना पेज सँभालकर रखो
   if (plvl !== 2) CR.forget();
-  if (plvl === 3) wsSetPane('wsPane1', chLecHTML(o, chSt.lec));
-  else if (plvl === 2) wsSetPane('wsPane1', CR.page(o));   // All Lectures: सीधे चैप्टर के सारे रिकॉर्ड
-  else if (plvl === 1) { chList = chFiltered(chF, chSt.sub); wsSetPane('wsPane1', wsBuild(chList.map(c => chapItem(c, true)), 1, WS_H_CHAP)); }
-  else { subs = subItems(); wsSetPane('wsPane1', wsBuild(subs, 1, WS_H_SUBS)); }
+  if (plvl === 3) wsSetPane('wsPane2', chLecHTML(o, chSt.lec));
+  else if (plvl === 2) wsSetPane('wsPane2', CR.page(o));   // All Lectures: सीधे चैप्टर के सारे रिकॉर्ड
+  else if (plvl === 1) { chList = chFiltered(chF, chSt.sub); wsSetPane('wsPane2', wsBuild(chList.map(c => chapItem(c, true)), 1, WS_H_CHAP)); }
+  else { subs = subItems(); wsSetPane('wsPane2', wsBuild(subs, 1, WS_H_SUBS)); }
   wsPlaceChrome();
-  const lvl = wsTab === 1 ? plvl : 0;
+  const lvl = wsTab === 2 ? plvl : 0;
   const SB0 = (k, s) => '<span onclick="chJump(' + k + ')">' + esc(s) + '</span>', SB = (k, s) => SVG_SEP + '<span onclick="chJump(' + k + ')">' + esc(s) + '</span>';
-  let title = 'Master Database', subHTML = '';
-  if (wsTab === 0) { const m = hist.reduce((a, l) => a + (Number(l.time) || 0), 0); subHTML = hist.length + (hist.length === 1 ? ' session' : ' sessions') + '<i class="wv-dot"></i>' + (Math.floor(m / 60) ? Math.floor(m / 60) + 'h ' : '') + (m % 60) + 'm'; }
+  let title = WS_TABS[wsTab], subHTML = '';
+  if (wsTab === 0) { subHTML = anSub(); } else if (wsTab === 1) { const m = hist.reduce((a, l) => a + (Number(l.time) || 0), 0); subHTML = hist.length + (hist.length === 1 ? ' session' : ' sessions') + '<i class="wv-dot"></i>' + (Math.floor(m / 60) ? Math.floor(m / 60) + 'h ' : '') + (m % 60) + 'm'; }
   else if (lvl === 0) subHTML = (subs.length || subList().length) + '<i class="wv-dot"></i>' + chData().length + ' Chapters';
   else if (lvl === 1) { title = chSt.sub; subHTML = ''; }
   else if (lvl === 2) { title = chSt.chap; subHTML = SB0(1, chSt.sub); }
   else { title = chSt.lec; subHTML = SB0(2, chSt.sub) + SB(1, chSt.chap); }
   g('wsTitle').textContent = title; g('wsSub').innerHTML = subHTML;
-  g('wsBack').style.display = lvl === 0 ? 'none' : '';
-  g('wsTop').classList.toggle('no-back', lvl === 0);
+  g('wsBack').style.display = ''; g('wsTop').classList.remove('no-back');
+  g('wsBack').innerHTML = lvl === 0 ? SVG_BURGER : SVG_BACK; g('wsBack').setAttribute('aria-label', lvl === 0 ? 'Menu' : 'Back'); g('wsBack').dataset.holdLabel = lvl === 0 ? 'Menu' : 'Back';
+  g('wsVw').style.display = (lvl >= 2 || wsTab === 0) ? 'none' : '';
+  { const gp = g('wsGoalPill'); if (gp) { gp.style.display = wsTab === 0 ? '' : 'none'; gp.innerHTML = anPillHTML(); } }
+  ['ws-t0', 'ws-t1', 'ws-t2'].forEach((c, i) => document.body.classList.toggle(c, wsOpen && wsTab === i));
+  anRender();
   g('wsViewIcon').innerHTML = WS_VIEWS[wsViewIdx].icon;
   const deep = lvl >= 2;
-  g('wsVw').style.display = lvl >= 2 ? 'none' : '';
-  g('wsSearchBtn').style.display = wsTab === 1 ? 'none' : '';   // search only in History
-  const showF = wsTab === 0 || lvl === 1 || lvl === 2;
+  
+  g('wsSearchBtn').style.display = wsTab === 0 ? 'none' : '';   // search only in History
+  const showF = wsTab === 1 || (wsTab === 2 && (lvl === 1 || lvl === 2));
   g('wsFilterBtn').style.display = showF ? '' : 'none';
   g('wsClose').style.display = 'none';
   g('wsMore').style.display = 'none';   // आंकड़े और रिकॉर्ड अब सीधे पेज पर हैं
-  if (chShOpen && !(wsTab === 1 && plvl === 2)) chSheetClose();
-  const n = wsTab === 0 ? fsActiveCount() : (lvl === 2 ? CR.count() : chActive());
+  if (chShOpen && !(wsTab === 2 && plvl === 2)) chSheetClose();
+  const n = wsTab === 1 ? fsActiveCount() : (lvl === 2 ? CR.count() : chActive());
   g('wsFilterBtn').classList.toggle('has', n > 0); g('wsBadge').textContent = n;
-  const wsDeep = wsTab === 1 && plvl >= 1;
+  const wsDeep = wsTab === 2 && plvl >= 1;
   document.body.classList.toggle('ws-deep', wsOpen && wsDeep);   // chapter / lecture pages: no tab bar, header stays open
   g('wsScreen').classList.toggle('deep', wsDeep);
-  g('wsScreen').classList.toggle('sel', selMode && wsTab === 0);
-  document.body.classList.toggle('ws-sel', wsOpen && selMode && wsTab === 0);
-  g('wsScreen').style.setProperty('--chrome-h', ((wsDeep || (selMode && wsTab === 0)) ? 52 : 96) + 'px');
+  g('wsScreen').classList.toggle('sel', selMode && wsTab === 1);
+  document.body.classList.toggle('ws-sel', wsOpen && selMode && wsTab === 1);
+  g('wsScreen').style.setProperty('--chrome-h', ((wsDeep || (selMode && wsTab === 1)) ? 52 : 96) + 'px');
   g('wsSelCount').textContent = selIds.size + ' Selected';
   document.querySelectorAll('#wsTabs .ws-tab').forEach((b, i) => b.classList.toggle('active', i === wsTab));
-  g('wsTrack').style.transform = 'translate3d(' + (-wsTab * 50) + '%,0,0)';
+  g('wsTrack').style.transform = 'translate3d(' + (-wsTab * 33.3333) + '%,0,0)';
   g('wsTabLine').style.transform = 'translate3d(' + (wsTab * 100) + '%,0,0)';
   wsHdrSync();
   if (wsK1 !== undefined && k1 !== wsK1) {
-    const pn = g('wsPane1');
+    const pn = g('wsPane2');
     pn.classList.remove('ws-fade', 'ws-in', 'ws-under'); void pn.offsetWidth;
     if (wsGh) {
       const fwd = plvl > wsPl, hd = document.createElement('div');
@@ -7891,7 +8037,7 @@ function wsHeaderClone() {   // हेडर की हूबहू कॉपी
 var wsSlideFin = null;
 function wsGhostMake() {   // पुराना पेज = उसकी लिस्ट + उसका हेडर, एक साथ
   if (wsSlideFin) wsSlideFin();
-  const pn = g('wsPane1'), tr = g('wsTrack');
+  const pn = g('wsPane2'), tr = g('wsTrack');
   tr.querySelectorAll(':scope > .ws-ghost, :scope > .ws-hd').forEach(e => e.remove());
   const wrap = document.createElement('div'); wrap.className = 'ws-ghost'; wrap.setAttribute('aria-hidden', 'true');
   const pc = pn.cloneNode(true);
@@ -7905,10 +8051,10 @@ function wsGhostMake() {   // पुराना पेज = उसकी लि
 }
 // ---------- collapsing header engine (Play Store style) ----------
 const WS_TOPH = 52;
-let wsHdrOff = 0, wsLastY = [0, 0], wsIgnore = false, wsSnapT = null, wsTouching = false;
-function wsCollapsible() { return !(selMode && wsTab === 0) && !(wsTab === 1 && !!chSt.sub); }
+let wsHdrOff = 0, wsLastY = [0, 0, 0], wsIgnore = false, wsSnapT = null, wsTouching = false;
+function wsCollapsible() { return !(selMode && wsTab === 1) && !(wsTab === 2 && !!chSt.sub); }
 function wsLine() {
-  const pin = g(wsTab ? 'wsPane1' : 'wsPane0').scrollTop > 4;
+  const pin = g('wsPane' + wsTab).scrollTop > 4;
   g('wsChrome').classList.toggle('pinned', pin);
   document.querySelectorAll('.ws-hd > .ws-hclone').forEach(c => c.classList.toggle('pinned', pin));
 }
@@ -8009,7 +8155,7 @@ function wsHdrScroll(y, dy) {
     if (wsHdrY(y) >= 0) wsHdrSet(0, 0, true);             // पूरा दिख गया: ऊपर टिक जाए
   }
 }
-[0, 1].forEach(idx => {
+[0, 1, 2].forEach(idx => {
   const pane = g('wsPane' + idx);
   pane.addEventListener('scroll', () => {
     const y = Math.max(0, pane.scrollTop), dy = y - wsLastY[idx];
@@ -8024,7 +8170,7 @@ function wsHdrScroll(y, dy) {
 });
 // जब लिस्ट स्क्रॉल हो ही नहीं सकती (छोटी / खाली), तब scroll इवेंट नहीं आता —
 // तब उंगली की ऊपर-नीचे हरकत (touch) से ही बार दिखाओ / छिपाओ।
-[0, 1].forEach(idx => {
+[0, 1, 2].forEach(idx => {
   const pane = g('wsPane' + idx);
   let ty = null;
   const noScroll = () => pane.scrollHeight - pane.clientHeight <= 1;
@@ -8086,28 +8232,29 @@ function exitWSDirect() {
   wsHdrOff = 0; wsApplyHdr(0, false);
   navAfterWS();
 }
-function wsBack() { if (wsDepth > 0) history.back(); else wsPop(); }
+function wsBack() { if (wsTab === 2 && chSt.sub) history.back(); else if (window.sbOpen) window.sbOpen(); }   // wsDepth में root का entry भी गिना जाता है, इसलिए गहराई chSt.sub से देखते हैं
 function wsPop() {
+  if (window.__sbIsOpen && window.__sbIsOpen()) { window.sbClose(); return true; }
   if (dsModal) { dsSubClose(); return true; }
   if (g('ds').classList.contains('open')) { dsCloseDirect(); return true; }
   if (g('wsPop').classList.contains('open')) { wsPopClose(); return true; }
   if (fsOpen) { closeFSheet(); return true; }
   if (chShOpen) { chSheetClose(); return true; }
-  if (wsOpen && wsTab === 1 && chSt.sub) { chBackDo(); return true; }
-  if (wsOpen) { exitWSDirect(); return true; }
+  if (wsOpen && wsTab === 2 && chSt.sub) { chBackDo(); return true; }
+  if (wsOpen && wsTab !== 0) { wsSetTab(0); return true; }
   return false;
 }
 function wsSetTab(i) {
   wsPopClose();
   const changed = i !== wsTab;
   if (changed) dsCloseNow();   // पहले सर्च बंद, फिर टैब बदले
-  if (changed) { if (selMode && i !== 0) exitSel(); haptic('light'); if (wsOpen && !wsOv) wsOvStart(); }
+  if (changed) { if (selMode && i !== 1) exitSel(); haptic('light'); if (wsOpen && !wsOv) wsOvStart(); }
   wsTab = i; wsRender();
   if (changed && wsOv) wsOvFinish(i);
 }
 window.addEventListener('popstate', e => {
   if (!wsOpen && !g('ds').classList.contains('open')) return;
-  const nonPushed = dsModal || g('wsPop').classList.contains('open') || fsOpen || chShOpen;
+  const nonPushed = (window.__sbIsOpen && window.__sbIsOpen()) || dsModal || g('wsPop').classList.contains('open') || fsOpen || chShOpen;
   if (nonPushed) { wsPop(); try { history.pushState({ wd: wsDepth }, ''); } catch (x) {} return; }
   const target = e.state && typeof e.state.wd === 'number' ? e.state.wd : 0;
   let guard = 8;
@@ -8153,7 +8300,7 @@ g('wsPopList').addEventListener('click', e => {
 (function () {
   const tr = g('wsTrack'); let lp = null, fired = false, x0 = 0, y0 = 0;
   tr.addEventListener('pointerdown', e => {
-    fired = false; const el = e.target.closest('[data-id]'); if (!el || wsTab !== 0) return;
+    fired = false; const el = e.target.closest('[data-id]'); if (!el || wsTab !== 1) return;
     x0 = e.clientX; y0 = e.clientY; clearTimeout(lp);
     lp = setTimeout(() => { fired = true; haptic('medium'); enterSel(el.dataset.id); }, 500);
   });
@@ -8164,23 +8311,23 @@ g('wsPopList').addEventListener('click', e => {
     if (fired) { fired = false; return; }
     if (!selMode && e.target.closest('a.nt-lkc, a.nt-lki, a[href]')) return;
     const h = e.target.closest('[data-id]');
-    if (h && wsTab === 0) { if (selMode) toggleSel(h.dataset.id); else hxToggle(h.dataset.id); return; }
+    if (h && wsTab === 1) { if (selMode) toggleSel(h.dataset.id); else hxToggle(h.dataset.id); return; }
     const lc = e.target.closest('[data-lec]');
-    if (lc && wsTab === 1) { chLecOpen(lc.dataset.lec); return; }
+    if (lc && wsTab === 2) { chLecOpen(lc.dataset.lec); return; }
     const sb = e.target.closest('[data-ss]');
-    if (sb && wsTab === 1) { subPopOpen(sb, e); return; }   // विषय टच: पॉपअप में चैप्टर, चैप्टर के नीचे लेक्चर
+    if (sb && wsTab === 2) { subPopOpen(sb, e); return; }   // विषय टच: पॉपअप में चैप्टर, चैप्टर के नीचे लेक्चर
     const c = e.target.closest('[data-cs]');
-    if (c && wsTab === 1) chPopOpen(c, e);
+    if (c && wsTab === 2) chPopOpen(c, e);
   });
   const vp = g('wsVp'), trk = g('wsTrack');
   let sx = 0, sy = 0, dx = 0, t0 = 0, sw = false, ign = false;
   const snapBack = () => {   // जहाँ होना चाहिए वहीं वापस; कभी अटके नहीं
-    trk.style.transition = ''; trk.style.transform = 'translate3d(' + (-wsTab * 50) + '%,0,0)';
+    trk.style.transition = ''; trk.style.transform = 'translate3d(' + (-wsTab * 33.3333) + '%,0,0)';
     sw = false; dx = 0; wsOvFinish(wsTab);
   };
   vp.addEventListener('touchstart', e => {
     if (e.touches.length !== 1) { ign = true; if (sw) snapBack(); return; }   // दूसरी उंगली आते ही स्वाइप रद्द
-    if (selMode || wsSearchOn() || (wsTab === 1 && chSt.sub) || e.target.closest('.tc, .fs-active, .ws-chrome')) { ign = true; return; }
+    if (selMode || wsSearchOn() || (wsTab === 2 && chSt.sub) || e.target.closest('.tc, .fs-active, .ws-chrome')) { ign = true; return; }
     ign = false; sw = false; dx = 0; t0 = Date.now(); sx = e.touches[0].clientX; sy = e.touches[0].clientY;
   }, { passive: true });
   vp.addEventListener('touchmove', e => {
@@ -8194,8 +8341,8 @@ g('wsPopList').addEventListener('click', e => {
     }
     dx = mx;
     const w = vp.offsetWidth || 360;
-    const prog = Math.max(0, Math.min(1, wsTab - dx / w));   // किनारे पर कोई खिंचाव नहीं
-    trk.style.transform = 'translate3d(' + (-prog * 50) + '%,0,0)';
+    const prog = Math.max(0, Math.min(2, wsTab - dx / w));   // किनारे पर कोई खिंचाव नहीं
+    trk.style.transform = 'translate3d(' + (-prog * 33.3333) + '%,0,0)';
     wsOvLine(prog);
   }, { passive: true });
   const endSw = e => {
@@ -8204,8 +8351,8 @@ g('wsPopList').addEventListener('click', e => {
     trk.style.transition = '';
     const w = vp.offsetWidth || 360, vx = dx / Math.max(1, Date.now() - t0);
     let next = wsTab;
-    if (wsTab === 0 && (dx < -w * 0.24 || (vx < -0.35 && dx < -30))) next = 1;
-    else if (wsTab === 1 && (dx > w * 0.24 || (vx > 0.35 && dx > 30))) next = 0;
+    if (wsTab < 2 && (dx < -w * 0.24 || (vx < -0.35 && dx < -30))) next = wsTab + 1;
+    else if (wsTab > 0 && (dx > w * 0.24 || (vx > 0.35 && dx > 30))) next = wsTab - 1;
     sw = false; dx = 0;
     if (next === wsTab) { snapBack(); return; }
     wsSetTab(next);
@@ -8215,8 +8362,8 @@ g('wsPopList').addEventListener('click', e => {
 })();
 
 // ---------- Filter & Sort sheet: chapter mode ----------
-function fsRecMode() { return wsOpen && wsTab === 1 && !!chSt.chap && !chSt.lec; }
-function fsChapMode() { return wsOpen && wsTab === 1 && !!chSt.sub && !chSt.chap; }
+function fsRecMode() { return wsOpen && wsTab === 2 && !!chSt.chap && !chSt.lec; }
+function fsChapMode() { return wsOpen && wsTab === 2 && !!chSt.sub && !chSt.chap; }
 function fxLayout(m) {
   const sb = g('fxSort').parentElement, dv = sb.nextElementSibling, lab = (id, t) => { g(id).previousElementSibling.textContent = t; };
   sb.style.display = dv.style.display = m === 'rec' ? 'none' : '';
@@ -8448,11 +8595,11 @@ let dsQ = '', dsSubs = [], dsC2 = '', dsC3 = '', dsMod = '', dsModal = null, dsM
 try { dsRecent = JSON.parse(localStorage.getItem('ru_ws_recent') || '[]'); } catch (e) { dsRecent = []; }
 const DS_MOD = ['Today', 'Last 7 days', 'Last 30 days', 'This year'];
 function dsCfg() {
-  return wsTab === 0
+  return wsTab === 1
     ? { c2: { label: 'Difficulty', opts: [['Easy', 'आसान'], ['Medium', 'ठीक-ठाक'], ['Hard', 'दोहराना है']] }, c3: { label: 'Type', opts: [['revision', 'रिवीजन'], ['add', 'नया']] } }
     : { c2: { label: 'Status', opts: [['started', 'शुरू हो चुके'], ['idle', 'अभी शुरू नहीं']] }, c3: { label: 'Progress', opts: [['none', '0 लेक्चर'], ['part', 'कुछ लेक्चर'], ['all', 'सारे लेक्चर']] } };
 }
-function dsSubjects() { return wsTab === 0 ? [...new Set(getLogs().map(l => l.sub).filter(Boolean))] : [...new Set(chData().map(o => o.sub))]; }
+function dsSubjects() { return wsTab === 1 ? [...new Set(getLogs().map(l => l.sub).filter(Boolean))] : [...new Set(chData().map(o => o.sub))]; }
 function reEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function hl(text, q) { const e = esc(text); q = q.trim(); return q ? e.replace(new RegExp('(' + reEsc(esc(q)) + ')', 'gi'), '<mark class="ws-m">$1</mark>') : e; }
 function wsSearchOn() { return g('ds') && g('ds').classList.contains('open'); }
@@ -8466,11 +8613,11 @@ function wsHistHTML(all) {   // History list: search band ho to usi list ko usi 
   const head = '<div class="ds-head"><span>' + (dsQ.trim() ? 'Results in History' : 'All History') + '</span><span>' + res.length + ' found</span></div>';
   return head + (res.length ? wsBuild(res.map(histItem), 0) : wsEmptyBox('No results found', 'Try a different search'));
 }
-function wsRenderHist() { if (window.__wsReady && g('wsPane0')) wsSetPane('wsPane0', wsHistHTML(getVisibleLogs())); }
+function wsRenderHist() { if (window.__wsReady && g('wsPane1')) wsSetPane('wsPane1', wsHistHTML(getVisibleLogs())); }
 new MutationObserver(() => { wsRenderHist(); }).observe(g('ds'), { attributes: true, attributeFilter: ['class'] });
 (function () {   // search sirf History tab me hai; Subjects par jate hi band ho jaye
   const _t = wsSetTab;
-  wsSetTab = function (i) { _t.apply(this, arguments); if (wsSearchOn() && wsTab !== 0) dsBack(); };
+  wsSetTab = function (i) { _t.apply(this, arguments); if (wsSearchOn() && wsTab !== 1) dsBack(); };
 })();
 new MutationObserver(() => { document.body.classList.toggle('ds-on', g('ds').classList.contains('open')); }).observe(g('ds'), { attributes: true, attributeFilter: ['class'] });
 function openDS() {
@@ -8499,7 +8646,7 @@ function dsMatchMod(ts) {
 }
 function dsResults() {
   const q = dsQ.trim().toLowerCase();
-  if (wsTab === 0) return getLogs().filter(l => {
+  if (wsTab === 1) return getLogs().filter(l => {
     if (q && !((l.sub || '') + ' ' + (l.chap || '') + ' ' + (l.lec || '') + ' ' + (l.notes || '') + ' ' + (l.date || '') + ' ' + diffHi(l.diff)).toLowerCase().includes(q)) return false;
     if (dsSubs.length && !dsSubs.includes(l.sub)) return false;
     if (dsC2 && l.diff !== dsC2) return false;
@@ -9021,7 +9168,8 @@ function wsExitAll() {
     }
     if (window.__tlHasOverlay && window.__tlHasOverlay()) { window.__tlBack(); return; }
     if (typeof spOpen !== 'undefined' && spOpen) { closeStudyPage(); return; }
-    if (wsOpen || g('ds').classList.contains('open')) { wsBack(); return; }
+    if (window.__sbIsOpen && window.__sbIsOpen()) { window.sbClose(); return; }
+    if (wsOpen || g('ds').classList.contains('open')) { if (wsTab === 2 && chSt.sub) { history.back(); return; } if (wsPop()) return; }
     if (wsPop()) return;
     const act = document.querySelector('.ni.active');
     if (act && act.getAttribute('data-tab') !== 'study') { go('study'); return; }
@@ -11982,7 +12130,7 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
   // - किसी भी कार्ड के अंदर के हिस्से अलग-अलग नहीं टूटेंगे; पूरा स्क्रॉल कंटेंट एक इकाई की तरह नर्म रबड़ जैसा स्ट्रेच होगा।
   const K = 0.16; // 16% Ultra-Soft setting
   const FIXED_CHROME = '.app-header, .ws-chrome, .ws-hclone, .ws-ov, .bbw, .sp-bar, .sp-fab, .tl-sub-bar, .tl-sheet-h, .tl-sheet-t, #ncPage header, #ncPage .cw, #ncPage .btm-wrap, .hf-sheet-top, .hf-sheet-footer, .fx-top, .fx-foot, .chm-h, .chm-hd, .chp-h, .chp-top, .sp2-top, #di';
-  const PAGE_SCROLLERS = new Set(['wsPane0', 'wsPane1', 'spBody', 'tlSubBody', 'tlSheetB', 'hfSheetBody', 'crBody', 'nc_notesPane', 'nc_ldb', 'dsSh']);
+  const PAGE_SCROLLERS = new Set(['wsPane0', 'wsPane1', 'wsPane2', 'spBody', 'tlSubBody', 'tlSheetB', 'hfSheetBody', 'crBody', 'nc_notesPane', 'nc_ldb', 'dsSh']);
 
   function isPageScroller(el) {
     if (!el || el.nodeType !== 1) return false;
@@ -12014,7 +12162,7 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
       const v = scroller.querySelector('main.view.active');
       return v ? [v] : [];
     }
-    if (scroller.id === 'wsPane0' || scroller.id === 'wsPane1') {
+    if (scroller.id === 'wsPane0' || scroller.id === 'wsPane1' || scroller.id === 'wsPane2') {
       const bw = scroller.querySelector(':scope > .ws-bounce-wrap');
       if (bw) return [bw];
     }
@@ -12139,7 +12287,7 @@ html.is-scrolling .bg-orb{animation-play-state:paused!important}
 
     if (!edge) {
       // Master Database: हेडर बार अभी खुल/छिप रहा हो तो पहले उसी को चलने दें, खिंचाव बाद में
-      if (activeScroller.id === 'wsPane0' || activeScroller.id === 'wsPane1') {
+      if (activeScroller.id === 'wsPane0' || activeScroller.id === 'wsPane1' || activeScroller.id === 'wsPane2') {
         try {
           if (typeof wsHdrY === 'function' && wsCollapsible()) {
             if (atTop && stepY > 0 && wsHdrY(st) < -0.5) return;
@@ -12650,7 +12798,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
     const hub = $('tlHub'); if (!hub) return;
     const s = stats(), gm = goalMin(), pct = gm ? Math.min(100, Math.round(s.today / gm * 100)) : 0;
     const goalMain = gm ? 'Today: ' + fmtHM(s.today) + ' / ' + fmtHM(gm) + ' Goal' : 'Tap to set daily goal';
-    const goalSub = gm ? (s.today >= gm ? 'Goal complete 🎉' : fmtHM(gm - s.today) + ' to go') : 'Today: ' + fmtHM(s.today);
+    const goalSub = gm ? (s.today >= gm ? 'Goal complete' : fmtHM(gm - s.today) + ' to go') : 'Today: ' + fmtHM(s.today);
     const sessBadge = (DIFF.find(d => d[0] === defDiff()) || DIFF[1]);
     const modeBadge = (MODES.find(m => m[0] === defMode()) || MODES[0])[1];
     hub.innerHTML =
@@ -12969,15 +13117,16 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
   })();
   KINDS.eximp = {
     init: () => ({}),
-    head() { return { title: 'Export & Import', sub: uSt.bakScope === 'syl' ? 'सिलेबस' : 'पढ़ाई हिस्ट्री' }; },
+    head() { return { title: 'Export & Import', sub: '' }; },
     body() {
       const syl = uSt.bakScope === 'syl', n = sylNums(); let ln = 0; try { ln = getLogs().length; } catch (e) {}
-      const X = [['xlsx', 'Excel (.xlsx)', 'Formatted Sheet', IC.sheet, '#34d399'], ['csv', 'CSV (.csv)', 'Universal CSV', IC.filetext, '#38bdf8'], ['share', 'Share', 'Send to Apps', IC.share, '#a78bfa'], ['copy', 'Copy', 'Copy to Clipboard', IC.copy, '#fbbf24']];
-      return '<div class="tl-seg" role="tablist"><button type="button" role="tab" data-a="sc" data-sc="hist" class="' + (syl ? '' : 'on') + '">' + IC.history + '<span class="tl-seg-t"><b>पढ़ाई हिस्ट्री</b><small>' + ln + ' सेशन</small></span></button><button type="button" role="tab" data-a="sc" data-sc="syl" class="' + (syl ? 'on' : '') + '">' + IC.library + '<span class="tl-seg-t"><b>सिलेबस</b><small>' + n.s + ' विषय · ' + n.l + ' लेक्चर</small></span></button></div>' +
+      const I2 = { hist: P('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), syl: P('<path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2z"/><path d="M22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/>'), xl: P('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/>'), csv: P('<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'), sh: P('<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>'), cp: P('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>') };
+      const X = [['xlsx', 'Excel', '', I2.xl, '#34d399'], ['csv', 'CSV', '', I2.csv, '#38bdf8'], ['share', 'Share', '', I2.sh, '#a78bfa'], ['copy', 'Copy', '', I2.cp, '#fbbf24']];
+      return '<div class="tl-seg" role="tablist"><button type="button" role="tab" data-a="sc" data-sc="hist" class="' + (syl ? '' : 'on') + '">' + I2.hist + '<span class="tl-seg-t"><b>हिस्ट्री</b><small>' + ln + ' सेशन</small></span></button><button type="button" role="tab" data-a="sc" data-sc="syl" class="' + (syl ? 'on' : '') + '">' + I2.syl + '<span class="tl-seg-t"><b>सिलेबस</b><small>' + n.s + ' विषय · ' + n.l + ' लेक्चर</small></span></button></div>' +
         '<div class="tl-lbl tl-sech">Import</div>' +
         '<div class="tl-drop' + (impBusy ? ' busy' : '') + '" role="button" tabindex="0" data-a="imp"><span class="tl-drop-ic">' + (impBusy ? IC.loader.replace('class="tl-i"', 'class="tl-i tl-spin"') : IC.fileup) + '</span><b>' + (impBusy ? 'Importing…' : 'फ़ाइलें चुनें') + '</b><span class="tl-fmts"><i>CSV</i><i>XLSX</i></span></div>' +
         (impReport ? '<div class="tl-report">' + IC.circlecheck + '<span>' + esc(impReport) + '</span><button type="button" class="tl-rep-x" data-a="repx" aria-label="Dismiss">' + IC.x + '</button></div>' : '') +
-        '<div class="tl-lbl tl-sech">Export</div><div class="tl-tiles2">' + X.map(x => '<button type="button" class="tl-xt" data-a="xp" data-f="' + x[0] + '" style="--ac:' + x[4] + '"><span class="tl-ib">' + x[3] + '</span><b>' + x[1] + '</b><span class="s">' + x[2] + '</span></button>').join('') + '</div>';
+        '<div class="tl-lbl tl-sech">Export</div><div class="tl-tiles2">' + X.map(x => '<button type="button" class="tl-xt" data-a="xp" data-f="' + x[0] + '" style="--ac:' + x[4] + '"><span class="tl-ib">' + x[3] + '</span><b>' + x[1] + '</b></button>').join('') + '</div>';
     },
     act(pg, a, el) {
       if (a === 'sc') { try { setBakScope(el.dataset.sc); } catch (e) {} renderPage(pg); }
@@ -12999,13 +13148,12 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
   KINDS.backup = {
     static: true,
     init: () => ({}),
-    head() { return { title: 'Cloud & Sheet Sync', sub: 'Google Cloud · Google Sheet', badge: syncBadge() }; },
+    head() { return { title: 'Google Sheet Backup', sub: '', badge: sheetOn() ? 'Connected' : '' }; },
     mount(pg) {
-      const b = pg.el.querySelector('.tl-sub-body'), fb = $('fbBox'); pg.fbParent = fb ? fb.parentNode : null;
-      b.innerHTML = '<div class="tl-bkslot"></div><div class="tl-shslot"></div>';
-      if (fb) b.querySelector('.tl-bkslot').appendChild(fb);
+      const b = pg.el.querySelector('.tl-sub-body');
+      b.innerHTML = '<div class="tl-shslot"></div>';
     },
-    unmount(pg) { const fb = $('fbBox'), par = pg.fbParent; if (fb && par && !par.contains(fb)) par.insertBefore(fb, $('shBox')); },
+    unmount(pg) {},
     refresh(pg, body) { const sl = body.querySelector('.tl-shslot'); if (sl) sl.innerHTML = shCardHtml(); },
     act(pg, a) {
       if (a === 'shcfg') openShSheet();
@@ -13107,6 +13255,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
 
   const shake = el => { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); hap('warning'); };
 
+  window.__openGoal = openGoal; window.__goalInfo = function () { return { gm: goalMin(), today: stats().today }; };
   function openGoal() {
     const gm = goalMin(), hrs = [1, 2, 3, 4, 6, 8], s = stats(), pct = gm ? Math.min(100, Math.round(s.today / gm * 100)) : 0;
     sheet('Daily Study Goal',
@@ -13253,6 +13402,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
   }
 
   /* ---- actions ---- */
+  window.__tl = { act: function (a, el) { return act(a, el); }, K: K, sync: function () { try { return syncBadge(); } catch (e) { return ''; } }, sheetOn: function () { return sheetOn(); } };
   function act(a, el) {
     hap();
     switch (a) {
@@ -13369,6 +13519,30 @@ body.nav-hide .wrap { padding-bottom: calc(24px + var(--sab)); }
 .ws-bounce-wrap { display: block; }
 .hx-in { display: block; }
 </style>
+<script id="v3js">
+var SVG_BURGER='<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>', SVG_BACK='<svg viewBox="0 0 24 24"><path d="M20 12H4M10 18l-6-6 6-6"/></svg>';
+function anFmt(m){m=Math.round(m||0);return (Math.floor(m/60)?Math.floor(m/60)+'h ':'')+(m%60)+'m';}
+function anToday(){const t=new Date().toLocaleDateString('en-GB');let l=[];try{l=getLogs()}catch(e){}const x=l.filter(a=>a.date===t);return {m:x.reduce((a,b)=>a+(Number(b.time)||0),0),n:x.length};}
+function anGoal(){try{return window.__goalInfo?window.__goalInfo():{gm:0,today:0}}catch(e){return {gm:0,today:0}}}
+function anSub(){const t=anToday();return 'Today'+'<i class="wv-dot"></i>'+anFmt(t.m)+'<i class="wv-dot"></i>'+t.n+(t.n===1?' session':' sessions');}
+function anPillHTML(){const g=anGoal(),p=g.gm?Math.min(100,g.today/g.gm*100):0,c=2*Math.PI*9;return '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".28" stroke-width="2"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2" stroke-dasharray="'+(c*p/100).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 12 12)"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>';}
+function anInit(){const p=document.getElementById('wsPane0');if(!p||p.dataset.init)return;p.dataset.init=1;
+ const goal=document.createElement('div');goal.id='anGoal';const sub=document.createElement('div');sub.id='anSubj';
+ p.appendChild(goal);const sr=document.querySelector('.stats-row'),hc=document.getElementById('weeklyHabitCard');
+ if(sr)p.appendChild(sr);if(hc)p.appendChild(hc);p.appendChild(sub);}
+function anRender(){const goal=document.getElementById('anGoal'),sub=document.getElementById('anSubj');if(!goal||!sub)return;
+ const g=anGoal(),pct=g.gm?Math.min(100,Math.round(g.today/g.gm*100)):0;
+ goal.innerHTML='<button type="button" class="an-goal" aria-label="Daily Study Goal"><span class="an-gi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></svg></span><span class="an-gt"><b>Daily Study Goal</b><span>'+(g.gm?anFmt(g.today)+' / '+anFmt(g.gm)+(g.today>=g.gm?' · Done':''):'Tap to set a goal')+'</span></span>'+(g.gm?'<span class="an-gp">'+pct+'%</span>':'<span class="an-gc"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>')+'<i class="an-gbar"><u style="width:'+pct+'%"></u></i></button>';
+ goal.firstChild.onclick=function(){window.__openGoal&&window.__openGoal();};
+ let logs=[];try{logs=getLogs()}catch(e){}const M={};
+ logs.forEach(l=>{const k=l.sub||'—';(M[k]=M[k]||{t:0,Easy:0,Medium:0,Hard:0});M[k].t+=Number(l.time)||0;if(M[k][l.diff]!==undefined)M[k][l.diff]++;});
+ const rows=Object.keys(M).map(k=>[k,M[k]]).sort((a,b)=>b[1].t-a[1].t).slice(0,8),mx=Math.max(1,...rows.map(r=>r[1].t));
+ const C={Easy:'var(--d-easy,#34d399)',Medium:'var(--d-med,#fbbf24)',Hard:'var(--d-hard,#f87171)'};
+ sub.innerHTML='<div class="an-card"><div class="an-h">Subject-wise Time &amp; Difficulty</div>'+(rows.length?rows.map(r=>{const d=r[1],n=d.Easy+d.Medium+d.Hard||1;
+  return '<div class="an-r"><div class="an-rt"><span>'+esc(r[0])+'</span><span>'+anFmt(d.t)+'</span></div><div class="an-b"><i style="width:'+Math.max(3,d.t/mx*100)+'%"></i></div><div class="an-d">'+['Easy','Medium','Hard'].map(x=>d[x]?'<i style="width:'+d[x]/n*100+'%;background:'+C[x]+'"></i>':'').join('')+'</div></div>';}).join('')+'<div class="an-lg"><span>● Easy</span><span>● Medium</span><span>● Hard</span></div>':'<div class="an-empty">अभी कोई रिकॉर्ड नहीं</div>')+'</div>';}
+(function(){const st=function(){try{anInit();openWS(0,true);}catch(e){console.error('v3 boot',e);}};
+ if(document.readyState==='complete')setTimeout(st,0);else window.addEventListener('load',function(){setTimeout(st,0);});})();
+</script>
 </body>
 </html>
     
