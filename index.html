@@ -3731,6 +3731,78 @@ body.sb-open #appSidebar{transform:translate3d(0,0,0);transition:transform .28s 
 #sbPop button.out,#sbPop button.out svg{color:var(--d-hard,#f87171)}
 .sb-gl{padding:9px 18px}
 </style>
+<style id="v3css3">
+.ws-ht{min-width:0;flex:1;display:flex;align-items:center;gap:9px}.ws-ht.crumb{flex-direction:column;align-items:flex-start;gap:0}
+.ws-title{flex:0 1 auto;min-width:0}
+.ws-sub{display:flex;align-items:center;gap:6px;min-width:0;margin:0;overflow:hidden;flex:0 1 auto}
+.ws-ht.crumb .ws-sub{display:block;max-width:100%;margin-top:1px}
+.ws-pill{flex:none;font-size:11px;font-weight:700;line-height:1;padding:5px 9px;border-radius:999px;color:var(--primary);background:color-mix(in srgb,var(--primary) 13%,transparent);border:1px solid color-mix(in srgb,var(--primary) 26%,transparent);white-space:nowrap;font-variant-numeric:tabular-nums}
+body:has(#ds.open) .ws-sf{width:calc(100% - var(--sf-r,86px) - 58px)}
+.an-goal{position:relative;width:100%;margin-bottom:12px;text-align:left;font:inherit;cursor:pointer;color:var(--text);padding:10px 12px 13px;gap:10px;overflow:hidden;-webkit-tap-highlight-color:transparent;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 15%,transparent),color-mix(in srgb,var(--surface) 70%,transparent) 75%);border-color:color-mix(in srgb,var(--primary) 22%,transparent)}
+.an-goal .stat-icon-wrap{width:34px;height:34px;border-radius:12px;background:color-mix(in srgb,var(--primary) 18%,transparent);color:var(--primary)}
+.an-goal .stat-icon-wrap svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.an-goal .stat-body{flex:1}.an-goal .stat-val{font-size:16px;color:var(--primary)}.an-goal .stat-lbl{text-transform:uppercase;letter-spacing:.2px}
+.an-gp{font-size:14px;font-weight:800;color:var(--primary);font-family:var(--mono)}.an-gc{color:var(--muted);display:grid;place-items:center}.an-gc svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.an-gbar{position:absolute;left:0;right:0;bottom:0;height:3px;background:color-mix(in srgb,var(--primary) 12%,transparent)}.an-gbar u{display:block;height:100%;background:var(--primary);border-radius:0 3px 3px 0;text-decoration:none;transition:width .4s}
+#anSubj .card{margin-bottom:12px}
+.sb-foot{position:relative}
+#sbOpt{position:absolute;right:12px;width:min(230px,calc(100% - 24px));z-index:5;background:var(--surface-elevated,var(--surface));border:1px solid var(--border);border-radius:14px;padding:6px;box-shadow:0 12px 32px rgba(0,0,0,.42);opacity:0;transform:translateY(-4px) scale(.97);transform-origin:top right;pointer-events:none;transition:opacity .15s,transform .15s}
+#sbOpt.on{opacity:1;transform:none;pointer-events:auto}
+#sbOpt button{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;color:var(--text);font:inherit;font-size:14px;font-weight:700;padding:11px 10px;border-radius:10px;cursor:pointer;text-align:left}
+#sbOpt button:active{background:var(--surface-hover)}#sbOpt button span{flex:1}
+#sbOpt svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;color:var(--muted)}#sbOpt svg.ck{color:var(--primary)}
+.sb-row .sb-cv{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* सर्च खुलने पर सिर्फ़ टाइटल/पिल छिपें, मेन्यू आइकन दिखता रहे */
+body:has(#ds.open) .ws-hl{opacity:1;pointer-events:auto}body:has(#ds.open) .ws-hl .ws-ht{opacity:0;pointer-events:none}.ws-ht{transition:opacity .15s}
+</style>
+<style id="v3css4">
+.ws-sum{display:flex;align-items:center;gap:10px;padding:2px 6px 10px;font-size:12.5px;color:var(--muted);font-weight:600}
+.ws-sum span{display:inline-flex;align-items:center;gap:6px}.ws-sum b{color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
+.ws-sum svg{width:15px;height:15px;fill:none;stroke:var(--primary);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ws-sum i{width:3px;height:3px;border-radius:50%;background:var(--muted-dim)}
+#sbPop .sb-div{height:1px;background:var(--border);margin:5px 6px}#sbPop .sb-st{margin-left:auto;font-size:11px;font-weight:700;color:var(--primary)}
+#sbPop svg{flex:none}
+</style>
+<style id="v3css5">
+.ws-empty{gap:4px}
+.ws-empty-ic{width:60px;height:60px;border-radius:50%;margin-bottom:12px;opacity:1;color:var(--primary);background:color-mix(in srgb,var(--primary) 11%,transparent);border:1px solid color-mix(in srgb,var(--primary) 20%,transparent)}
+.ws-empty-ic svg{width:26px;height:26px;stroke-width:1.8}
+.ws-empty b{font-size:16px}.ws-empty span{font-size:13.5px;max-width:270px}
+.ws-empty button.ui-empty-btn{margin-top:16px;height:42px;padding:0 24px;font-size:14px;font-weight:700;color:#000;background:var(--primary)!important;border:0}
+[data-theme="light"] .ws-empty button.ui-empty-btn{color:#fff!important}
+</style>
+<style id="v3css6">
+.ws-sum-st{position:sticky;top:calc(var(--chrome-h,96px) + 10px);height:0;z-index:2}
+.ws-sum-sp{height:42px}
+.ws-sum{height:34px;box-sizing:border-box;overflow:hidden;padding:0 12px;justify-content:center;gap:12px;align-items:center;white-space:nowrap;border-radius:12px;background:color-mix(in srgb,var(--text) 6%,var(--surface));border:1px solid var(--border);will-change:height,opacity}.ws-sum>*{opacity:var(--o,1)}
+</style>
+<style id="v3css7">
+.ws-sum-w{height:42px;overflow:hidden;will-change:height}
+.ws-sum-w.anim,.ws-sum-w.anim .ws-sum{transition:height .2s cubic-bezier(.2,0,0,1),opacity .2s}
+</style>
+<style id="sdrcss">
+/* v11: विषय टच = दाएँ से साइड-पैनल (हेडर + Tabs के नीचे), लेक्चर-पैनल उसके ऊपर; नीचे का पैनल पीछे दिखता रहता है */
+.sdr{position:absolute;right:0;bottom:0;width:min(80vw,340px);z-index:311;pointer-events:none}
+.sdr-p{position:absolute;top:0;bottom:0;right:0;display:flex;flex-direction:column;overflow:hidden;pointer-events:auto;background:var(--surface-elevated);border:1px solid var(--border);border-right:0;border-radius:16px 0 0 0;box-shadow:-8px 0 28px rgba(0,0,0,.32);transform:translateX(106%);transition:transform .27s cubic-bezier(.22,1,.36,1)}
+.sdr-1{width:100%}
+.sdr-2{width:calc(100% - 30px);z-index:3;box-shadow:-10px 0 30px rgba(0,0,0,.45)}
+.sdr.on .sdr-1,.sdr.on .sdr-2.on{transform:none}
+.sdr-dim{position:absolute;inset:0;z-index:2;background:rgba(0,0,0,0);pointer-events:none;transition:background .22s}
+.sdr.two .sdr-dim{background:rgba(0,0,0,.4);pointer-events:auto}
+.sdr-h{flex:none;display:flex;align-items:center;gap:6px;padding:12px 14px 10px;border-bottom:1px solid var(--border);font-size:12px;font-weight:700;color:var(--muted)}
+.sdr-h2{padding-left:6px}
+.sdr-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 auto}
+.sdr-t .bc-c{color:var(--text);font-size:15px;font-weight:800;line-height:1.3;overflow-wrap:anywhere}
+.sdr-bk{flex:none;width:34px;height:34px;border:0;border-radius:50%;background:none;color:var(--primary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sdr-bk:active{background:color-mix(in srgb,var(--primary) 16%,transparent)}
+.sdr-l{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:4px 0 calc(14px + var(--sab,0px))}
+.sdr-i{gap:10px;min-height:48px}
+.sdr-i .chp-nm{flex:1 1 auto;min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+.sdr-i .sp2-r{display:inline-flex;align-items:center;gap:6px;flex:none}
+.ws.sdr-on::after{content:"";position:absolute;left:0;right:0;bottom:0;top:var(--sdr-top,0);z-index:310;background:rgba(0,0,0,.3);pointer-events:none;animation:chpScrim .2s ease both}
+body.sdr-on .bbw{transform:translateY(105%)!important;pointer-events:none!important}
+@media (prefers-reduced-motion:reduce){.sdr-p,.sdr-dim{transition:none}.ws.sdr-on::after{animation:none}}
+</style>
 </head>
 <body>
 <div id="bgOrbs" aria-hidden="true"><i class="bg-orb o1"></i><i class="bg-orb o2"></i><i class="bg-orb o3"></i></div>
@@ -4100,7 +4172,7 @@ body.sb-open #appSidebar{transform:translate3d(0,0,0);transition:transform .28s 
             </tr>
           </thead>
           <tbody id="tblLocalLogs">
-            <tr><td colspan="8" class="empty-cell"><div class="empty-state"><svg class="ic"><use href="#i-book"/></svg><b>No records yet</b><span>Your sessions will show up here</span></div></td></tr>
+            <tr><td colspan="8" class="empty-cell"><div class="empty-state"><svg class="ic"><use href="#i-book"/></svg><b>अभी कोई रिकॉर्ड नहीं</b><span>पढ़ाई का सेशन सेव करते ही वह यहाँ दिखेगा</span></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -4304,12 +4376,11 @@ body.sb-open #appSidebar{transform:translate3d(0,0,0);transition:transform .28s 
   <header class="ws-chrome" id="wsChrome">
   <div class="ws-top" id="wsTop">
     <div class="ws-hl">
-      <button type="button" class="ws-bi" id="wsBack" data-hold-label="Menu" aria-label="Menu" onclick="wsBack()"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-      <div style="min-width:0;"><div class="ws-title" id="wsTitle">Analytics</div><div class="ws-sub" id="wsSub"></div></div>
+      <button type="button" class="ws-bi" id="wsBack" data-hold-label="Menu" aria-label="Menu" onclick="wsBack()"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3.5"/><path d="M9 4v16"/></svg></button>
+      <div class="ws-ht"><div class="ws-title" id="wsTitle">Analytics</div><div class="ws-sub" id="wsSub"></div></div>
     </div>
     <div class="ws-hr">
-      <button type="button" class="an-pill" id="wsGoalPill" style="display:none" onclick="window.__openGoal&&window.__openGoal()" aria-label="Daily Goal"></button>
-      <button type="button" class="ws-bi" id="wsSearchBtn" data-hold-label="Search" aria-label="Search" onclick="openDS()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.35-4.35"/></svg></button>
+            <button type="button" class="ws-bi" id="wsSearchBtn" data-hold-label="Search" aria-label="Search" onclick="openDS()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.35-4.35"/></svg></button>
       <div class="ws-vw" id="wsVw">
         <button type="button" class="ws-bi" id="wsViewBtn" aria-label="View Mode"><span id="wsViewIcon"></span></button>
         <div class="ws-pop" id="wsPop" role="menu"><div class="ws-pop-h"><span>VIEW MODE</span><span>Pin = Default</span></div><div id="wsPopList"></div></div>
@@ -4333,7 +4404,7 @@ body.sb-open #appSidebar{transform:translate3d(0,0,0);transition:transform .28s 
   <div class="ws-tabs" id="wsTabs" role="tablist">
     <button type="button" class="ws-tab active" role="tab" onclick="wsSetTab(0)">Analytics</button>
     <button type="button" class="ws-tab" role="tab" onclick="wsSetTab(1)">History</button>
-    <button type="button" class="ws-tab" role="tab" onclick="wsSetTab(2)">Subjects</button>
+    <button type="button" class="ws-tab" role="tab" onclick="wsSetTab(2)">Syllabus</button>
     <i class="ws-tab-line" id="wsTabLine"></i>
   </div>
   </header>
@@ -4357,38 +4428,42 @@ body.sb-open #appSidebar{transform:translate3d(0,0,0);transition:transform .28s 
 <aside id="appSidebar" aria-label="Menu" aria-hidden="true">
   <div class="sb-head"><div class="sb-brand"><i class="sb-dot"></i><b>Revision Universe</b><span class="sb-pro">PRO</span></div><button type="button" class="sb-x" onclick="sbClose()" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
   <div class="sb-body" id="sbBody"></div>
+  <div id="sbOpt" role="menu"></div>
   <div class="sb-foot" id="sbFoot">
     <div id="sbPop" role="menu">
-      <button type="button" data-f="bk"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Backup</button>
-      <button type="button" data-f="rs"><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>Restore</button>
-      <button type="button" data-f="lo" class="out"><svg viewBox="0 0 24 24"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg>Logout</button>
+      <button type="button" data-f="bk" class="on-only"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Backup</button>
+      <button type="button" data-f="rs" class="on-only"><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>Restore</button>
+      <button type="button" data-f="sh"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>Google Sheet<span class="sb-st" id="sbShSt"></span></button>
+      <div class="sb-div on-only"></div>
+      <button type="button" data-f="lo" class="out on-only"><svg viewBox="0 0 24 24"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg>Logout</button>
     </div>
     <div class="sb-av" id="sbAv"></div>
     <div class="sb-fi"><div class="sb-fn" id="sbFn">Cloud Backup</div><div class="sb-fs" id="sbFs"><i id="sbFd"></i><span id="sbFt"></span></div></div>
     <button type="button" class="sb-gl" id="sbLogin" onclick="fbLogin()">Login</button>
-    <div class="sb-fa" id="sbFa" style="display:none"><button type="button" class="sb-dots" id="sbDots" aria-label="More"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></div>
+    <div class="sb-fa" id="sbFa"><button type="button" class="sb-dots" id="sbDots" aria-label="More"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></div>
   </div>
 </aside>
 <script id="v3sbjs">
 (function(){
 var $=function(i){return document.getElementById(i)},LS=function(k,v){try{localStorage.setItem(k,v)}catch(e){}},LG=function(k,d){try{return localStorage.getItem(k)||d}catch(e){return d}};
-var IC={sub:'<path d="M4 5h16M4 12h16M4 19h10"/>',goal:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/>',ex:'<path d="M7 4v13M3.5 13.5L7 17l3.5-3.5M17 20V7M13.5 10.5L17 7l3.5 3.5"/>',cl:'<path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5a4.8 4.8 0 0 1 0 9.5z"/>',sh:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/>',bg:'<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/>',up:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',dn:'<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',out:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>'};
-var sv=function(k){return '<svg viewBox="0 0 24 24">'+IC[k]+'</svg>'};
-function row(a,ic,nm,bd){return '<button type="button" class="sb-row" data-a="'+a+'"><span class="sb-ic">'+sv(ic)+'</span><span class="sb-nm">'+nm+'</span>'+(bd?'<span class="sb-bd">'+bd+'</span>':'')+'</button>';}
+var IC={sub:'<path d="M4 5h16M4 12h16M4 19h10"/>',ex:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',im:'<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',sh:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/>',bg:'<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/>',vw:'<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',cl:'<path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5a4.8 4.8 0 0 1 0 9.5z"/>',hi:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',sy:'<path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2z"/><path d="M22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/>'};
+var sv=function(k){return '<svg viewBox="0 0 24 24">'+IC[k]+'</svg>'},CV='<svg class="sb-cv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+function row(a,ic,nm,bd,opt){return '<button type="button" class="sb-row" '+(opt?'data-opt="'+opt+'"':'data-a="'+a+'"')+'><span class="sb-ic">'+sv(ic)+'</span><span class="sb-nm">'+nm+'</span>'+(bd?'<span class="sb-bd">'+bd+'</span>':'')+(opt?CV:'')+'</button>';}
 function seg(id,arr,cur){return '<div class="sb-seg" id="'+id+'">'+arr.map(function(a){return '<button type="button" data-v="'+a[0]+'" class="'+(a[0]===cur?'on':'')+'">'+a[1]+'</button>'}).join('')+'</div>';}
+function vwList(){return WS_VIEWS.map(function(v){return [v.key,v.label.replace(' View','')]})}
+function vwLabel(){var k=LG('ru_ws_default_view','list'),f=vwList().filter(function(x){return x[0]===k})[0];return f?f[1]:'List'}
 function build(){
- var th=document.documentElement.getAttribute('data-theme')||'dark',md=LG('ru_def_mode','revision'),df=LG('ru_def_diff','Medium'),vw=LG('ru_ws_default_view','list');
+ var th=document.documentElement.getAttribute('data-theme')||'dark',md=LG('ru_def_mode','revision'),df=LG('ru_def_diff','Medium');
  var subs=0;try{subs=Object.keys(masterData||{}).length}catch(e){}
- var gi=window.__goalInfo?window.__goalInfo():{gm:0},gb=gi.gm?(Math.round(gi.gm/6)/10)+'h / day':'';
  var shOn=false;try{shOn=window.__tl&&window.__tl.sheetOn()}catch(e){}
  var bgv=document.documentElement.getAttribute('data-bg')||'1',cd=document.documentElement.getAttribute('data-card')||'1';
  $('sbBody').innerHTML='<div class="sb-sec">Quick Controls</div>'
  +'<div class="sb-ctl"><span>Theme</span>'+seg('sbTh',[['dark','Dark'],['light','Light']],th)+'</div>'
  +'<div class="sb-ctl"><span>Default Study Mode</span>'+seg('sbMd',[['revision','Revision'],['first_study','New']],md==='revision'?'revision':'first_study')+'</div>'
  +'<div class="sb-ctl"><span>Default Difficulty</span>'+seg('sbDf',[['Easy','आसान'],['Medium','ठीक-ठाक'],['Hard','दोहराना']],df)+'</div>'
- +'<div class="sb-ctl"><span>Default View Mode</span><div class="sb-chips" id="sbVw">'+WS_VIEWS.map(function(v){return '<button type="button" data-v="'+v.key+'" class="'+(v.key===vw?'on':'')+'">'+v.label.replace(' View','')+'</button>'}).join('')+'</div></div>'
+ +row('','vw','Default View Mode',vwLabel(),'view')
  +'<div class="sb-sec">Tools</div>'
- +row('subjects','sub','Subjects &amp; Chapters',subs+' विषय')+row('goal','goal','Daily Study Goal',gb)+row('eximp','ex','Export &amp; Import','CSV · XLSX')+row('backup','sh','Google Sheet Backup',shOn?'Connected':'')+row('bg','bg','Background &amp; Cards','BG '+bgv+' · Card '+cd);
+ +row('syllabus','sy','Syllabus',subs+' विषय')+row('','im','Import','','import')+row('','ex','Export','','export')+row('bg','bg','Background &amp; Cards','BG '+bgv+' · Card '+cd);
 }
 function fbSync(){
  var t=$('fbTitle'),st=$('fbStatus'),d=$('fbDot'),av=$('fbAvatar'),ac=$('fbActions'),lb=$('fbLoginBtn');if(!t||!$('sbFn'))return;
@@ -4397,41 +4472,68 @@ function fbSync(){
  $('sbFs').style.display=(on||canLogin)?'':'none';
  $('sbFt').textContent=on?(st?st.textContent:''):'लॉगिन नहीं है';
  $('sbFd').className=on&&d&&/(^|\s)ok(\s|$)/.test(d.className)?'ok':'';
- $('sbLogin').style.display=(!on&&canLogin)?'':'none';$('sbFa').style.display=on?'flex':'none';
+ $('sbLogin').style.display=(!on&&canLogin)?'':'none';
+ var shOn=false;try{shOn=window.__tl&&window.__tl.sheetOn()}catch(e){}
+ $('sbShSt').textContent=shOn?'Connected':'';
+ document.querySelectorAll('#sbPop .on-only').forEach(function(x){x.style.display=on?'':'none'});
  $('sbAv').innerHTML=(on&&av&&av.src&&av.style.display!=='none')?'<img alt="" referrerpolicy="no-referrer" src="'+av.src+'">':'<svg viewBox="0 0 24 24">'+IC.cl+'</svg>';
- if(!on)popClose();
 }
 function popClose(){var p=$('sbPop');if(p)p.classList.remove('on')}
+function optClose(){var o=$('sbOpt');o.classList.remove('on');o.dataset.for=''}
 var mo=new MutationObserver(fbSync),mi=setInterval(function(){var b=$('fbBox');if(b){mo.observe(b,{subtree:true,childList:true,attributes:true,characterData:true});clearInterval(mi);fbSync();}},400);
-var built=false;
 window.sbOpen=function(){
  if(window.__sbIsOpen())return;
- build();fbSync();popClose();var sb=$('appSidebar');sb.setAttribute('aria-hidden','false');
- void sb.offsetWidth;                                  /* पहले लेआउट पक्का, फिर स्लाइड - पहली फ्रेम में झपक नहीं */
+ build();fbSync();popClose();optClose();var sb=$('appSidebar');sb.setAttribute('aria-hidden','false');
+ void sb.offsetWidth;
  requestAnimationFrame(function(){document.body.classList.add('sb-open');});
  try{haptic('light')}catch(e){}
 };
-window.sbClose=function(){popClose();document.body.classList.remove('sb-open');$('appSidebar').setAttribute('aria-hidden','true');};
+window.sbClose=function(){popClose();optClose();var sb=$('appSidebar');sb.style.transition=sb.style.transform='';$('appSbScrim').style.opacity='';document.body.classList.remove('sb-open');sb.setAttribute('aria-hidden','true');};
 window.__sbIsOpen=function(){return document.body.classList.contains('sb-open')};
+function showOpt(anchor,key,items,cur){
+ var o=$('sbOpt');if(o.classList.contains('on')&&o.dataset.for===key){optClose();return}
+ o.innerHTML=items.map(function(it){return '<button type="button" data-v="'+it[0]+'">'+(it[2]?'<svg viewBox="0 0 24 24">'+it[2]+'</svg>':'')+'<span>'+it[1]+'</span>'+(it[0]===cur?'<svg class="ck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>':'')+'</button>'}).join('');
+ o.dataset.for=key;var a=$('appSidebar').getBoundingClientRect(),r=anchor.getBoundingClientRect(),top=r.bottom-a.top+4;
+ if(top+o.offsetHeight>a.height-90)top=Math.max(8,r.top-a.top-o.offsetHeight-4);
+ o.style.top=top+'px';o.classList.add('on');
+}
 $('sbBody').addEventListener('click',function(e){
- var b=e.target.closest('button');if(!b)return;var p=b.parentNode,v=b.dataset.v,a=b.dataset.a;
+ var b=e.target.closest('button');if(!b)return;var p=b.parentNode,v=b.dataset.v,a=b.dataset.a,op=b.dataset.opt;
+ if(op){
+  if(op==='view')showOpt(b,'view',vwList(),LG('ru_ws_default_view','list'));
+  else showOpt(b,op,[['hist','History',IC.hi],['syl','Syllabus',IC.sy]],'');
+  return;}
  if(p.id==='sbTh'){if(v!==(document.documentElement.getAttribute('data-theme')||'dark'))toggleTheme();p.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});return;}
  if(p.id==='sbMd'){LS('ru_def_mode',v);try{if(!state.run&&!(state.elapsed>0))setMode(v)}catch(x){}}
  else if(p.id==='sbDf'){LS('ru_def_diff',v);try{setDiff(v)}catch(x){}}
- else if(p.id==='sbVw'){LS('ru_ws_default_view',v);try{wsDefKey=v;wsViewIdx=Math.max(0,WS_VIEWS.findIndex(function(m){return m.key===v}));wsRender();}catch(x){}}
- else if(a){sbClose();setTimeout(function(){window.__tl&&window.__tl.act(a,b)},200);return;}
+ else if(a){sbClose();setTimeout(function(){window.__tl&&window.__tl.act(a==='syllabus'?'subjects':a,b)},200);return;}
  else return;
  p.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});try{haptic('light')}catch(x){}
 });
-$('sbDots').addEventListener('click',function(e){e.stopPropagation();$('sbPop').classList.toggle('on')});
+$('sbOpt').addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b)return;var k=$('sbOpt').dataset.for,v=b.dataset.v;optClose();
+ if(k==='view'){LS('ru_ws_default_view',v);try{wsDefKey=v;wsViewIdx=Math.max(0,WS_VIEWS.findIndex(function(m){return m.key===v}));wsRender();}catch(x){}
+  var bd=document.querySelector('[data-opt=view] .sb-bd');if(bd)bd.textContent=vwLabel();try{haptic('light')}catch(x){}}
+ else{sbClose();setTimeout(function(){window.__tl&&window.__tl.openEx(k,v)},200);}
+});
+$('sbDots').addEventListener('click',function(e){e.stopPropagation();optClose();$('sbPop').classList.toggle('on')});
 $('sbPop').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var f=b.dataset.f;popClose();
- if(f==='bk'){try{fbBackup()}catch(x){}}else{sbClose();setTimeout(function(){try{f==='rs'?fbRestore():fbLogout()}catch(x){}},200);}});
-$('sbFoot').addEventListener('click',function(e){if(!e.target.closest('#sbPop,#sbDots'))popClose()});
-var x0=0,y0=0,sb=$('appSidebar');
-sb.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
-sb.addEventListener('touchend',function(e){var t=e.changedTouches[0];if(t.clientX-x0<-60&&Math.abs(t.clientY-y0)<50)sbClose()},{passive:true});
+ if(f==='bk'){try{fbBackup()}catch(x){}}else if(f==='sh'){sbClose();setTimeout(function(){window.__tl&&window.__tl.act('backup')},200);}else{sbClose();setTimeout(function(){try{f==='rs'?fbRestore():fbLogout()}catch(x){}},200);}});
+$('appSidebar').addEventListener('click',function(e){if(!e.target.closest('#sbOpt,[data-opt]'))optClose();if(!e.target.closest('#sbPop,#sbDots'))popClose();},true);
+/* उँगली के साथ खिसकने वाला close-swipe: सिर्फ़ साफ़ बाईं ओर के इशारे पर */
+var dr=null,sb=$('appSidebar'),sc=$('appSbScrim'),EA='transform .24s cubic-bezier(.22,1,.36,1)';
+sb.addEventListener('touchstart',function(e){var t=e.touches[0];dr={x:t.clientX,y:t.clientY,t:Date.now(),m:0}},{passive:true});
+sb.addEventListener('touchmove',function(e){if(!dr)return;var t=e.touches[0],dx=t.clientX-dr.x,dy=t.clientY-dr.y;
+ if(!dr.m){if(Math.abs(dy)>9||dx>9){dr=null;return}if(dx<-12&&Math.abs(dx)>Math.abs(dy)*2){dr.m=1;sb.style.transition='none';sc.style.transition='none';optClose();popClose()}else return}
+ var d=Math.min(0,dx);sb.style.transform='translate3d('+d+'px,0,0)';sc.style.opacity=String(Math.max(0,1+d/sb.offsetWidth));},{passive:true});
+function fin(e){if(!dr||!dr.m){dr=null;return}var t=(e.changedTouches||[{clientX:dr.x}])[0],dx=t.clientX-dr.x,v=dx/Math.max(1,Date.now()-dr.t),close=e.type!=='touchcancel'&&(dx<-sb.offsetWidth*.33||v<-.55);dr=null;
+ sb.style.transition=EA;sc.style.transition='opacity .24s';
+ if(close){sb.style.transform='translate3d(-102%,0,0)';sc.style.opacity='0';setTimeout(function(){sbClose();sc.style.transition=''},250)}
+ else{sb.style.transform='translate3d(0,0,0)';sc.style.opacity='1';setTimeout(function(){sb.style.transition=sb.style.transform='';sc.style.transition=sc.style.opacity=''},250)}}
+sb.addEventListener('touchend',fin,{passive:true});sb.addEventListener('touchcancel',fin,{passive:true});
 })();
 </script>
+
 
 
 <!-- ===== STUDY SESSION पेज (Home के + बटन से खुलता है): Select Lecture · Focus Timer · Session Review ===== -->
@@ -7409,7 +7511,7 @@ const HF = (function () {
 })();
 
 // ===================== MASTER DATABASE : FULL-PAGE WORKSPACE =====================
-const WS_TABS = ['Analytics', 'History', 'Subjects'];            // 3rd tab (Analytical Forecast) is reserved for later
+const WS_TABS = ['Analytics', 'History', 'Syllabus'];            // 3rd tab (Analytical Forecast) is reserved for later
 const WS_VIEWS = [
   { key: 'list', label: 'List View', icon: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/></svg>' },
   { key: 'grid', label: 'Grid View', icon: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>' },
@@ -7495,14 +7597,19 @@ const WS_H_SUBS = ['Subject', 'Chapters', 'Started', 'Revisions', 'Time', 'Last'
 // ---------- modern empty state ----------
 function uiStartSession() { try { openStudyPage(); } catch (e) {} }
 function uiResetFilters(tab) { try { if (tab === 1) chRm('all'); else { HF.rm('all'); var q = g('histSearchInput'); if (q && q.value) { q.value = ''; q.dispatchEvent(new Event('input')); } } } catch (e) {} }
-function wsEmptyBox(t, d, act) {
-  const ic = '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+const WS_EIC = {
+  hist: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+  list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r=".9"/><circle cx="4.5" cy="12" r=".9"/><circle cx="4.5" cy="18" r=".9"/>'
+};
+function wsEmptyBox(t, d, act, kind) {
+  const ic = '<svg viewBox="0 0 24 24">' + WS_EIC[kind || 'list'] + '</svg>';
   return '<div class="ws-empty"><div class="ws-empty-ic">' + ic + '</div><b>' + t + '</b><span>' + d + '</span>' + (act ? '<button type="button" class="ui-empty-btn" onclick="' + act[1] + '">' + act[0] + '</button>' : '') + '</div>';
 }
 function wsEmpty(tab) {
   const filtered = tab === 0 ? (fsActiveCount() > 0) : (chActive() > 0);
-  if (tab === 0 && !getLogs().length) return wsEmptyBox('No records yet', 'Your sessions will show up here', ['+ Start Study Session', 'uiStartSession()']);
-  return wsEmptyBox(tab === 0 ? 'No records found' : 'No chapters found', filtered ? 'Try changing the filters' : 'Nothing to show here yet', filtered ? ['Reset Filters', 'uiResetFilters(' + tab + ')'] : (tab === 0 ? ['+ Start Study Session', 'uiStartSession()'] : null));
+  if (tab === 0 && !getLogs().length) return wsEmptyBox('अभी कोई रिकॉर्ड नहीं', 'पढ़ाई का सेशन सेव करते ही वह यहाँ दिखेगा', ['पढ़ाई शुरू करें', 'uiStartSession()'], 'hist');
+  return wsEmptyBox(tab === 0 ? 'कोई रिकॉर्ड नहीं मिला' : 'कोई चैप्टर नहीं मिला', filtered ? 'फ़िल्टर बदलकर दोबारा देखें' : 'यहाँ दिखाने के लिए अभी कुछ नहीं है', filtered ? ['फ़िल्टर हटाएँ', 'uiResetFilters(' + tab + ')'] : (tab === 0 ? ['पढ़ाई शुरू करें', 'uiStartSession()'] : null), filtered ? 'search' : (tab === 0 ? 'hist' : 'list'));
 }
 
 // ---------- 5 view builders ----------
@@ -7541,7 +7648,7 @@ function chDetailHTML(o) {
 }
 function chLecHTML(o, lec) {
   const all = o.recs.filter(r => r.lec === lec), tot = all.reduce((a, r) => a + (Number(r.time) || 0), 0);
-  if (!all.length) return '<div class="chd-stats">' + chStat(0, 'रिवीजन') + chStat('0m', 'कुल समय') + chStat('—', 'औसत') + chStat('—', 'आख़िरी') + '</div>' + wsEmptyBox('No revisions yet', 'This lecture has no revisions') + '';
+  if (!all.length) return '<div class="chd-stats">' + chStat(0, 'रिवीजन') + chStat('0m', 'कुल समय') + chStat('—', 'औसत') + chStat('—', 'आख़िरी') + '</div>' + wsEmptyBox('अभी कोई रिवीजन नहीं', 'इस लेक्चर का रिवीजन अभी नहीं हुआ', null, 'hist') + '';
   const dc = { Easy: 0, Medium: 0, Hard: 0 }; all.forEach(r => { if (dc[r.diff] !== undefined) dc[r.diff]++; });
   const first = all.reduce((a, r) => Math.min(a, chTs(r.date) || a), Infinity), last = all.reduce((a, r) => Math.max(a, chTs(r.date)), 0);
   const w = k => (dc[k] / all.length * 100) + '%';
@@ -7551,7 +7658,7 @@ function chLecHTML(o, lec) {
 }
 // ---------- चैप्टर पेज: सिर्फ़ लेक्चर सूची (आंकड़े/रिकॉर्ड तीन-डॉट शीट में) ----------
 function chLecListHTML(o) {
-  if (!o.all.length) return wsEmptyBox('No lectures yet', 'This chapter has no lectures');
+  if (!o.all.length) return wsEmptyBox('अभी कोई लेक्चर नहीं', 'इस चैप्टर में अभी लेक्चर नहीं जुड़े', null, 'list');
   const items = o.all.map(l => {
     const rs = o.recs.filter(r => r.lec === l), tm = rs.reduce((a, r) => a + (Number(r.time) || 0), 0), last = rs.reduce((a, r) => Math.max(a, chTs(r.date) || 0), 0);
     return { sub: o.sub, col: subCol(o.sub), title: l, ns: true, idle: !rs.length, d1: last ? chDate(last) : '—', g: last ? chDate(last) : 'अभी शुरू नहीं',
@@ -7683,7 +7790,8 @@ function chSubOpen(s) {
 // ---------- विषय टच: एक ही पॉपअप में चैप्टर → (टैप पर) उसके नीचे लेक्चर, Notes के फ़ोल्डर जैसा ----------
 var SP_CHEV = '<svg class="sp2-chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
 function subPopGo(sub, chap, item) {   // item: 'all' या लेक्चर का नाम
-  chPopMem = { via: 'sub', sub: sub, chap: chap, item: item };
+  const _a = chPopEl && chPopEl.querySelector('.sdr-1 .sdr-l'), _b = chPopEl && chPopEl.querySelector('.sdr-2 .sdr-l');
+  chPopMem = { via: 'sub', sub: sub, chap: chap, item: item, s1: _a ? _a.scrollTop : undefined, s2: _b ? _b.scrollTop : undefined };
   chPopClose();
   chSt.sy = g('wsPane2').scrollTop; chF = { sort: 'recent', stat: 'all', sub: 'all' }; chRF = { d: [], m: [], l: [] };
   chSt.sub = sub; chSt.chap = chap; chSt.viaSub = true; haptic('light');
@@ -7699,48 +7807,63 @@ function spHead(sub, chap, n) {   // ऊपर छोटी पंक्ति =
     ? '<small class="bc-s">' + esc(sub) + '</small><b class="bc-c">' + esc(chap) + '</b>'
     : '<small class="bc-s">विषय · ' + n + ' चैप्टर</small><b class="bc-c">' + esc(sub) + '</b>';
 }
-function subPopOpenNow(row, ev, restore) {
-  if (!restore && chPopEl && chPopRow === row) { chPopClose(); chPopMem = null; chHdrRestore(); return; }
+function subPopOpenNow(row, ev, restore) {   // v11: विषय टच = दाएँ से छोटा साइड-पैनल (चैप्टर) → चैप्टर टच = उसके ऊपर लेक्चर-पैनल (नीचे वाला पीछे दिखता रहे) → लेक्चर टच = नया पेज
+  if (!restore && chPopEl && chPopRow === row) { chPopClose(); chPopMem = null; return; }
   const sub = row.dataset.ss, chs = chData().filter(o => o.sub === sub);
   if (!chs.length) { chPopClose(); chSubOpen(sub); return; }
   chPopClose(); if (!restore) haptic('light');
   const mem = (restore && chPopMem && chPopMem.via === 'sub' && chPopMem.sub === sub) ? chPopMem : null;
-  const sc = g('wsScreen'), p = document.createElement('div');
-  p.className = 'chp sp2' + (mem ? ' focus' : ''); p.setAttribute('role', 'menu');
-  const dot = '<i class="chp-cd"></i>';
-  p.innerHTML = '<div class="chp-h sp2-top"><button type="button" class="sp2-bk" data-bk="1" aria-label="Back"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><span class="sp2-tt">' + spHead(sub, mem ? mem.chap : null, chs.length) + '</span></div><div class="chp-l">' + chs.map((o, ci) => {
-    const isOpen = !!(mem && mem.chap === o.chap), tot = o.recs.length;
-    const items = '<button type="button" class="chp-i all' + (isOpen && mem.item === 'all' ? ' cur' : '') + '" data-c="' + ci + '" data-a="all"><span class="chp-nm">' + (isOpen && mem.item === 'all' ? dot : '') + 'All Lectures</span>' + (tot ? '<small>' + tot + '</small>' : CH_PEND) + '</button>' +
-      o.all.map((l, i) => { const cur = isOpen && mem.item === l; return '<button type="button" class="chp-i' + (cur ? ' cur' : '') + '" data-c="' + ci + '" data-a="' + i + '"><span class="chp-nm">' + (cur ? dot : '') + esc(l) + '</span>' + (o.cnt[l] ? '<small>' + o.cnt[l] + '</small>' : CH_PEND) + '</button>'; }).join('');
-    return '<div class="sp2-ch' + (isOpen ? ' open' : '') + '"><button type="button" class="chp-i sp2-hd" data-t="' + ci + '"><span class="chp-nm">' + esc(o.chap) + '</span><span class="sp2-r">' + (tot ? '<small>' + tot + '</small>' : CH_PEND) + SP_CHEV + '</span></button><div class="sp2-lecs">' + items + '</div></div>';
-  }).join('') + '</div>';
-  sc.appendChild(p);
-  row.classList.add('chp-src'); chPopMode(true);
-  const r = row.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight, m = 12;
-  const w = p.offsetWidth, x = ev && ev.clientX ? ev.clientX : r.left + r.width / 2;
-  const left = Math.max(m, Math.min(x - w / 2, vw - w - m));
-  const below = vh - m - (r.bottom - 8), above = r.top + 8 - m, up = below < 280 && above > below, space = up ? above : below;
-  p.style.maxHeight = Math.max(200, Math.min(space, vh * 0.72)) + 'px';
-  p.style.left = left + 'px';
-  if (up) { p.style.top = 'auto'; p.style.bottom = (vh - (r.top + 8)) + 'px'; p.classList.add('up'); } else p.style.top = Math.max(m, r.bottom - 8) + 'px';
-  p.style.setProperty('--ox', Math.round(x - left) + 'px'); p.style.setProperty('--oy', up ? '100%' : '0');
-  const L = p.querySelector('.chp-l'), C = p.querySelector('.cur'), T = p.querySelector('.sp2-tt');
-  if (L && C) L.scrollTop = Math.max(0, C.offsetTop - (L.clientHeight - C.offsetHeight) / 2);
-  chPopEl = p; chPopRow = row;
-  requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('on')));
-  p.addEventListener('click', e => {
-    const t = e.target.closest('button'); if (!t) return;
-    if (t.dataset.bk !== undefined) {   // ← बैक: चैप्टर बंद करो, सारे चैप्टर वापस
-      p.querySelectorAll('.sp2-ch.open').forEach(x => x.classList.remove('open')); p.classList.remove('focus'); T.innerHTML = spHead(sub, null, chs.length); L.scrollTop = 0; haptic('light'); return;
-    }
-    if (t.dataset.t !== undefined) {   // चैप्टर: खोलो / बंद करो
-      const o = chs[+t.dataset.t]; if (!o.all.length) { subPopGo(sub, o.chap, 'all'); return; }
-      const box = t.parentNode; box.classList.toggle('open'); haptic('light');   // खुलने पर सिर्फ़ यही चैप्टर दिखे, दोबारा टैप से सारे चैप्टर वापस
-      const isO = box.classList.contains('open'); p.classList.toggle('focus', isO); T.innerHTML = spHead(sub, isO ? o.chap : null, chs.length); L.scrollTop = 0;
-      return;
-    }
-    if (t.dataset.a !== undefined) { const o = chs[+t.dataset.c]; subPopGo(sub, o.chap, t.dataset.a === 'all' ? 'all' : o.all[+t.dataset.a]); }
+  const sc = g('wsScreen'), wr = sc.getBoundingClientRect(), hb = g('wsChrome').getBoundingClientRect();
+  const top = Math.max(0, Math.round(hb.bottom - wr.top));   // header + tabs bar के ठीक नीचे से
+  const d = document.createElement('div'); d.className = 'sdr'; d.style.top = top + 'px'; d.setAttribute('role', 'menu');
+  const cnt = n => n ? '<small>' + n + '</small>' : CH_PEND;
+  d.innerHTML = '<div class="sdr-p sdr-1"><div class="sdr-h"><span class="sdr-t"><small class="bc-s">विषय · ' + chs.length + ' चैप्टर</small><b class="bc-c">' + esc(sub) + '</b></span></div>' +
+    '<div class="sdr-l">' + chs.map((o, ci) => '<button type="button" class="chp-i sdr-i" data-t="' + ci + '"><span class="chp-nm">' + esc(o.chap) + '</span><span class="sp2-r">' + cnt(o.recs.length) + SP_CHEV + '</span></button>').join('') + '</div><i class="sdr-dim"></i></div>';
+  sc.appendChild(d); sc.style.setProperty('--sdr-top', top + 'px'); sc.classList.add('sdr-on'); document.body.classList.add('sdr-on');
+  row.classList.add('chp-src'); chPopEl = d; chPopRow = row;
+  const P1 = d.querySelector('.sdr-1'), L1 = P1.querySelector('.sdr-l');
+  let P2 = null, curCi = -1;
+  const mark = ci => { L1.querySelectorAll('.sdr-i').forEach((b, i) => b.classList.toggle('cur', i === ci)); };
+  const close2 = instant => {
+    const x = P2; P2 = null; curCi = -1; d.classList.remove('two'); mark(-1);
+    if (!x) return;
+    x.classList.remove('on'); x.style.pointerEvents = 'none'; setTimeout(() => x.remove(), instant ? 0 : 260);
+  };
+  const open2 = (ci, item, sy) => {
+    const o = chs[ci]; close2(true); curCi = ci; mark(ci);
+    const tot = o.recs.length, dot = '<i class="chp-cd"></i>';
+    const x = document.createElement('div'); x.className = 'sdr-p sdr-2';
+    x.innerHTML = '<div class="sdr-h sdr-h2"><button type="button" class="sdr-bk" data-bk="1" aria-label="Back"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><span class="sdr-t"><small class="bc-s">' + esc(sub) + '</small><b class="bc-c">' + esc(o.chap) + '</b></span></div>' +
+      '<div class="sdr-l"><button type="button" class="chp-i sdr-i all' + (item === 'all' ? ' cur' : '') + '" data-a="all"><span class="chp-nm">' + (item === 'all' ? dot : '') + 'All Lectures</span>' + cnt(tot) + '</button><div class="chp-sep"></div>' +
+      o.all.map((l, i) => '<button type="button" class="chp-i sdr-i' + (item === l ? ' cur' : '') + '" data-a="' + i + '"><span class="chp-nm">' + (item === l ? dot : '') + esc(l) + '</span>' + cnt(o.cnt[l]) + '</button>').join('') + '</div>';
+    d.appendChild(x); P2 = x; d.classList.add('two');
+    const L2 = x.querySelector('.sdr-l');
+    if (typeof sy === 'number') L2.scrollTop = sy;
+    else { const C = L2.querySelector('.cur'); if (C && item && item !== 'all') L2.scrollTop = Math.max(0, C.offsetTop - (L2.clientHeight - C.offsetHeight) / 2); }
+    requestAnimationFrame(() => requestAnimationFrame(() => { if (P2 === x) x.classList.add('on'); }));
+    x.addEventListener('click', e => {
+      const t = e.target.closest('button'); if (!t) return;
+      if (t.dataset.bk !== undefined) { close2(); haptic('light'); return; }
+      if (t.dataset.a !== undefined) subPopGo(sub, o.chap, t.dataset.a === 'all' ? 'all' : o.all[+t.dataset.a]);
+    });
+  };
+  P1.addEventListener('click', e => {
+    if (e.target.closest('.sdr-dim')) { if (P2) { close2(); haptic('light'); } return; }   // नीचे वाले पैनल की दिखती पट्टी = एक कदम पीछे
+    const t = e.target.closest('.sdr-i'); if (!t) return;
+    const ci = +t.dataset.t, o = chs[ci];
+    if (!o.all.length) { subPopGo(sub, o.chap, 'all'); return; }   // कोई लेक्चर नहीं: सीधे चैप्टर पेज
+    if (curCi === ci) { close2(); haptic('light'); return; }
+    haptic('light'); open2(ci, null);
   });
+  if (mem) {   // पेज से Back करके लौटे: वही पैनल, वही चुना हुआ लेक्चर, वही स्क्रॉल
+    const ci = chs.findIndex(o => o.chap === mem.chap);
+    if (typeof mem.s1 === 'number') L1.scrollTop = mem.s1;
+    if (ci > -1 && chs[ci].all.length) {
+      mark(ci); open2(ci, mem.item, mem.s2);
+      if (typeof mem.s1 !== 'number') { const C = L1.querySelector('.cur'); if (C) L1.scrollTop = Math.max(0, C.offsetTop - (L1.clientHeight - C.offsetHeight) / 2); }
+    }
+  }
+  requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('on')));
 }
 
 // ---------- हेडर: पॉपअप खुलने से पहले वैसे ही ऊपर सरके जैसे नीचे scroll पर सरकता है; बंद होने पर वापस ----------
@@ -7771,12 +7894,13 @@ function chPopOpen(row, ev, restore) {
 }
 function subPopOpen(row, ev, restore) {
   if (!chData().some(o => o.sub === row.dataset.ss) || (!restore && chPopEl && chPopRow === row)) { subPopOpenNow(row, ev, restore); return; }
-  chHdrGate(subPopOpenNow, row, ev, restore);
+  subPopOpenNow(row, ev, restore);   // v11: हेडर + Tabs वैसे ही दिखते रहें, पैनल उनके नीचे खुले
 }
 // ---------- चैप्टर टच: पॉपअप (All + Lec सूची) ----------
 var chPopEl = null, chPopRow = null;
 function chPopClose() {
   chPopMode(false);
+  document.body.classList.remove('sdr-on'); const _ws = g('wsScreen'); if (_ws) _ws.classList.remove('sdr-on');
   const e = chPopEl, r = chPopRow; chPopEl = null; chPopRow = null;
   if (r) r.classList.remove('chp-src');
   if (!e) return;
@@ -7849,7 +7973,7 @@ document.addEventListener('click', e => {
 // History में सर्च खुला हो तो टैब पर पहला टच सिर्फ़ सर्च बंद करे (बाकी पॉपअप की तरह), दूसरा टच टैब बदले
 document.addEventListener('click', e => {
   if (!wsSearchOn()) return;
-  const t = e.target.closest && e.target.closest('.ws-tab, #wsViewBtn');
+  const t = e.target.closest && e.target.closest('.ws-tab');
   if (!t || g('ds').contains(t)) return;
   dsCloseNow(); e.stopPropagation(); e.preventDefault();
 }, true);
@@ -7963,17 +8087,19 @@ function wsRender() {
   if (plvl === 3) wsSetPane('wsPane2', chLecHTML(o, chSt.lec));
   else if (plvl === 2) wsSetPane('wsPane2', CR.page(o));   // All Lectures: सीधे चैप्टर के सारे रिकॉर्ड
   else if (plvl === 1) { chList = chFiltered(chF, chSt.sub); wsSetPane('wsPane2', wsBuild(chList.map(c => chapItem(c, true)), 1, WS_H_CHAP)); }
-  else { subs = subItems(); wsSetPane('wsPane2', wsBuild(subs, 1, WS_H_SUBS)); }
+  else { subs = subItems(); const ns = subs.length || subList().length, nc = chData().length;
+    wsSetPane('wsPane2', '<div class="ws-sum-w"><div class="ws-sum"><span><svg viewBox="0 0 24 24"><path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2z"/><path d="M22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/></svg><b>' + ns + '</b> विषय</span><i></i><span><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><b>' + nc + '</b> चैप्टर</span></div></div>' + wsBuild(subs, 1, WS_H_SUBS)); }
   wsPlaceChrome();
   const lvl = wsTab === 2 ? plvl : 0;
   const SB0 = (k, s) => '<span onclick="chJump(' + k + ')">' + esc(s) + '</span>', SB = (k, s) => SVG_SEP + '<span onclick="chJump(' + k + ')">' + esc(s) + '</span>';
   let title = WS_TABS[wsTab], subHTML = '';
   if (wsTab === 0) { subHTML = anSub(); } else if (wsTab === 1) { const m = hist.reduce((a, l) => a + (Number(l.time) || 0), 0); subHTML = hist.length + (hist.length === 1 ? ' session' : ' sessions') + '<i class="wv-dot"></i>' + (Math.floor(m / 60) ? Math.floor(m / 60) + 'h ' : '') + (m % 60) + 'm'; }
-  else if (lvl === 0) subHTML = (subs.length || subList().length) + '<i class="wv-dot"></i>' + chData().length + ' Chapters';
+  else if (lvl === 0) subHTML = (subs.length || subList().length) + ' विषय<i class="wv-dot"></i>' + chData().length + ' चैप्टर';
   else if (lvl === 1) { title = chSt.sub; subHTML = ''; }
   else if (lvl === 2) { title = chSt.chap; subHTML = SB0(1, chSt.sub); }
   else { title = chSt.lec; subHTML = SB0(2, chSt.sub) + SB(1, chSt.chap); }
-  g('wsTitle').textContent = title; g('wsSub').innerHTML = subHTML;
+  g('wsTitle').textContent = title;
+  { const crumb = wsTab === 2 && lvl >= 2; g('wsSub').innerHTML = crumb ? subHTML : ''; g('wsSub').parentNode.classList.toggle('crumb', crumb); }
   g('wsBack').style.display = ''; g('wsTop').classList.remove('no-back');
   g('wsBack').innerHTML = lvl === 0 ? SVG_BURGER : SVG_BACK; g('wsBack').setAttribute('aria-label', lvl === 0 ? 'Menu' : 'Back'); g('wsBack').dataset.holdLabel = lvl === 0 ? 'Menu' : 'Back';
   g('wsVw').style.display = (lvl >= 2 || wsTab === 0) ? 'none' : '';
@@ -8265,7 +8391,7 @@ window.addEventListener('popstate', e => {
 function wsSyncPop() {
   g('wsPopList').innerHTML = WS_VIEWS.map((m, i) => '<div class="ws-pr' + (i === wsViewIdx ? ' active' : '') + '"><button type="button" class="ws-ps" data-vi="' + i + '" role="menuitem">' + m.icon + '<span class="ws-pn"><span>' + m.label + '</span>' + (m.key === wsDefKey ? '<span class="ws-dp">Default</span>' : '') + '</span></button><button type="button" class="ws-pin' + (m.key === wsDefKey ? ' is-def' : '') + '" data-pin="' + i + '" aria-label="Set ' + m.label + ' as Default">' + SVG_PIN + '</button></div>').join('');
 }
-function wsPopOpen() { if (g('wsPop').classList.contains('open')) return; dsCloseNow(); wsSyncPop(); g('wsPop').classList.add('open'); g('wsViewBtn').classList.add('is-active'); haptic('medium'); }
+function wsPopOpen() { if (g('wsPop').classList.contains('open')) return; wsSyncPop(); g('wsPop').classList.add('open'); g('wsViewBtn').classList.add('is-active'); haptic('medium'); }
 function wsPopClose() { g('wsPop').classList.remove('open'); g('wsViewBtn').classList.remove('is-active'); }
 g('wsPopList').addEventListener('click', e => {
   e.stopPropagation();
@@ -8320,14 +8446,16 @@ g('wsPopList').addEventListener('click', e => {
     if (c && wsTab === 2) chPopOpen(c, e);
   });
   const vp = g('wsVp'), trk = g('wsTrack');
-  let sx = 0, sy = 0, dx = 0, t0 = 0, sw = false, ign = false;
+  let sx = 0, sy = 0, dx = 0, t0 = 0, sw = false, ign = false, hab = false, stEl = null, swEnd = 0;
   const snapBack = () => {   // जहाँ होना चाहिए वहीं वापस; कभी अटके नहीं
     trk.style.transition = ''; trk.style.transform = 'translate3d(' + (-wsTab * 33.3333) + '%,0,0)';
     sw = false; dx = 0; wsOvFinish(wsTab);
   };
   vp.addEventListener('touchstart', e => {
     if (e.touches.length !== 1) { ign = true; if (sw) snapBack(); return; }   // दूसरी उंगली आते ही स्वाइप रद्द
-    if (selMode || wsSearchOn() || (wsTab === 2 && chSt.sub) || e.target.closest('.tc, .fs-active, .ws-chrome')) { ign = true; return; }
+    if (selMode || wsSearchOn() || (wsTab === 2 && chSt.sub) || e.target.closest('.tc, .fs-active')) { ign = true; return; }
+    stEl = e.target;
+    hab = !!e.target.closest('.habit-card');   // 7-day habit card: अपना हफ़्ता-स्वाइप है; सिर्फ़ तब पेज स्वाइप जब बदलने को कुछ न बचा हो (नीचे देखें)
     ign = false; sw = false; dx = 0; t0 = Date.now(); sx = e.touches[0].clientX; sy = e.touches[0].clientY;
   }, { passive: true });
   vp.addEventListener('touchmove', e => {
@@ -8336,7 +8464,13 @@ g('wsPopList').addEventListener('click', e => {
     const mx = e.touches[0].clientX - sx, my = e.touches[0].clientY - sy;
     if (!sw) {
       if (Math.abs(mx) < 8 && Math.abs(my) < 8) return;
-      if (Math.abs(mx) > Math.abs(my) * 1.15) { sw = true; trk.style.transition = 'none'; wsPopClose(); chPopClose(); wsOvStart(); }
+      if (Math.abs(mx) > Math.abs(my) * 1.15) {
+        // habit card पर: बायीं ओर स्वाइप + आज वाला हफ़्ता (आगे जाने को कुछ नहीं) + कोई दिन खुला नहीं = पेज स्वाइप; वरना card का अपना स्वाइप
+        if (hab && !(mx < 0 && wsTab === 0 && habitOffset === 0 && !habitSel)) { ign = true; return; }
+        sw = true; trk.style.transition = 'none'; wsPopClose(); chPopClose(); wsOvStart();
+        // स्वाइप शुरू: जिस आइकन / बटन पर उँगली रखी थी उसका टैप और लॉन्ग-प्रेस रद्द (pointercancel), ताकि स्वाइप के साथ वह काम न चल पड़े
+        try { if (stEl && stEl.dispatchEvent) stEl.dispatchEvent(new PointerEvent('pointercancel', { bubbles: true, pointerType: 'touch' })); } catch (x) {}
+      }
       else { ign = true; return; }
     }
     dx = mx;
@@ -8346,6 +8480,7 @@ g('wsPopList').addEventListener('click', e => {
     wsOvLine(prog);
   }, { passive: true });
   const endSw = e => {
+    if (sw) swEnd = Date.now();
     if (e && e.touches && e.touches.length) { if (sw) snapBack(); ign = true; return; }
     if (ign || !sw) { if (sw) snapBack(); sw = false; return; }
     trk.style.transition = '';
@@ -8359,6 +8494,8 @@ g('wsPopList').addEventListener('click', e => {
   };
   vp.addEventListener('touchend', endSw);
   vp.addEventListener('touchcancel', () => { snapBack(); ign = true; });
+  document.addEventListener('pointerup', e => { if (sw) e.stopImmediatePropagation(); }, true);   // स्वाइप के दौरान उठी उँगली बटन का टैप न बने
+  document.addEventListener('click', e => { if (Date.now() - swEnd < 350) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 })();
 
 // ---------- Filter & Sort sheet: chapter mode ----------
@@ -8611,7 +8748,7 @@ function wsHistHTML(all) {   // History list: search band ho to usi list ko usi 
   if (!wsSearchOn()) return wsBuild(all.map(histItem), 0);
   const res = all.filter(dsLogOK);
   const head = '<div class="ds-head"><span>' + (dsQ.trim() ? 'Results in History' : 'All History') + '</span><span>' + res.length + ' found</span></div>';
-  return head + (res.length ? wsBuild(res.map(histItem), 0) : wsEmptyBox('No results found', 'Try a different search'));
+  return head + (res.length ? wsBuild(res.map(histItem), 0) : wsEmptyBox('कुछ नहीं मिला', 'कोई दूसरा शब्द लिखकर खोजें', null, 'search'));
 }
 function wsRenderHist() { if (window.__wsReady && g('wsPane1')) wsSetPane('wsPane1', wsHistHTML(getVisibleLogs())); }
 new MutationObserver(() => { wsRenderHist(); }).observe(g('ds'), { attributes: true, attributeFilter: ['class'] });
@@ -8899,9 +9036,9 @@ function renderHistory() {
   if (!logs.length) {
     tbody.innerHTML = '<tr><td colspan="8" class="empty-cell"><div class="empty-state"><svg class="ic"><use href="' +
       (filtered ? '#i-cog' : '#i-book') + '"/></svg><b>' +
-      (filtered ? 'No records found' : 'No records yet') + '</b><span>' +
-      (filtered ? 'Try changing the filters or search' : 'Your sessions will show up here') + '</span>' +
-      (filtered ? '<button type="button" class="ui-empty-btn" onclick="uiResetFilters(0)">Reset Filters</button>' : '<button type="button" class="ui-empty-btn" onclick="uiStartSession()">+ Start Study Session</button>') + '</div></td></tr>';
+      (filtered ? 'कोई रिकॉर्ड नहीं मिला' : 'अभी कोई रिकॉर्ड नहीं') + '</b><span>' +
+      (filtered ? 'फ़िल्टर बदलकर दोबारा देखें' : 'पढ़ाई का सेशन सेव करते ही वह यहाँ दिखेगा') + '</span>' +
+      (filtered ? '<button type="button" class="ui-empty-btn" onclick="uiResetFilters(0)">फ़िल्टर हटाएँ</button>' : '<button type="button" class="ui-empty-btn" onclick="uiStartSession()">पढ़ाई शुरू करें</button>') + '</div></td></tr>';
     return;
   }
 
@@ -10707,7 +10844,7 @@ function drawCards() {
   const list = getVisibleCards();
 
   if (!list.length) {
-    container.innerHTML = `<div class="empty">${I('note')}<div>No notes yet</div></div>`;
+    container.innerHTML = `<div class="empty">${I('note')}<div>अभी कोई नोट नहीं</div></div>`;
     return;
   }
 
@@ -11886,7 +12023,7 @@ function drawLinks() {
         <button type="button" class="ib" data-m="${l.id}" aria-label="More">${I('dots')}</button>
       </div>
     `;
-  }).join('') : `<div class="empty">${I('search')}<div>No links found</div></div>`;
+  }).join('') : `<div class="empty">${I('search')}<div>कोई लिंक नहीं मिला</div></div>`;
 }
 
 $('nc_lchips').addEventListener('click', e => {
@@ -12989,7 +13126,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
     search: 'विषय खोजें…',
     init: () => ({ mode: 'view', sel: new Set(), searching: false, q: '' }),
     list: pg => { const q = (pg.st.q || '').trim().toLowerCase(); return Object.keys(masterData || {}).sort().filter(s => !q || s.toLowerCase().indexOf(q) >= 0); },
-    head(pg) { const n = sylNums(); return { title: 'Subjects', sub: n.s + ' विषय · ' + n.c + ' चैप्टर', acts: [{ a: 'search', ic: IC.search, l: 'Search', on: pg.st.searching }, restoreAct({}), { a: 'del', ic: IC.trash, l: 'Delete Mode', on: pg.st.mode === 'del', cls: 'danger' }] }; },
+    head(pg) { const n = sylNums(); return { title: 'Syllabus', sub: n.s + ' विषय · ' + n.c + ' चैप्टर', acts: [{ a: 'search', ic: IC.search, l: 'Search', on: pg.st.searching }, restoreAct({}), { a: 'del', ic: IC.trash, l: 'Delete Mode', on: pg.st.mode === 'del', cls: 'danger' }] }; },
     body(pg) {
       const items = pg.items = this.list(pg), del = pg.st.mode === 'del';
       [...pg.st.sel].forEach(x => { if (!masterData[x]) pg.st.sel.delete(x); });
@@ -13116,17 +13253,16 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
     try { new MutationObserver(() => { const t = (ir.textContent || '').trim(); if (IMP_IDLE(t)) return; impReport = t; impBusy = false; clearTimeout(impBusyT); const pg = pages.find(p => p.kind === 'eximp'); if (pg) renderPage(pg); }).observe(ir, { childList: true, characterData: true, subtree: true }); } catch (e) {}
   })();
   KINDS.eximp = {
-    init: () => ({}),
-    head() { return { title: 'Export & Import', sub: '' }; },
-    body() {
+    init: p => ({ mode: (p && p.mode) || 'export' }),
+    head(pg) { const syl = uSt.bakScope === 'syl', n = sylNums(); let ln = 0; try { ln = getLogs().length; } catch (e) {} return { title: (pg.st.mode === 'import' ? 'Import ' : 'Export ') + (syl ? 'Syllabus' : 'History'), sub: syl ? n.s + ' विषय · ' + n.l + ' लेक्चर' : ln + ' सेशन' }; },
+    body(pg) {
       const syl = uSt.bakScope === 'syl', n = sylNums(); let ln = 0; try { ln = getLogs().length; } catch (e) {}
       const I2 = { hist: P('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), syl: P('<path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2z"/><path d="M22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/>'), xl: P('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/>'), csv: P('<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'), sh: P('<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>'), cp: P('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>') };
       const X = [['xlsx', 'Excel', '', I2.xl, '#34d399'], ['csv', 'CSV', '', I2.csv, '#38bdf8'], ['share', 'Share', '', I2.sh, '#a78bfa'], ['copy', 'Copy', '', I2.cp, '#fbbf24']];
-      return '<div class="tl-seg" role="tablist"><button type="button" role="tab" data-a="sc" data-sc="hist" class="' + (syl ? '' : 'on') + '">' + I2.hist + '<span class="tl-seg-t"><b>हिस्ट्री</b><small>' + ln + ' सेशन</small></span></button><button type="button" role="tab" data-a="sc" data-sc="syl" class="' + (syl ? 'on' : '') + '">' + I2.syl + '<span class="tl-seg-t"><b>सिलेबस</b><small>' + n.s + ' विषय · ' + n.l + ' लेक्चर</small></span></button></div>' +
-        '<div class="tl-lbl tl-sech">Import</div>' +
-        '<div class="tl-drop' + (impBusy ? ' busy' : '') + '" role="button" tabindex="0" data-a="imp"><span class="tl-drop-ic">' + (impBusy ? IC.loader.replace('class="tl-i"', 'class="tl-i tl-spin"') : IC.fileup) + '</span><b>' + (impBusy ? 'Importing…' : 'फ़ाइलें चुनें') + '</b><span class="tl-fmts"><i>CSV</i><i>XLSX</i></span></div>' +
-        (impReport ? '<div class="tl-report">' + IC.circlecheck + '<span>' + esc(impReport) + '</span><button type="button" class="tl-rep-x" data-a="repx" aria-label="Dismiss">' + IC.x + '</button></div>' : '') +
-        '<div class="tl-lbl tl-sech">Export</div><div class="tl-tiles2">' + X.map(x => '<button type="button" class="tl-xt" data-a="xp" data-f="' + x[0] + '" style="--ac:' + x[4] + '"><span class="tl-ib">' + x[3] + '</span><b>' + x[1] + '</b></button>').join('') + '</div>';
+      const imp = pg.st.mode === 'import';
+      return (imp ? '<div class="tl-drop' + (impBusy ? ' busy' : '') + '" role="button" tabindex="0" data-a="imp"><span class="tl-drop-ic">' + (impBusy ? IC.loader.replace('class="tl-i"', 'class="tl-i tl-spin"') : IC.fileup) + '</span><b>' + (impBusy ? 'Importing…' : 'फ़ाइलें चुनें') + '</b><span class="tl-fmts"><i>CSV</i><i>XLSX</i></span></div>' +
+        (impReport ? '<div class="tl-report">' + IC.circlecheck + '<span>' + esc(impReport) + '</span><button type="button" class="tl-rep-x" data-a="repx" aria-label="Dismiss">' + IC.x + '</button></div>' : '') : '') +
+        (imp ? '' : '<div class="tl-tiles2">' + X.map(x => '<button type="button" class="tl-xt" data-a="xp" data-f="' + x[0] + '" style="--ac:' + x[4] + '"><span class="tl-ib">' + x[3] + '</span><b>' + x[1] + '</b></button>').join('') + '</div>');
     },
     act(pg, a, el) {
       if (a === 'sc') { try { setBakScope(el.dataset.sc); } catch (e) {} renderPage(pg); }
@@ -13402,7 +13538,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
   }
 
   /* ---- actions ---- */
-  window.__tl = { act: function (a, el) { return act(a, el); }, K: K, sync: function () { try { return syncBadge(); } catch (e) { return ''; } }, sheetOn: function () { return sheetOn(); } };
+  window.__tl = { openEx: function (mode, scope) { try { setBakScope(scope); } catch (e) {} pushPage('eximp', { mode: mode }); }, act: function (a, el) { return act(a, el); }, K: K, sync: function () { try { return syncBadge(); } catch (e) { return ''; } }, sheetOn: function () { return sheetOn(); } };
   function act(a, el) {
     hap();
     switch (a) {
@@ -13520,11 +13656,11 @@ body.nav-hide .wrap { padding-bottom: calc(24px + var(--sab)); }
 .hx-in { display: block; }
 </style>
 <script id="v3js">
-var SVG_BURGER='<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>', SVG_BACK='<svg viewBox="0 0 24 24"><path d="M20 12H4M10 18l-6-6 6-6"/></svg>';
+var SVG_BURGER='<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3.5"/><path d="M9 4v16"/></svg>', SVG_BACK='<svg viewBox="0 0 24 24"><path d="M20 12H4M10 18l-6-6 6-6"/></svg>';
 function anFmt(m){m=Math.round(m||0);return (Math.floor(m/60)?Math.floor(m/60)+'h ':'')+(m%60)+'m';}
 function anToday(){const t=new Date().toLocaleDateString('en-GB');let l=[];try{l=getLogs()}catch(e){}const x=l.filter(a=>a.date===t);return {m:x.reduce((a,b)=>a+(Number(b.time)||0),0),n:x.length};}
 function anGoal(){try{return window.__goalInfo?window.__goalInfo():{gm:0,today:0}}catch(e){return {gm:0,today:0}}}
-function anSub(){const t=anToday();return 'Today'+'<i class="wv-dot"></i>'+anFmt(t.m)+'<i class="wv-dot"></i>'+t.n+(t.n===1?' session':' sessions');}
+function anSub(){const t=anToday();return 'Today '+anFmt(t.m)+'<i class="wv-dot"></i>'+t.n+(t.n===1?' session':' sessions');}
 function anPillHTML(){const g=anGoal(),p=g.gm?Math.min(100,g.today/g.gm*100):0,c=2*Math.PI*9;return '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".28" stroke-width="2"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2" stroke-dasharray="'+(c*p/100).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 12 12)"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>';}
 function anInit(){const p=document.getElementById('wsPane0');if(!p||p.dataset.init)return;p.dataset.init=1;
  const goal=document.createElement('div');goal.id='anGoal';const sub=document.createElement('div');sub.id='anSubj';
@@ -13532,16 +13668,62 @@ function anInit(){const p=document.getElementById('wsPane0');if(!p||p.dataset.in
  if(sr)p.appendChild(sr);if(hc)p.appendChild(hc);p.appendChild(sub);}
 function anRender(){const goal=document.getElementById('anGoal'),sub=document.getElementById('anSubj');if(!goal||!sub)return;
  const g=anGoal(),pct=g.gm?Math.min(100,Math.round(g.today/g.gm*100)):0;
- goal.innerHTML='<button type="button" class="an-goal" aria-label="Daily Study Goal"><span class="an-gi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></svg></span><span class="an-gt"><b>Daily Study Goal</b><span>'+(g.gm?anFmt(g.today)+' / '+anFmt(g.gm)+(g.today>=g.gm?' · Done':''):'Tap to set a goal')+'</span></span>'+(g.gm?'<span class="an-gp">'+pct+'%</span>':'<span class="an-gc"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>')+'<i class="an-gbar"><u style="width:'+pct+'%"></u></i></button>';
+ goal.innerHTML='<button type="button" class="stat-capsule an-goal" aria-label="Daily Study Goal"><div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></svg></div><div class="stat-body"><span class="stat-val">'+(g.gm?anFmt(g.today)+' / '+anFmt(g.gm):'Set daily goal')+'</span><span class="stat-lbl">DAILY STUDY GOAL</span></div>'+(g.gm?'<span class="an-gp">'+pct+'%</span>':'<span class="an-gc"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>')+'<i class="an-gbar"><u style="width:'+pct+'%"></u></i></button>';
  goal.firstChild.onclick=function(){window.__openGoal&&window.__openGoal();};
  let logs=[];try{logs=getLogs()}catch(e){}const M={};
  logs.forEach(l=>{const k=l.sub||'—';(M[k]=M[k]||{t:0,Easy:0,Medium:0,Hard:0});M[k].t+=Number(l.time)||0;if(M[k][l.diff]!==undefined)M[k][l.diff]++;});
  const rows=Object.keys(M).map(k=>[k,M[k]]).sort((a,b)=>b[1].t-a[1].t).slice(0,8),mx=Math.max(1,...rows.map(r=>r[1].t));
  const C={Easy:'var(--d-easy,#34d399)',Medium:'var(--d-med,#fbbf24)',Hard:'var(--d-hard,#f87171)'};
- sub.innerHTML='<div class="an-card"><div class="an-h">Subject-wise Time &amp; Difficulty</div>'+(rows.length?rows.map(r=>{const d=r[1],n=d.Easy+d.Medium+d.Hard||1;
-  return '<div class="an-r"><div class="an-rt"><span>'+esc(r[0])+'</span><span>'+anFmt(d.t)+'</span></div><div class="an-b"><i style="width:'+Math.max(3,d.t/mx*100)+'%"></i></div><div class="an-d">'+['Easy','Medium','Hard'].map(x=>d[x]?'<i style="width:'+d[x]/n*100+'%;background:'+C[x]+'"></i>':'').join('')+'</div></div>';}).join('')+'<div class="an-lg"><span>● Easy</span><span>● Medium</span><span>● Hard</span></div>':'<div class="an-empty">अभी कोई रिकॉर्ड नहीं</div>')+'</div>';}
+ if(!rows.length){sub.innerHTML='';return;}
+ sub.innerHTML='<div class="card"><div class="card-head"><h2 class="card-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--primary)"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Subject-wise Time</span></h2><span class="stat-pill">'+rows.length+(rows.length===1?' subject':' subjects')+'</span></div>'+rows.map(function(r){const d=r[1],n=d.Easy+d.Medium+d.Hard||1;
+  return '<div class="an-r"><div class="an-rt"><span>'+esc(r[0])+'</span><span>'+anFmt(d.t)+'</span></div><div class="an-b"><i style="width:'+Math.max(3,d.t/mx*100)+'%"></i></div><div class="an-d">'+['Easy','Medium','Hard'].map(function(x){return d[x]?'<i style="width:'+d[x]/n*100+'%;background:'+C[x]+'"></i>':''}).join('')+'</div></div>';}).join('')+'<div class="an-lg"><span style="color:'+C.Easy+'">● Easy</span><span style="color:'+C.Medium+'">● Medium</span><span style="color:'+C.Hard+'">● Hard</span></div></div>';}
 (function(){const st=function(){try{anInit();openWS(0,true);}catch(e){console.error('v3 boot',e);}};
  if(document.readyState==='complete')setTimeout(st,0);else window.addEventListener('load',function(){setTimeout(st,0);});})();
+</script>
+<script id="v3sum">
+/* गिनती वाला बॉक्स (v11): उँगली की चाल से पहले यही सिकुड़ता है। बॉक्स पूरा बंद होते ही उसी स्वाइप का बचा हिस्सा सीधे सूची को स्क्रॉल करता है
+   (हेडर उसी से अपने-आप छिपना शुरू करता है), इसलिए बीच में रुकावट नहीं आती। उँगली उठने पर हल्का fling (inertia) भी चलता है। */
+(function(){var p=document.getElementById('wsPane2');if(!p)return;var T=42,H=34,q=1,y0=0,x0=0,ly=0,lt=0,ts=0,v=0,mode=0,own=false,raf=0,wheelT=null;
+ function w(){return p.querySelector('.ws-sum-w')}
+ function paint(anim){var a=w();if(!a)return;var r=a.firstChild;a.classList.toggle('anim',!!anim);
+  a.style.height=(T*(1-q))+'px';r.style.height=(H*(1-q))+'px';r.style.setProperty('--o',String(Math.max(0,1-q/.45)));
+  r.style.opacity=String(Math.min(1,H*(1-q)/9));r.style.borderWidth=q>.85?'0':'';r.style.visibility=q>=.99?'hidden':'';}
+ function active(){return typeof wsTab!=='undefined'&&wsTab===2&&w()&&!(typeof wsSearchOn==='function'&&wsSearchOn())}
+ function settle(){if(q>0&&q<1){q=q>.5?1:0;paint(true)}}
+ /* dy>0: सूची नीचे (उँगली ऊपर) — पहले बॉक्स सिकुड़े, बचा हिस्सा स्क्रॉल; dy<0: पहले स्क्रॉल ऊपर, सिरे पर पहुँचकर बॉक्स खुले। लौटाता है: कितना सच में खपा */
+ function move(dy){var used=0;
+  if(dy>0){if(q<1){var u=Math.min(dy,(1-q)*T);q+=u/T;dy-=u;used+=u;if(q>.999)q=1}
+   if(dy>0){var s=p.scrollTop;p.scrollTop=s+dy;used+=p.scrollTop-s}}
+  else if(dy<0){var s2=p.scrollTop;if(s2>0){var t=Math.min(-dy,s2);p.scrollTop=s2-t;dy+=t;used+=t}
+   if(dy<0&&q>0){var u2=Math.min(-dy,q*T);q-=u2/T;if(q<.001)q=0;used+=u2}}
+  paint(false);return used}
+ function stopFling(){if(raf){cancelAnimationFrame(raf);raf=0}}
+ function fling(){stopFling();if(Math.abs(v)<.12){settle();return}var t0=performance.now();
+  (function step(now){var dt=Math.min(40,now-t0);t0=now;var d=v*dt;v*=Math.pow(.95,dt/16.7);
+   var used=move(d);if(Math.abs(v)<.03||Math.abs(used)<.01&&Math.abs(d)>=.01){raf=0;settle();return}raf=requestAnimationFrame(step)})(t0)}
+ new MutationObserver(function(){if(p.scrollTop>0)q=1;paint(false)}).observe(p,{childList:true});
+ p.addEventListener('touchstart',function(e){stopFling();var t=e.touches[0];y0=ly=t.clientY;x0=t.clientX;lt=ts=performance.now();v=0;mode=0;own=false},{passive:true});
+ p.addEventListener('touchmove',function(e){
+  if(!active()||e.touches.length!==1)return;var t=e.touches[0],dy=ly-t.clientY,now=performance.now();ly=t.clientY;
+  if(!mode){if(Math.abs(t.clientX-x0)>Math.abs(t.clientY-y0)+4)mode=2;else if(Math.abs(t.clientY-y0)>3)mode=1;else return}
+  if(mode!==1)return;
+  if(!own){var top=p.scrollTop<=0;if(!e.cancelable||!top||!((dy>0&&q<1)||(dy<0&&q>0)))return;
+   /* तेज़ फ्लिक: JS बीच में न आए — बॉक्स झट से (animation के साथ) बंद, और स्क्रॉल पूरी तरह नेटिव चले */
+   var sp=Math.abs(t.clientY-y0)/Math.max(1,now-ts);
+   if(sp>.6){q=dy>0?1:0;paint(true);mode=2;return}
+   own=true}
+  /* यह स्वाइप अब हमारा है: बाकी पूरा स्वाइप (बॉक्स + सूची) हम ही चलाते हैं, ताकि बीच में नेटिव स्क्रॉल से टकराव न हो */
+  var dt=Math.max(1,now-lt);lt=now;v=v*.6+(dy/dt)*.4;
+  if(v>1.1&&q<1){q=1;paint(true)}
+  move(dy);if(e.cancelable){e.preventDefault();e.stopPropagation()}
+ },{passive:false});
+ p.addEventListener('touchend',function(e){if(e.touches&&e.touches.length)return;if(own){own=false;if(performance.now()-lt>90)v=0;fling()}else settle()},{passive:true});
+ p.addEventListener('touchcancel',function(){own=false;v=0;settle()},{passive:true});
+ p.addEventListener('wheel',function(e){if(!active())return;var top=p.scrollTop<=0,dy=e.deltaY;
+  if((dy>0&&q<1&&top)||(dy<0&&q>0&&top)){q=Math.max(0,Math.min(1,q+dy/(T*2)));paint(false);e.preventDefault();clearTimeout(wheelT);wheelT=setTimeout(settle,160)}},{passive:false});
+ p.addEventListener('scroll',function(){if(p.scrollTop>0&&q<1&&!own&&!raf){q=1;paint(false)}},{passive:true});
+ window.__sumQ=function(v){q=v;paint(false)};
+})();
 </script>
 </body>
 </html>
