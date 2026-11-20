@@ -3853,10 +3853,9 @@ body.ws-t0 #wsPane1>.ws-bounce-wrap,body.ws-t2 #wsPane1>.ws-bounce-wrap{content-
 @media (prefers-reduced-motion:reduce){.ws-pane.ws-in.lfx,.ws-ghost.lfx{animation:none}}
 </style>
 <style id="sdrfx2">
-/* v17: लेक्चर-पैनल खुलने पर पीछे के चैप्टर पैनल के कटे शब्द ढके किनारे की ओर धीरे-धीरे फीके (बिना ब्लर); चुना हुआ चैप्टर हाइलाइट बना रहता है */
-.sdr-dim::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,transparent 4%,color-mix(in srgb,var(--surface) 92%,transparent) 36%);opacity:0;transition:opacity .3s ease;pointer-events:none}
-.sdr.two .sdr-dim::after{opacity:1}
-@media (prefers-reduced-motion:reduce){.sdr-dim::after{transition:none}}
+/* v17 (E): लेक्चर-पैनल खुलने पर पीछे का चैप्टर पैनल सिर्फ़ गहरा परदा (iOS जैसा), बिना ब्लर और बिना फीकेपन के */
+.sdr.two .sdr-dim{background:rgba(0,0,0,.38);transition:background .3s ease}
+@media (prefers-reduced-motion:reduce){.sdr.two .sdr-dim{transition:none}}
 </style>
 <style id="sbpopcss">
 #sbPop .sb-ph{padding:7px 10px 2px;font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
