@@ -3783,12 +3783,12 @@ body:has(#ds.open) .ws-hl{opacity:1;pointer-events:auto}body:has(#ds.open) .ws-h
 <style id="sdrcss">
 /* v11: विषय टच = दाएँ से साइड-पैनल (हेडर + Tabs के नीचे), लेक्चर-पैनल उसके ऊपर; नीचे का पैनल पीछे दिखता रहता है */
 .sdr{position:absolute;right:0;bottom:0;width:min(80vw,340px);z-index:311;pointer-events:none}
-.sdr-p{position:absolute;top:0;bottom:0;right:0;display:flex;flex-direction:column;overflow:hidden;pointer-events:auto;background:var(--surface-elevated);border:1px solid var(--border);border-right:0;border-radius:16px 0 0 0;box-shadow:-8px 0 28px rgba(0,0,0,.32);transform:translateX(106%);transition:transform .27s cubic-bezier(.22,1,.36,1)}
-.sdr-1{width:100%}
-.sdr-2{width:calc(100% - 30px);z-index:3;box-shadow:-10px 0 30px rgba(0,0,0,.45)}
+.sdr-p{position:absolute;top:10px;bottom:calc(10px + var(--sab,0px));right:10px;display:flex;flex-direction:column;overflow:hidden;pointer-events:auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.28);transform:translateX(calc(100% + 30px));transition:transform .27s cubic-bezier(.22,1,.36,1)}
+.sdr-1{width:calc(100% - 10px)}
+.sdr-2{width:calc(75% - 10px);z-index:3;bottom:auto;max-height:calc(100% - 20px - var(--sab,0px))}
 .sdr.on .sdr-1,.sdr.on .sdr-2.on{transform:none}
 .sdr-dim{position:absolute;inset:0;z-index:2;background:rgba(0,0,0,0);pointer-events:none;transition:background .22s}
-.sdr.two .sdr-dim{background:rgba(0,0,0,.4);pointer-events:auto}
+.sdr.two .sdr-dim{background:rgba(0,0,0,.07);pointer-events:auto}
 .sdr-h{flex:none;display:flex;align-items:center;gap:6px;padding:12px 14px 10px;border-bottom:1px solid var(--border);font-size:12px;font-weight:700;color:var(--muted)}
 .sdr-h2{padding-left:6px}
 .sdr-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 auto}
@@ -3799,9 +3799,83 @@ body:has(#ds.open) .ws-hl{opacity:1;pointer-events:auto}body:has(#ds.open) .ws-h
 .sdr-i{gap:10px;min-height:48px}
 .sdr-i .chp-nm{flex:1 1 auto;min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.3}
 .sdr-i .sp2-r{display:inline-flex;align-items:center;gap:6px;flex:none}
-.ws.sdr-on::after{content:"";position:absolute;left:0;right:0;bottom:0;top:var(--sdr-top,0);z-index:310;background:rgba(0,0,0,.3);pointer-events:none;animation:chpScrim .2s ease both}
+.ws.sdr-on::after{content:"";position:absolute;left:0;right:0;bottom:0;top:var(--sdr-top,0);z-index:310;background:rgba(0,0,0,.12);pointer-events:none;transition:background .3s;animation:chpScrim .2s ease both}
+.ws.sdr-on.sdr-two::after{background:rgba(0,0,0,.18)}
 body.sdr-on .bbw{transform:translateY(105%)!important;pointer-events:none!important}
+/* v13: तैरते कार्ड-पैनल (चारों ओर गैप), हल्की छाया (सबसे पीछे का पेज ज़्यादा), ऊपर रास्ता (सभी विषय › विषय), दाईं ओर खींचकर पीछे */
+.sdr-l{padding-bottom:14px}
+.sdr-cr{font-style:normal;color:var(--primary);cursor:pointer;padding:3px 0}
+.ws-tabs{border-bottom-color:color-mix(in srgb,var(--text) 18%,transparent)}
+/* v14 (1) मुख्य पेज स्थिर रहे: नया पेज उसके ऊपर से आए/जाए, मुख्य पेज के साथ हेडर+Tabs भी न खिसकें */
+@keyframes wsStill{from{transform:none}to{transform:none}}
+.ws-ghost.fwd.still{animation:none}
+.ws-ghost.fwd.still>.ws-pane{animation:wsDimOut .34s cubic-bezier(.22,1,.36,1) both}
+.ws-pane.ws-under.still{animation:wsStill .34s linear both,wsDimIn .34s cubic-bezier(.22,1,.36,1) both}
+.ws-ghost.top{left:0;top:var(--sat);width:100%;height:calc(100% - var(--sat));z-index:312}
+/* v14 (2) जाते समय पैनल पुराने पेज की कॉपी में टिके रहें, लौटते समय जाते हुए पेज के नीचे अपनी जगह पहले से हों */
+.ws-snap{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.ws-snap-dim{position:absolute;left:0;right:0;bottom:0}
+.ws-snap .sdr{z-index:auto}
+.sdr.noanim .sdr-p,.sdr.noanim .sdr-dim{transition:none!important}
+.ws.sdr-noanim.sdr-on::after{animation:none}
+/* v14 (3) चुना हुआ चैप्टर/लेक्चर: आधुनिक ऐप जैसा हल्का गोल पिल, हरी मोटी लाइन और हरा रंग नहीं */
+.sdr-i{width:calc(100% - 16px);margin:2px 8px;border-radius:14px;padding:12px 12px}
+.sdr-i:active{background:color-mix(in srgb,var(--text) 6%,transparent)}
+.sdr-i.cur{background:color-mix(in srgb,var(--text) 8%,transparent);box-shadow:none;color:var(--text)}
+.sdr-i.cur small{background:color-mix(in srgb,var(--text) 14%,transparent);color:var(--text)}
+.sdr-i .chp-cd{display:none}
+.sdr-i.all{color:var(--primary)}
 @media (prefers-reduced-motion:reduce){.sdr-p,.sdr-dim{transition:none}.ws.sdr-on::after{animation:none}}
+
+/* v15: History पेज (हज़ारों तत्व) Syllabus/Analytics टैब पर छिपा = browser उसकी style/layout गिनती छोड़ देता है */
+body.ws-t0 #wsPane1>.ws-bounce-wrap,body.ws-t2 #wsPane1>.ws-bounce-wrap{content-visibility:hidden;contain-intrinsic-size:auto 600px}
+/* v15: पेज खुलते समय झटका हटाया — पुराने पेज पर भारी filter:brightness एनिमेशन की जगह हल्का opacity परदा (GPU पर चलता है) */
+.ws-ghost.fwd>.ws-pane{animation:wsClipOut .34s cubic-bezier(.22,1,.36,1) both}
+.ws-ghost.fwd.still>.ws-pane{animation:none}
+.ws-ghost.fwd::after{content:"";position:absolute;inset:0;z-index:2;background:#000;opacity:0;pointer-events:none;animation:wsVeil .34s cubic-bezier(.22,1,.36,1) both}
+@keyframes wsVeil{from{opacity:0}to{opacity:.14}}
+.ws-snap{z-index:3}
+@media (prefers-reduced-motion:reduce){.ws-ghost.fwd::after{animation:none}}
+/* v16: Lec/चैप्टर पेज खुलते समय पुराना पैनल/पेज नए पेज के आर-पार न दिखे (पहले पेज पारदर्शी था) + चाल नरम */
+.ws-pane.ws-in{background:var(--bg);will-change:transform;backface-visibility:hidden;contain:paint}
+.ws-ghost.back>.ws-pane{background:var(--bg)}
+.ws-pane.ws-in,.ws-pane.ws-under,.ws-ghost.fwd,.ws-ghost.fwd>.ws-pane,.ws-ghost.fwd>.ws-hclone,.ws-ghost.fwd>.ws-hclone>*,.ws-ghost.fwd::after,.ws-ghost.back,.ws-hd.fwd{animation-duration:.4s;animation-timing-function:cubic-bezier(.32,.72,0,1)}
+</style>
+<style id="lfxcss">
+/* v17: लेक्चर का पूरा पेज — डेमो के इफेक्ट: सर्कुलर रिवील (टैप की जगह से गोला फैले) + शेयर्ड-Z ज़ूम; पीछे का पेज iOS डेप्थ की तरह सिकुड़े; Back पर गोला उसी जगह सिमट जाए */
+@keyframes lfxReveal{from{clip-path:circle(0px at var(--lx,50%) var(--ly,40%));transform:scale(.93);opacity:.55}to{clip-path:circle(var(--lr,1400px) at var(--lx,50%) var(--ly,40%));transform:none;opacity:1}}
+@keyframes lfxHide{from{clip-path:circle(var(--lr,1400px) at var(--lx,50%) var(--ly,40%));transform:none}to{clip-path:circle(0px at var(--lx,50%) var(--ly,40%));transform:scale(.93)}}
+@keyframes lfxDepth{from{transform:none;filter:none}to{transform:scale(.95);filter:brightness(.82)}}
+.ws-pane.ws-in.lfx{transform-origin:var(--lx,50%) var(--ly,40%);box-shadow:none;animation:lfxReveal .5s cubic-bezier(.32,.72,0,1) both}
+.ws-ghost.fwd.lfx:not(.still){transform-origin:var(--lx,50%) var(--ly,40%);animation:lfxDepth .5s cubic-bezier(.32,.72,0,1) both}
+.ws-ghost.fwd.lfx:not(.still)>.ws-pane{animation:none}
+.ws-ghost.back.lfx{transform-origin:var(--lx,50%) var(--ly,40%);box-shadow:none;animation:lfxHide .4s cubic-bezier(.32,.72,0,1) both}
+@media (prefers-reduced-motion:reduce){.ws-pane.ws-in.lfx,.ws-ghost.lfx{animation:none}}
+</style>
+<style id="sdrfx2">
+/* v17: लेक्चर-पैनल खुलने पर पीछे के चैप्टर पैनल के कटे शब्द ढके किनारे की ओर धीरे-धीरे फीके (बिना ब्लर); चुना हुआ चैप्टर हाइलाइट बना रहता है */
+.sdr-dim::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,transparent 4%,color-mix(in srgb,var(--surface) 92%,transparent) 36%);opacity:0;transition:opacity .3s ease;pointer-events:none}
+.sdr.two .sdr-dim::after{opacity:1}
+@media (prefers-reduced-motion:reduce){.sdr-dim::after{transition:none}}
+</style>
+<style id="sbpopcss">
+#sbPop .sb-ph{padding:7px 10px 2px;font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+</style>
+
+<style id="rucss">
+/* v11: पूरे ऐप की खाली स्थितियाँ — एक जैसा चित्र + शीर्षक + (छोटी पंक्ति) + (बटन) */
+.ru-es{width:100%;max-width:320px;margin:0 auto;padding:36px 16px;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box}
+.ru-es.full{min-height:calc(100vh - var(--chrome-h,96px) - 90px);min-height:calc(100dvh - var(--chrome-h,96px) - 90px);justify-content:center;padding-top:20px;padding-bottom:20px}
+.ru-es-art{overflow:visible}
+.ru-es b{font-size:17px;font-weight:700;color:var(--text,inherit);line-height:1.3}
+.ru-es p{font-size:14.5px;color:var(--muted,var(--mu,#8b96ab));line-height:1.5;margin:6px 0 0}
+.ru-es button{margin-top:22px;width:100%;max-width:260px;height:46px;border:0;border-radius:999px;background:var(--primary,var(--pr,#38bdf8));color:#000;font:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px color-mix(in srgb,var(--primary,var(--pr,#38bdf8)) 30%,transparent);transition:transform .1s;-webkit-tap-highlight-color:transparent}
+[data-theme="light"] .ru-es button{color:#fff}
+.ru-es button:active{transform:scale(.97)}
+.ru-es .bl{fill:var(--primary,var(--pr,#38bdf8));opacity:.13}
+.ru-es .ln{fill:none;stroke:var(--primary,var(--pr,#38bdf8));stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ru-es .fl{fill:color-mix(in srgb,var(--primary,var(--pr,#38bdf8)) 14%,var(--surface,var(--bg,#0b1220)))}
+.ru-es .sp{fill:none;stroke:var(--primary,var(--pr,#38bdf8));stroke-width:2;stroke-linecap:round;opacity:.8}
 </style>
 </head>
 <body>
@@ -4172,7 +4246,7 @@ body.sdr-on .bbw{transform:translateY(105%)!important;pointer-events:none!import
             </tr>
           </thead>
           <tbody id="tblLocalLogs">
-            <tr><td colspan="8" class="empty-cell"><div class="empty-state"><svg class="ic"><use href="#i-book"/></svg><b>अभी कोई रिकॉर्ड नहीं</b><span>पढ़ाई का सेशन सेव करते ही वह यहाँ दिखेगा</span></div></td></tr>
+            <tr><td colspan="8" class="empty-cell"></td></tr>
           </tbody>
         </table>
       </div>
@@ -4431,10 +4505,12 @@ body.sdr-on .bbw{transform:translateY(105%)!important;pointer-events:none!import
   <div id="sbOpt" role="menu"></div>
   <div class="sb-foot" id="sbFoot">
     <div id="sbPop" role="menu">
-      <button type="button" data-f="bk" class="on-only"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Backup</button>
-      <button type="button" data-f="rs" class="on-only"><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>Restore</button>
+      <div class="sb-ph">Google Sheets</div>
       <button type="button" data-f="sh"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>Google Sheet<span class="sb-st" id="sbShSt"></span></button>
       <div class="sb-div on-only"></div>
+      <div class="sb-ph on-only">Firebase</div>
+      <button type="button" data-f="bk" class="on-only"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Backup</button>
+      <button type="button" data-f="rs" class="on-only"><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>Restore</button>
       <button type="button" data-f="lo" class="out on-only"><svg viewBox="0 0 24 24"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg>Logout</button>
     </div>
     <div class="sb-av" id="sbAv"></div>
@@ -7541,7 +7617,9 @@ const CH_STAT = [['started', 'शुरू हो चुके'], ['idle', 'अ�
 function chTs(d) { const p = String(d || '').split('/'); return p.length === 3 ? new Date(+p[2], +p[1] - 1, +p[0]).getTime() : 0; }
 function chMin(m) { m = Math.round(m || 0); const h = Math.floor(m / 60), r = m % 60; return h ? h + 'h' + (r ? ' ' + r + 'm' : '') : r + 'm'; }
 function chDate(ts) { return ts ? new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—'; }
+var _cdMemo = null;   // v15: एक wsRender के दौरान chData() एक ही बार गिनो (पहले हर कॉल पर सारे लॉग दोबारा घूमते थे)
 function chData() {
+  if (_cdMemo) return _cdMemo;
   const map = new Map(), order = [];
   const add = (s, c) => { const k = s + '\u0001' + c; if (!map.has(k)) { map.set(k, { sub: s, chap: c, lecs: [], recs: [], time: 0, last: 0, cnt: {} }); order.push(k); } return map.get(k); };
   Object.keys(masterData).forEach(s => Object.keys(masterData[s]).forEach(c => { add(s, c).lecs = (masterData[s][c] || []).slice(); }));
@@ -7602,14 +7680,29 @@ const WS_EIC = {
   search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
   list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r=".9"/><circle cx="4.5" cy="12" r=".9"/><circle cx="4.5" cy="18" r=".9"/>'
 };
-function wsEmptyBox(t, d, act, kind) {
-  const ic = '<svg viewBox="0 0 24 24">' + WS_EIC[kind || 'list'] + '</svg>';
-  return '<div class="ws-empty"><div class="ws-empty-ic">' + ic + '</div><b>' + t + '</b><span>' + d + '</span>' + (act ? '<button type="button" class="ui-empty-btn" onclick="' + act[1] + '">' + act[0] + '</button>' : '') + '</div>';
+var RU_BG = '<rect class="bl" x="14" y="62" width="62" height="12" rx="6"/><rect class="bl" x="84" y="50" width="62" height="12" rx="6"/><rect class="bl" x="40" y="80" width="86" height="12" rx="6"/><circle class="bl" cx="148" cy="76" r="5"/><circle class="bl" cx="10" cy="48" r="4"/>';
+var RU_ART = {
+  start: '<path class="fl ln" d="M80 18c14 10 20 28 14 50H66c-6-22 0-40 14-50z"/><circle class="ln" cx="80" cy="46" r="7"/><path class="ln" d="M66 68l-12 10 4-16M94 68l12 10-4-16M74 78l6 10 6-10"/><path class="sp" d="M122 28v8M118 32h8M36 46v6M33 49h6M126 70h6"/>',
+  clock: '<circle class="fl ln" cx="80" cy="52" r="32"/><path class="ln" d="M80 34v19l12 8"/><path class="ln" d="M46 40l-6-8M40 32l9 1"/><path class="sp" d="M126 30v8M122 34h8M34 76v6M31 79h6"/>',
+  search: '<circle class="fl ln" cx="72" cy="46" r="24"/><path class="ln" d="M90 64l20 20"/><path class="ln" d="M62 40a12 12 0 0 1 10-8"/><path class="sp" d="M124 30v8M120 34h8M34 70v6M31 73h6"/>',
+  book: '<rect class="fl ln" x="52" y="20" width="48" height="64" rx="6"/><path class="ln" d="M62 20v64M72 40h18M72 52h18M72 64h12"/><path class="ln fl" d="M104 74l16-34 8 4-16 34-10 4z"/><path class="sp" d="M122 24v8M118 28h8M40 34v6M37 37h6"/>',
+  note: '<path class="fl ln" d="M54 24h42l14 14v46H54z"/><path class="ln" d="M96 24v14h14M64 52h36M64 64h36M64 76h20"/><path class="sp" d="M124 28v8M120 32h8M36 50v6M33 53h6"/>',
+  list: '<rect class="fl ln" x="46" y="30" width="56" height="40" rx="7" transform="rotate(-8 74 50)"/><rect class="fl ln" x="54" y="36" width="56" height="40" rx="7"/><path class="ln" d="M64 50h26M64 60h16"/><circle class="ln" cx="112" cy="76" r="14" style="fill:var(--surface,var(--bg,#0b1220))"/><path class="ln" d="M112 69v14M105 76h14"/><path class="sp" d="M36 34v6M33 37h6"/>',
+  check: '<circle class="fl ln" cx="80" cy="52" r="32"/><path class="ln" d="M66 52l10 10 19-20"/><path class="sp" d="M126 28v8M122 32h8M34 72v6M31 75h6"/>'
+};
+function ruEs(kind, t, d, act, full) {   // kind: start | clock | search | book | note | list | check  (inline style: किसी पेज का अपना CSS चित्र/शीर्षक की जगह-माप न बिगाड़े)
+  return '<div class="ru-es' + (full ? ' full' : '') + '" style="text-align:center"><svg class="ru-es-art" viewBox="0 0 160 110" width="170" height="117" aria-hidden="true" style="display:block;width:170px;max-width:70%;height:auto;margin:0 auto 16px;flex:none">' + RU_BG + (RU_ART[kind] || RU_ART.book) + '</svg>' +
+    '<b style="display:block;width:100%;text-align:center">' + t + '</b>' + (d ? '<p style="display:block;width:100%;text-align:center">' + d + '</p>' : '') +
+    (act ? '<button type="button" onclick="' + act[1] + '">' + act[0] + '</button>' : '') + '</div>';
 }
+function wsEmptyBox(t, d, act, kind) {
+  return ruEs({ hist: 'clock', search: 'search', list: 'book' }[kind || 'list'] || 'book', t, d, act, true);
+}
+function wsEmpty4() { return ruEs('start', 'शुरुआत करें', 'पहला कदम एक सेशन है', ['चलिए शुरू करें', 'uiStartSession()'], true); }
 function wsEmpty(tab) {
   const filtered = tab === 0 ? (fsActiveCount() > 0) : (chActive() > 0);
-  if (tab === 0 && !getLogs().length) return wsEmptyBox('अभी कोई रिकॉर्ड नहीं', 'पढ़ाई का सेशन सेव करते ही वह यहाँ दिखेगा', ['पढ़ाई शुरू करें', 'uiStartSession()'], 'hist');
-  return wsEmptyBox(tab === 0 ? 'कोई रिकॉर्ड नहीं मिला' : 'कोई चैप्टर नहीं मिला', filtered ? 'फ़िल्टर बदलकर दोबारा देखें' : 'यहाँ दिखाने के लिए अभी कुछ नहीं है', filtered ? ['फ़िल्टर हटाएँ', 'uiResetFilters(' + tab + ')'] : (tab === 0 ? ['पढ़ाई शुरू करें', 'uiStartSession()'] : null), filtered ? 'search' : (tab === 0 ? 'hist' : 'list'));
+  if (tab === 0 && !getLogs().length) return wsEmpty4();   // v11: बिल्कुल खाली History = रॉकेट वाला "शुरुआत करें"
+  return wsEmptyBox(tab === 0 ? 'कुछ नहीं मिला' : (filtered ? 'कुछ नहीं मिला' : 'कोई चैप्टर नहीं'), filtered ? 'फ़िल्टर बदलकर देखें' : (tab === 0 ? '' : 'सिलेबस जुड़ने पर यहाँ दिखेगा'), filtered ? ['फ़िल्टर हटाएँ', 'uiResetFilters(' + tab + ')'] : (tab === 0 ? ['पढ़ाई शुरू करें', 'uiStartSession()'] : null), filtered ? 'search' : (tab === 0 ? 'hist' : 'list'));
 }
 
 // ---------- 5 view builders ----------
@@ -7792,11 +7885,33 @@ var SP_CHEV = '<svg class="sp2-chev" viewBox="0 0 24 24" width="14" height="14" 
 function subPopGo(sub, chap, item) {   // item: 'all' या लेक्चर का नाम
   const _a = chPopEl && chPopEl.querySelector('.sdr-1 .sdr-l'), _b = chPopEl && chPopEl.querySelector('.sdr-2 .sdr-l');
   chPopMem = { via: 'sub', sub: sub, chap: chap, item: item, s1: _a ? _a.scrollTop : undefined, s2: _b ? _b.scrollTop : undefined };
-  chPopClose();
+  chPopSnapClose();
   chSt.sy = g('wsPane2').scrollTop; chF = { sort: 'recent', stat: 'all', sub: 'all' }; chRF = { d: [], m: [], l: [] };
   chSt.sub = sub; chSt.chap = chap; chSt.viaSub = true; haptic('light');
   if (item === 'all') { chSt.lec = null; chSt.direct = false; } else { chSt.lec = item; chSt.cy = 0; chSt.direct = true; }
   wsPush(); wsRender(); wsSetScroll(1, 0);
+}
+var wsPanelSnap = null;
+function chPopSnapClose() {   // पैनल जैसे हैं वैसे ही पुराने पेज की कॉपी में रखो; असली पैनल तुरंत हटें (बिना स्लाइड), नया पेज उन्हें ढकते हुए आए
+  const e = chPopEl; if (!e) return;
+  const sc = g('wsScreen'), vp = g('wsTrack').parentNode, off = Math.round(vp.getBoundingClientRect().top - sc.getBoundingClientRect().top);
+  const top = (parseFloat(e.style.top) || 0) - off;
+  const snap = document.createElement('div'); snap.className = 'ws-snap';
+  const dim = document.createElement('i'); dim.className = 'ws-snap-dim'; dim.style.top = top + 'px'; dim.style.background = 'rgba(0,0,0,' + (e.classList.contains('two') ? .18 : .12) + ')';
+  const cl = e.cloneNode(true); cl.style.top = top + 'px'; cl.classList.remove('noanim');
+  snap.appendChild(dim); snap.appendChild(cl);
+  snap._st = Array.from(e.querySelectorAll('.sdr-l')).map(x => x.scrollTop);
+  wsPanelSnap = snap;
+  chPopMode(false); document.body.classList.remove('sdr-on'); sc.classList.remove('sdr-on', 'sdr-two');
+  const r = chPopRow; chPopEl = null; chPopRow = null; if (r) r.classList.remove('chp-src');
+  e.remove();
+}
+function chPopRestoreNow() {   // Back करने पर पैनल उसी पल, उसी जगह (जाते हुए पेज के नीचे)
+  if (!chPopMem || chPopMem.via !== 'sub') return;
+  if (!(wsOpen && wsTab === 2 && !chSt.sub)) return;
+  const row = Array.from(g('wsPane2').querySelectorAll('[data-ss]')).find(x => x.dataset.ss === chPopMem.sub);
+  if (!row) { chPopMem = null; return; }
+  subPopOpen(row, null, true);
 }
 function chPopMode(on) {   // पॉपअप खुला: हेडर + ऊपर के Tabs + नीचे का बार छिपे/बंद; बंद होने के बाद ही पहले जैसे चलें
   document.body.classList.toggle('chp-on', !!on);
@@ -7817,15 +7932,16 @@ function subPopOpenNow(row, ev, restore) {   // v11: विषय टच = द�
   const top = Math.max(0, Math.round(hb.bottom - wr.top));   // header + tabs bar के ठीक नीचे से
   const d = document.createElement('div'); d.className = 'sdr'; d.style.top = top + 'px'; d.setAttribute('role', 'menu');
   const cnt = n => n ? '<small>' + n + '</small>' : CH_PEND;
-  d.innerHTML = '<div class="sdr-p sdr-1"><div class="sdr-h"><span class="sdr-t"><small class="bc-s">विषय · ' + chs.length + ' चैप्टर</small><b class="bc-c">' + esc(sub) + '</b></span></div>' +
+  const BKS = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
+  d.innerHTML = '<div class="sdr-p sdr-1"><div class="sdr-h sdr-h2"><button type="button" class="sdr-bk" data-bk="1" aria-label="Back">' + BKS + '</button><span class="sdr-t"><small class="bc-s"><i class="sdr-cr" data-g="0">सभी विषय</i></small><b class="bc-c">' + esc(sub) + '</b></span></div>' +
     '<div class="sdr-l">' + chs.map((o, ci) => '<button type="button" class="chp-i sdr-i" data-t="' + ci + '"><span class="chp-nm">' + esc(o.chap) + '</span><span class="sp2-r">' + cnt(o.recs.length) + SP_CHEV + '</span></button>').join('') + '</div><i class="sdr-dim"></i></div>';
-  sc.appendChild(d); sc.style.setProperty('--sdr-top', top + 'px'); sc.classList.add('sdr-on'); document.body.classList.add('sdr-on');
+  sc.appendChild(d); sc.style.setProperty('--sdr-top', top + 'px'); if (restore) { d.classList.add('noanim'); sc.classList.add('sdr-noanim'); } sc.classList.add('sdr-on'); document.body.classList.add('sdr-on');
   row.classList.add('chp-src'); chPopEl = d; chPopRow = row;
   const P1 = d.querySelector('.sdr-1'), L1 = P1.querySelector('.sdr-l');
   let P2 = null, curCi = -1;
   const mark = ci => { L1.querySelectorAll('.sdr-i').forEach((b, i) => b.classList.toggle('cur', i === ci)); };
   const close2 = instant => {
-    const x = P2; P2 = null; curCi = -1; d.classList.remove('two'); mark(-1);
+    const x = P2; P2 = null; curCi = -1; d.classList.remove('two'); sc.classList.remove('sdr-two'); mark(-1);
     if (!x) return;
     x.classList.remove('on'); x.style.pointerEvents = 'none'; setTimeout(() => x.remove(), instant ? 0 : 260);
   };
@@ -7833,15 +7949,16 @@ function subPopOpenNow(row, ev, restore) {   // v11: विषय टच = द�
     const o = chs[ci]; close2(true); curCi = ci; mark(ci);
     const tot = o.recs.length, dot = '<i class="chp-cd"></i>';
     const x = document.createElement('div'); x.className = 'sdr-p sdr-2';
-    x.innerHTML = '<div class="sdr-h sdr-h2"><button type="button" class="sdr-bk" data-bk="1" aria-label="Back"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><span class="sdr-t"><small class="bc-s">' + esc(sub) + '</small><b class="bc-c">' + esc(o.chap) + '</b></span></div>' +
+    x.innerHTML = '<div class="sdr-h sdr-h2"><button type="button" class="sdr-bk" data-bk="1" aria-label="Back"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><span class="sdr-t"><small class="bc-s"><i class="sdr-cr" data-g="0">सभी विषय</i> › <i class="sdr-cr" data-g="1">' + esc(sub) + '</i></small><b class="bc-c">' + esc(o.chap) + '</b></span></div>' +
       '<div class="sdr-l"><button type="button" class="chp-i sdr-i all' + (item === 'all' ? ' cur' : '') + '" data-a="all"><span class="chp-nm">' + (item === 'all' ? dot : '') + 'All Lectures</span>' + cnt(tot) + '</button><div class="chp-sep"></div>' +
       o.all.map((l, i) => '<button type="button" class="chp-i sdr-i' + (item === l ? ' cur' : '') + '" data-a="' + i + '"><span class="chp-nm">' + (item === l ? dot : '') + esc(l) + '</span>' + cnt(o.cnt[l]) + '</button>').join('') + '</div>';
-    d.appendChild(x); P2 = x; d.classList.add('two');
+    d.appendChild(x); P2 = x; d.classList.add('two'); sc.classList.add('sdr-two');
     const L2 = x.querySelector('.sdr-l');
     if (typeof sy === 'number') L2.scrollTop = sy;
     else { const C = L2.querySelector('.cur'); if (C && item && item !== 'all') L2.scrollTop = Math.max(0, C.offsetTop - (L2.clientHeight - C.offsetHeight) / 2); }
-    requestAnimationFrame(() => requestAnimationFrame(() => { if (P2 === x) x.classList.add('on'); }));
+    if (restore) x.classList.add('on'); else requestAnimationFrame(() => requestAnimationFrame(() => { if (P2 === x) x.classList.add('on'); }));
     x.addEventListener('click', e => {
+      const g2 = e.target.closest('[data-g]'); if (g2) { if (g2.dataset.g === '1') close2(); else { chPopClose(); chPopMem = null; } haptic('light'); return; }
       const t = e.target.closest('button'); if (!t) return;
       if (t.dataset.bk !== undefined) { close2(); haptic('light'); return; }
       if (t.dataset.a !== undefined) subPopGo(sub, o.chap, t.dataset.a === 'all' ? 'all' : o.all[+t.dataset.a]);
@@ -7849,6 +7966,7 @@ function subPopOpenNow(row, ev, restore) {   // v11: विषय टच = द�
   };
   P1.addEventListener('click', e => {
     if (e.target.closest('.sdr-dim')) { if (P2) { close2(); haptic('light'); } return; }   // नीचे वाले पैनल की दिखती पट्टी = एक कदम पीछे
+    if (e.target.closest('[data-g],[data-bk]')) { chPopClose(); chPopMem = null; haptic('light'); return; }
     const t = e.target.closest('.sdr-i'); if (!t) return;
     const ci = +t.dataset.t, o = chs[ci];
     if (!o.all.length) { subPopGo(sub, o.chap, 'all'); return; }   // कोई लेक्चर नहीं: सीधे चैप्टर पेज
@@ -7863,7 +7981,21 @@ function subPopOpenNow(row, ev, restore) {   // v11: विषय टच = द�
       if (typeof mem.s1 !== 'number') { const C = L1.querySelector('.cur'); if (C) L1.scrollTop = Math.max(0, C.offsetTop - (L1.clientHeight - C.offsetHeight) / 2); }
     }
   }
-  requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('on')));
+  // दाईं ओर खींचकर एक कदम पीछे (ऊपर वाला पैनल)
+  let tx = 0, ty = 0, tdx = 0, tel = null, tlive = false;
+  d.addEventListener('touchstart', e => { const top = P2 || P1; if (!top.contains(e.target)) { tel = null; return; } tel = top; tx = e.touches[0].clientX; ty = e.touches[0].clientY; tdx = 0; tlive = false; }, { passive: true });
+  d.addEventListener('touchmove', e => {
+    if (!tel) return; const mx = e.touches[0].clientX - tx, my = e.touches[0].clientY - ty;
+    if (!tlive) { if (Math.abs(my) > Math.abs(mx) || mx < 8) { if (Math.abs(my) > 10) tel = null; return; } tlive = true; tel.style.transition = 'none'; }
+    tdx = Math.max(0, mx); tel.style.transform = 'translateX(' + tdx + 'px)';
+  }, { passive: true });
+  d.addEventListener('touchend', () => {
+    if (!tel) return; const b = tel; tel = null; if (!tlive) return;
+    b.style.transition = ''; b.style.transform = '';
+    if (tdx > 70) { haptic('light'); if (b === P2) close2(); else { chPopClose(); chPopMem = null; } }
+  });
+  if (restore) { d.classList.add('on'); requestAnimationFrame(() => requestAnimationFrame(() => { d.classList.remove('noanim'); sc.classList.remove('sdr-noanim'); })); }
+  else requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('on')));
 }
 
 // ---------- हेडर: पॉपअप खुलने से पहले वैसे ही ऊपर सरके जैसे नीचे scroll पर सरकता है; बंद होने पर वापस ----------
@@ -7900,7 +8032,7 @@ function subPopOpen(row, ev, restore) {
 var chPopEl = null, chPopRow = null;
 function chPopClose() {
   chPopMode(false);
-  document.body.classList.remove('sdr-on'); const _ws = g('wsScreen'); if (_ws) _ws.classList.remove('sdr-on');
+  document.body.classList.remove('sdr-on'); const _ws = g('wsScreen'); if (_ws) _ws.classList.remove('sdr-on', 'sdr-two');
   const e = chPopEl, r = chPopRow; chPopEl = null; chPopRow = null;
   if (r) r.classList.remove('chp-src');
   if (!e) return;
@@ -7997,7 +8129,7 @@ function chLecOpen(l) {
   chSt.cy = g('wsPane2').scrollTop; chSt.lec = l; chSt.direct = false; haptic('light'); wsPush(); wsRender(); wsSetScroll(1, 0);
 }
 function chBackDo() {
-  if (chSt.viaSub) { chSt.viaSub = false; chSt.sub = null; chSt.chap = null; chSt.lec = null; chSt.direct = false; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.sy || 0)); chPopSchedule(); return; }   // विषय-पॉपअप से आए थे: Back से सीधे विषय सूची + पॉपअप दोबारा
+  if (chSt.viaSub) { chSt.viaSub = false; chSt.sub = null; chSt.chap = null; chSt.lec = null; chSt.direct = false; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => { wsSetScroll(1, chSt.sy || 0); chPopRestoreNow(); }); return; }   // विषय-पॉपअप से आए थे: Back से सीधे विषय सूची + पॉपअप दोबारा
   if (chSt.lec && chSt.direct) { chSt.direct = false; chSt.lec = null; chSt.chap = null; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.y)); chPopSchedule(); return; }   // पॉपअप से सीधे आए थे: Back से सीधे चैप्टर सूची + पॉपअप दोबारा
   if (chSt.lec) { chSt.lec = null; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.cy)); return; }
   if (chSt.chap) { chSt.chap = null; chRF = { d: [], m: [], l: [] }; wsRender(); requestAnimationFrame(() => wsSetScroll(1, chSt.y)); chPopSchedule(); return; }   // All Lectures पेज से Back: चैप्टर सूची + पॉपअप दोबारा
@@ -8071,18 +8203,40 @@ function wsPlaceChrome() {   // असली हेडर चालू टैब
   if (ch.parentNode !== act || act.firstChild !== ch) act.insertBefore(ch, act.firstChild);
 }
 // ---------- render ----------
-function wsRender() {
+function wsRender() {   // v15: wrapper — chData() की गिनती एक बार
+  _cdMemo = null;
+  try { _cdMemo = chData(); } catch (e) { _cdMemo = null; }
+  try { wsRenderCore(); } finally { _cdMemo = null; }
+}
+// v15: Syllabus में चलते समय History और Analytics पेज छिपे रहते हैं; उन्हें पेज-खुलने की एनिमेशन के दौरान न बनाओ, बाद में खाली समय पर बनाओ
+var wsLazyT = 0;
+function wsLazyCancel() { clearTimeout(wsLazyT); wsLazyT = 0; }
+function wsLazyHidden() {
+  clearTimeout(wsLazyT);
+  wsLazyT = setTimeout(function () {
+    const run = function () {
+      wsLazyT = 0;
+      try { if (window.__wsReady && g('wsPane1')) wsSetPane('wsPane1', wsHistHTML(getVisibleLogs())); } catch (e) {}
+      try { anRender(); } catch (e) {}
+    };
+    if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 1200 }); else run();
+  }, 500);
+}
+function wsRenderCore() {
   chPopClose();
   if (!window.__wsReady || !g('wsScreen')) return;
-  const hist = getVisibleLogs();
-  wsSetPane('wsPane1', wsHistHTML(hist));
+  const lazyHidden = !!(wsOpen && wsTab === 2);   // v15
+  let hist = [];
+  if (lazyHidden) wsLazyCancel();   // v15: Syllabus में History/Analytics बनाना ही बंद; टैब खोलने पर wsRender उन्हें बनाता है
+  else { wsLazyCancel(); hist = getVisibleLogs(); wsSetPane('wsPane1', wsHistHTML(hist)); }
   let o = null, chList = [], subs = [];
   if (chSt.sub && !subList().some(x => x[0] === chSt.sub)) { chSt.sub = null; chSt.chap = null; chSt.lec = null; }
   if (chSt.chap) { o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap); if (!o) { chSt.chap = null; chSt.lec = null; } }
   const plvl = chSt.sub ? (o ? (chSt.lec ? 3 : 2) : 1) : 0;      // 0 subjects, 1 chapters of a subject, 2 chapter, 3 lecture
   const k1 = plvl + '|' + chSt.sub + '|' + chSt.chap + '|' + chSt.lec;
   let wsGh = null;
-  if (wsK1 !== undefined && k1 !== wsK1 && wsOpen && wsTab === 2 && wsTp === 2 && wsPl !== undefined && plvl !== wsPl && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) wsGh = wsGhostMake();   // पुराना पेज सँभालकर रखो
+  if (wsK1 !== undefined && k1 !== wsK1 && wsOpen && wsTab === 2 && wsTp === 2 && wsPl !== undefined && plvl !== wsPl && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) wsGh = wsGhostMake(plvl < wsPl);   // पुराना पेज सँभालकर रखो
+  if (!wsGh) wsPanelSnap = null;
   if (plvl !== 2) CR.forget();
   if (plvl === 3) wsSetPane('wsPane2', chLecHTML(o, chSt.lec));
   else if (plvl === 2) wsSetPane('wsPane2', CR.page(o));   // All Lectures: सीधे चैप्टर के सारे रिकॉर्ड
@@ -8105,7 +8259,7 @@ function wsRender() {
   g('wsVw').style.display = (lvl >= 2 || wsTab === 0) ? 'none' : '';
   { const gp = g('wsGoalPill'); if (gp) { gp.style.display = wsTab === 0 ? '' : 'none'; gp.innerHTML = anPillHTML(); } }
   ['ws-t0', 'ws-t1', 'ws-t2'].forEach((c, i) => document.body.classList.toggle(c, wsOpen && wsTab === i));
-  anRender();
+  if (!lazyHidden) anRender();   // v15: Syllabus में Analytics बाद में बनेगा
   g('wsViewIcon').innerHTML = WS_VIEWS[wsViewIdx].icon;
   const deep = lvl >= 2;
   
@@ -8130,25 +8284,42 @@ function wsRender() {
   wsHdrSync();
   if (wsK1 !== undefined && k1 !== wsK1) {
     const pn = g('wsPane2');
-    pn.classList.remove('ws-fade', 'ws-in', 'ws-under'); void pn.offsetWidth;
+    pn.classList.remove('ws-fade', 'ws-in', 'ws-under', 'still', 'lfx'); void pn.offsetWidth;
     if (wsGh) {
       const fwd = plvl > wsPl, hd = document.createElement('div');
       hd.className = 'ws-hd';
       pn.classList.add(fwd ? 'ws-in' : 'ws-under'); wsGh.classList.add(fwd ? 'fwd' : 'back');
+      if (fwd && plvl === 3) lfxIn(pn, wsGh); else if (!fwd && wsPl === 3) lfxOut(wsGh);   // v17
+      if (wsPl === 0 || plvl === 0) { pn.classList.add('still'); wsGh.classList.add('still'); }   // मुख्य पेज (विषय सूची) अपनी जगह स्थिर
       // एनिमेशन सच में खत्म होने पर ही नकली कॉपियाँ हटाओ (धीमे फ़ोन पर टाइमर पहले बज जाता था और झपक होती थी)
       let tm = 0;
       const fin = () => {
         clearTimeout(tm); pn.removeEventListener('animationend', onEnd); wsSlideFin = null;
-        pn.classList.remove('ws-in', 'ws-under'); wsGh.remove(); hd.remove();
+        pn.classList.remove('ws-in', 'ws-under', 'still', 'lfx'); wsGh.remove(); hd.remove();
         g('wsScreen').classList.remove('ws-slide'); wsSliding = false;
       };
-      const onEnd = e => { if (e.target === pn && /^wsIn(R|Lt)$/.test(e.animationName)) fin(); };
+      const onEnd = e => { if (e.target === pn && /^(wsIn(R|Lt)|wsStill|lfxReveal)$/.test(e.animationName)) fin(); };
       pn.addEventListener('animationend', onEnd); tm = setTimeout(fin, 1000); wsSlideFin = fin;
     } else pn.classList.add('ws-fade');
   }
   wsK1 = k1; wsPl = plvl; wsTp = wsTab;
 }
 var wsK1, wsPl, wsTp;
+var lfxO = null, lfxTap = null;   // v17: लेक्चर पेज के इफेक्ट: आख़िरी टैप की जगह और खुलने का उद्गम
+window.addEventListener('pointerdown', function (e) { lfxTap = { x: e.clientX, y: e.clientY, t: Date.now() }; }, true);
+function lfxSet(el, o) { el.style.setProperty('--lx', o.x + 'px'); el.style.setProperty('--ly', o.y + 'px'); el.style.setProperty('--lr', o.r + 'px'); }
+function lfxIn(pn, gh) {   // लेक्चर पेज आगे खुल रहा है
+  try {
+    const r = g('wsVp').getBoundingClientRect(), w = r.width, h = r.height;   // pn.getBoundingClientRect() नहीं: उस पल उस पर wsInR का शुरुआती सरकाव लगा होता है
+    const fresh = lfxTap && Date.now() - lfxTap.t < 900;
+    const x = Math.max(0, Math.min(w, fresh ? lfxTap.x - r.left : w / 2)), y = Math.max(0, Math.min(h, fresh ? lfxTap.y - r.top : h * 0.4));
+    lfxO = { x: Math.round(x), y: Math.round(y), r: Math.ceil(Math.hypot(Math.max(x, w - x), Math.max(y, h - y))) + 24 };
+    lfxSet(pn, lfxO); lfxSet(gh, lfxO); pn.classList.add('lfx'); gh.classList.add('lfx');
+  } catch (e) {}
+}
+function lfxOut(gh) {   // लेक्चर पेज से Back: गोला उसी जगह सिमटे जहाँ से खुला था
+  try { const o = lfxO || { x: Math.round(window.innerWidth / 2), y: Math.round(window.innerHeight * 0.4), r: 1400 }; lfxSet(gh, o); gh.classList.add('lfx'); } catch (e) {}
+}
 var wsSliding = false;
 function wsHeaderClone() {   // हेडर की हूबहू कॉपी (जैसा अभी दिख रहा है)
   const ch = g('wsChrome'), cg = ch.cloneNode(true);
@@ -8161,17 +8332,20 @@ function wsHeaderClone() {   // हेडर की हूबहू कॉपी
   return cg;
 }
 var wsSlideFin = null;
-function wsGhostMake() {   // पुराना पेज = उसकी लिस्ट + उसका हेडर, एक साथ
+function wsGhostMake(back) {   // पुराना पेज = उसकी लिस्ट + उसका हेडर, एक साथ (back: जाता हुआ पेज पैनलों के ऊपर से सरके)
   if (wsSlideFin) wsSlideFin();
   const pn = g('wsPane2'), tr = g('wsTrack');
   tr.querySelectorAll(':scope > .ws-ghost, :scope > .ws-hd').forEach(e => e.remove());
+  g('wsScreen').querySelectorAll(':scope > .ws-ghost.top').forEach(e => e.remove());
   const wrap = document.createElement('div'); wrap.className = 'ws-ghost'; wrap.setAttribute('aria-hidden', 'true');
   const pc = pn.cloneNode(true);
   pc.removeAttribute('id'); pc.className = 'ws-pane'; pc.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
   pc.style.paddingTop = getComputedStyle(pn).paddingTop;
   wrap.appendChild(pc);
-  tr.appendChild(wrap);
+  if (back) { wrap.classList.add('top'); g('wsScreen').appendChild(wrap); } else tr.appendChild(wrap);
   pc.scrollTop = pn.scrollTop;
+  if (wsPanelSnap && !back) { wrap.appendChild(wsPanelSnap); wsPanelSnap.querySelectorAll('.sdr-l').forEach((x, i) => { x.scrollTop = (wsPanelSnap._st && wsPanelSnap._st[i]) || 0; }); }
+  wsPanelSnap = null;
   g('wsScreen').classList.add('ws-slide'); wsSliding = true;   // इसके बाद क्लास बदलने पर भी टैब सिकुड़ेंगे नहीं
   return wrap;
 }
@@ -9034,11 +9208,7 @@ function renderHistory() {
   updSearchDot();
 
   if (!logs.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty-cell"><div class="empty-state"><svg class="ic"><use href="' +
-      (filtered ? '#i-cog' : '#i-book') + '"/></svg><b>' +
-      (filtered ? 'कोई रिकॉर्ड नहीं मिला' : 'अभी कोई रिकॉर्ड नहीं') + '</b><span>' +
-      (filtered ? 'फ़िल्टर बदलकर दोबारा देखें' : 'पढ़ाई का सेशन सेव करते ही वह यहाँ दिखेगा') + '</span>' +
-      (filtered ? '<button type="button" class="ui-empty-btn" onclick="uiResetFilters(0)">फ़िल्टर हटाएँ</button>' : '<button type="button" class="ui-empty-btn" onclick="uiStartSession()">पढ़ाई शुरू करें</button>') + '</div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-cell">' + (filtered ? ruEs('search', 'कुछ नहीं मिला', 'फ़िल्टर बदलकर देखें', ['फ़िल्टर हटाएँ', 'uiResetFilters(0)']) : wsEmpty4()) + '</td></tr>';
     return;
   }
 
@@ -13000,7 +13170,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
   };
   const missCount = scope => { const t = missTree(scope); if (!scope.sub) return t.length; if (!scope.chap) return t[0] ? t[0].chs.length : 0; return t[0] && t[0].chs[0] ? t[0].chs[0].lecs.length : 0; };
   let flashName = ''; const setFlash = n => { flashName = n; setTimeout(() => { flashName = ''; }, 2500); };
-  const emptyHtml = (ic, t) => '<div class="tl-empty">' + ic + '<span>' + t + '</span></div>';
+  const emptyHtml = (kind, t) => ruEs(kind, t);
   const cbH = (on, cls) => '<span class="tl-cb' + (on === true ? ' on' : (on === 'part' ? ' part' : '')) + (cls ? ' ' + cls : '') + '"><svg viewBox="0 0 24 24">' + (on === 'part' ? '<path d="M6 12h12"/>' : '<path d="M5 12l5 5 9-10"/>') + '</svg></span>';
   const gapOf = (items, sel) => { const idx = []; items.forEach((x, i) => { if (sel.has(x)) idx.push(i); }); if (idx.length < 2) return null; const a = idx[0], b = idx[idx.length - 1]; for (let i = a + 1; i < b; i++) if (!sel.has(items[i])) return [a, b]; return null; };
   const smartSel = (pg, items) => { const sel = pg.st.sel, gp = gapOf(items, sel); if (!sel.size) items.forEach(x => sel.add(x)); else if (gp) { for (let i = gp[0]; i <= gp[1]; i++) sel.add(items[i]); } else sel.clear(); };
@@ -13130,7 +13300,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
     body(pg) {
       const items = pg.items = this.list(pg), del = pg.st.mode === 'del';
       [...pg.st.sel].forEach(x => { if (!masterData[x]) pg.st.sel.delete(x); });
-      if (!items.length) return emptyHtml(pg.st.q ? IC.search : IC.library, pg.st.q ? 'कोई नतीजा नहीं' : 'कोई विषय नहीं');
+      if (!items.length) return emptyHtml(pg.st.q ? 'search' : 'book', pg.st.q ? 'कोई नतीजा नहीं' : 'कोई विषय नहीं');
       return items.map((s, i) => { const n = subNums(s), on = pg.st.sel.has(s);
         return '<div class="tl-li' + (on ? ' sel' : '') + (s === flashName ? ' flash' : '') + '" role="button" tabindex="0" data-a="open" data-i="' + i + '" style="--sc:' + subCol(s) + '">' + (del ? cbH(on) : '') +
           '<div class="tl-li-t"><b>' + esc(s) + '</b><span>' + n.c + ' चैप्टर · ' + n.l + ' लेक्चर</span></div>' + (del ? '' : IC.chev) + '</div>'; }).join('');
@@ -13155,7 +13325,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
     body(pg) {
       const m = masterData[pg.st.sub] || {}, items = pg.items = Object.keys(m), del = pg.st.mode === 'del';
       [...pg.st.sel].forEach(x => { if (!m[x]) pg.st.sel.delete(x); });
-      if (!items.length) return emptyHtml(IC.library, 'कोई चैप्टर नहीं');
+      if (!items.length) return emptyHtml('book', 'कोई चैप्टर नहीं');
       return items.map((c, i) => { const on = pg.st.sel.has(c), n = m[c].length;
         return '<div class="tl-li' + (on ? ' sel' : '') + (c === flashName ? ' flash' : '') + '" role="button" tabindex="0" data-a="open" data-i="' + i + '" style="--sc:' + subCol(pg.st.sub) + '">' +
           (del ? cbH(on) : '<span class="tl-no">' + String(i + 1).padStart(2, '0') + '</span>') +
@@ -13185,7 +13355,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
       [...pg.st.sel].forEach(x => { if (lecs.indexOf(x) < 0) pg.st.sel.delete(x); });
       let h = '';
       if (!del) h += '<div class="tl-qa">' + [1, 3, 5, 10].map(n => '<button type="button" data-a="q" data-n="' + n + '"><b>+' + n + '</b><span>लेक्चर</span></button>').join('') + '<button type="button" data-a="qc" class="cu"><b>' + IC.plus + '</b><span>Custom</span></button></div>';
-      if (!lecs.length) return h + emptyHtml(IC.bookopen, 'कोई लेक्चर नहीं');
+      if (!lecs.length) return h + emptyHtml('list', 'कोई लेक्चर नहीं');
       return h + '<div class="tl-lecgrid">' + lecs.map((l, i) => { const on = pg.st.sel.has(l);
         return '<div class="tl-lec' + (del ? ' dl' : '') + (on ? ' sel' : '') + '"' + (del ? ' role="button" tabindex="0" data-a="cell" data-i="' + i + '"' : '') + '>' + (del ? cbH(on) : '') + '<span>' + esc(l) + '</span></div>'; }).join('') + '</div>';
     },
@@ -13211,7 +13381,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
       const t = pg.tree = missTree(pg.st.scope), sel = pg.st.sel, valid = new Set();
       t.forEach(g2 => g2.chs.forEach(ch => ch.lecs.forEach(l => valid.add(LK(g2.s, ch.c, l)))));
       [...sel].forEach(k => { if (!valid.has(k)) sel.delete(k); });
-      if (!t.length) return emptyHtml(IC.circlecheck, 'सब कुछ मौजूद है');
+      if (!t.length) return emptyHtml('check', 'सब कुछ मौजूद है');
       return t.map((g2, si) => {
         const all = []; g2.chs.forEach(ch => ch.lecs.forEach(l => all.push(LK(g2.s, ch.c, l))));
         const ns = all.filter(k => sel.has(k)).length, stt = ns === 0 ? false : (ns === all.length ? true : 'part');
@@ -13618,6 +13788,7 @@ html[data-theme="light"] .tl-group,html[data-theme="light"] .tl-goal{background:
     (root || document).querySelectorAll(SEL).forEach(el => {
       if (done.has(el)) return;
       if (el.closest && el.closest('.ntb-lc')) { done.add(el); return; } // .ntb-lc .ntb-x has its own non-overlapping hit box
+      if (el.closest && el.closest('.ws-ghost,.ws-snap,.ws-hclone,.ws-hd,[aria-hidden="true"]')) { done.add(el); return; }   // v15: एनिमेशन की नकली कॉपियाँ नापना बेकार (और भारी) है
       const w = el.offsetWidth, h = el.offsetHeight;
       if (!w || !h) return;                       // छिपा है: दिखने पर फिर जाँचेंगे
       done.add(el);
@@ -13632,7 +13803,16 @@ html[data-theme="light"] .tl-group,html[data-theme="light"] .tl-goal{background:
       el.classList.add('ui-hit');
     });
   }
-  const sched = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; try { scan(); } catch (e) {} }); };
+  // v15: पहले हर class/style बदलाव पर अगले ही फ्रेम में पूरा डॉक्यूमेंट नापा जाता था (लेआउट ज़बरदस्ती चलता था) — पेज खुलने की एनिमेशन के बीच यही हिचकना था।
+  // अब: बदलाव थमने के 300ms बाद, खाली समय पर, और एनिमेशन चलते समय बिल्कुल नहीं।
+  let tm = 0;
+  const sched = () => {
+    clearTimeout(tm);
+    tm = setTimeout(() => {
+      const run = () => { if (window.wsSliding) { sched(); return; } try { scan(); } catch (e) {} };
+      if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 1500 }); else run();
+    }, 300);
+  };
   const start = () => { sched(); try { new MutationObserver(sched).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] }); } catch (e) {} };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
