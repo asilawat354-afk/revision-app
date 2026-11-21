@@ -279,10 +279,6 @@ select:disabled { opacity: 0.45; cursor: not-allowed; }
 .timer-quote { text-align: center; color: var(--muted-dim); border-top: 1px solid var(--border); margin-top: 10px; padding-top: 8px; font-size: 11px; line-height: 1.6; }
 
 /* MANUAL ENTRY CONTROLS */
-.manual-presets { display: flex; gap: 6px; margin-bottom: 10px; }
-.preset-chip { flex: 1; padding: 5px 0; border-radius: var(--radius-sm); background: var(--surface-elevated); border: 1px solid var(--border); color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.15s ease; }
-.preset-chip:active { transform: scale(0.95); }
-.preset-chip.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); font-weight: 800; }
 
 /* DIFFICULTY PILLS */
 .diff-tg { margin-bottom: 10px; }
@@ -598,7 +594,6 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); backgr
 .btn-start { height: 54px; font-size: 16px; border-radius: 20px; background: var(--text) !important; color: var(--bg) !important; box-shadow: 0 10px 30px rgba(255,255,255,0.1); }
 .btn-sm, .btn.sm { height: 34px; border-radius: 12px; }
 .timer-secondary-row .btn { height: 46px; font-size: 13px; }
-.preset-chip { border-radius: 14px; padding: 9px 0; }
 
 /* Timer ring */
 .ring { width: min(250px, 70vw); margin: 14px auto 22px; filter: none; }
@@ -3876,6 +3871,30 @@ body.ws-t0 #wsPane1>.ws-bounce-wrap,body.ws-t2 #wsPane1>.ws-bounce-wrap{content-
 .ru-es .fl{fill:color-mix(in srgb,var(--primary,var(--pr,#38bdf8)) 14%,var(--surface,var(--bg,#0b1220)))}
 .ru-es .sp{fill:none;stroke:var(--primary,var(--pr,#38bdf8));stroke-width:2;stroke-linecap:round;opacity:.8}
 </style>
+<style>
+/* ===== रिबन ब्रेडक्रम्ब (विषय › चैप्टर › लेक्चर): शुरू में पारदर्शी, लिस्ट नीचे से गुज़रे तो हेडर जैसी सतह-पट्टी ===== */
+.rb-row{display:none;height:44px;padding:7px 14px;align-items:center;overflow-x:auto;scrollbar-width:none;background:transparent;border-bottom:1px solid transparent;transition:background-color .22s,border-color .22s}
+.rb-row::-webkit-scrollbar{display:none}
+.ws.rbm .rb-row{display:flex}
+.rb-row.stk{background:var(--surface);border-bottom-color:var(--border)}
+/* रिबन वाले पेज: हेडर बाकी टैब की तरह स्क्रॉल पर ऊपर की पट्टी छिपाए, रिबन टैब-बार की जगह टिका रहे */
+.ws.deep.rbm .ws-chrome{top:var(--ht,-52px)!important}
+.ws.deep.rbm .ws-chrome:not(.ws-hclone):not(.ws-ov){transform:var(--hct,none)!important}
+.ws.deep.rbm .ws-chrome.ws-hclone{top:-52px!important}
+.ws.rbm .ws-chrome{background:transparent!important}
+.ws.rbm .ws-top{background:var(--surface)}
+/* छोटी लिस्ट में भी इतनी जगह रहे कि स्क्रॉल पर ऊपर का हेडर छिप सके (रिबन टिका रहे) */
+.ws.rbm .ws-pane>.ws-bounce-wrap{min-height:calc(100% - 51px)}
+.ws.rbm .ws-chrome:not(.ws-hclone):not(.ws-ov)::before{background:var(--surface)}
+.rb{--onp:#030712;display:inline-flex;align-items:center;min-width:max-content}
+[data-theme="light"] .rb{--onp:#fff}
+.rb-st{height:30px;padding:0 15px 0 18px;background:var(--surface-elevated);color:var(--muted);font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;white-space:nowrap;margin-left:-6px;cursor:pointer;-webkit-tap-highlight-color:transparent;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,0 100%,9px 50%)}
+.rb-st>b{font-weight:inherit;max-width:44vw;overflow:hidden;text-overflow:ellipsis}
+.rb-st:first-child{margin-left:0;padding-left:12px;border-radius:8px 0 0 8px;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,0 100%)}
+.rb-st:nth-child(2){background:var(--surface-hover);color:var(--text)}
+.rb-st:last-child{padding-right:14px;background:var(--primary);color:var(--onp);font-weight:800;cursor:default;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,9px 50%);border-radius:0 8px 8px 0}
+.rb-st:only-child{clip-path:none;border-radius:8px}
+</style>
 </head>
 <body>
 <div id="bgOrbs" aria-hidden="true"><i class="bg-orb o1"></i><i class="bg-orb o2"></i><i class="bg-orb o3"></i></div>
@@ -4311,7 +4330,7 @@ body.ws-t0 #wsPane1>.ws-bounce-wrap,body.ws-t2 #wsPane1>.ws-bounce-wrap{content-
         <button class="hf-sort-card" data-sort="most"><span>ज़्यादा समय</span><span class="hf-sort-dot"></span></button>
         <button class="hf-sort-card" data-sort="least"><span>कम समय</span><span class="hf-sort-dot"></span></button>
         <button class="hf-sort-card" data-sort="subject"><span>विषय A–Z</span><span class="hf-sort-dot"></span></button>
-        <button class="hf-sort-card" data-sort="hard"><span>दोहराना है पहले</span><span class="hf-sort-dot"></span></button>
+        <button class="hf-sort-card" data-sort="hard"><span>Relearn पहले</span><span class="hf-sort-dot"></span></button>
       </div>
     </div>
 
@@ -4366,9 +4385,9 @@ body.ws-t0 #wsPane1>.ws-bounce-wrap,body.ws-t2 #wsPane1>.ws-bounce-wrap{content-
         <div>
           <div class="hf-sub-head"><span class="hf-sub-label">Difficulty</span></div>
           <div class="hf-chip-group" id="hfPriorityChips">
-            <button class="hf-chip" data-val="Hard"><svg class="hf-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>दोहराना है</span></button>
-            <button class="hf-chip" data-val="Medium"><svg class="hf-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>ठीक-ठाक</span></button>
-            <button class="hf-chip" data-val="Easy"><svg class="hf-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>आसान</span></button>
+            <button class="hf-chip" data-val="Hard"><svg class="hf-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>Relearn</span></button>
+            <button class="hf-chip" data-val="Medium"><svg class="hf-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>Practice</span></button>
+            <button class="hf-chip" data-val="Easy"><svg class="hf-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>Clear</span></button>
           </div>
         </div>
       </div>
@@ -4480,6 +4499,7 @@ body.ws-t0 #wsPane1>.ws-bounce-wrap,body.ws-t2 #wsPane1>.ws-bounce-wrap{content-
     <button type="button" class="ws-tab" role="tab" onclick="wsSetTab(2)">Syllabus</button>
     <i class="ws-tab-line" id="wsTabLine"></i>
   </div>
+  <div class="rb-row" id="wsRb"></div>
   </header>
   <div class="fs-active" id="wsPills" style="display:none"></div>
   <div class="ws-vp" id="wsVp"><div class="ws-track" id="wsTrack"><div class="ws-pane" id="wsPane0"></div><div class="ws-pane" id="wsPane1"></div><div class="ws-pane" id="wsPane2"></div></div></div>
@@ -4535,7 +4555,7 @@ function build(){
  $('sbBody').innerHTML='<div class="sb-sec">Quick Controls</div>'
  +'<div class="sb-ctl"><span>Theme</span>'+seg('sbTh',[['dark','Dark'],['light','Light']],th)+'</div>'
  +'<div class="sb-ctl"><span>Default Study Mode</span>'+seg('sbMd',[['revision','Revision'],['first_study','New']],md==='revision'?'revision':'first_study')+'</div>'
- +'<div class="sb-ctl"><span>Default Difficulty</span>'+seg('sbDf',[['Easy','आसान'],['Medium','ठीक-ठाक'],['Hard','दोहराना']],df)+'</div>'
+ +'<div class="sb-ctl"><span>Default Difficulty</span>'+seg('sbDf',[['Easy','Clear'],['Medium','Practice'],['Hard','दोहराना']],df)+'</div>'
  +row('','vw','Default View Mode',vwLabel(),'view')
  +'<div class="sb-sec">Tools</div>'
  +row('syllabus','sy','Syllabus',subs+' विषय')+row('','im','Import','','import')+row('','ex','Export','','export')+row('bg','bg','Background &amp; Cards','BG '+bgv+' · Card '+cd);
@@ -4714,28 +4734,36 @@ sb.addEventListener('touchend',fin,{passive:true});sb.addEventListener('touchcan
       <!-- MANUAL ENTRY VIEW -->
       <div id="manualPane" style="display:none; padding-top:4px;">
         <label class="field-label">STUDY TIME (MINUTES)</label>
-        <input type="number" id="manualTime" placeholder="e.g. 45" min="1" max="1440" style="font-weight:700; font-size:15px; margin-bottom:8px;">
-
-        <div class="manual-presets" id="manualPresets">
-          <button type="button" class="preset-chip" onclick="setManualPreset(15, this)">15m</button>
-          <button type="button" class="preset-chip" onclick="setManualPreset(25, this)">25m</button>
-          <button type="button" class="preset-chip" onclick="setManualPreset(45, this)">45m</button>
-          <button type="button" class="preset-chip" onclick="setManualPreset(60, this)">60m</button>
+        <!-- Style 2: Single-Line Smart Capsule -->
+        <div class="s2-capsule" id="mwBox">
+          <div class="s2-stepper">
+            <button type="button" class="s2-step-btn" id="decMin" aria-label="1 मिनट कम करें (दबाए रखें)">&minus;</button>
+            <label class="s2-num-box" for="manualTime">
+              <input type="number" id="manualTime" class="s2-input" min="1" max="1440" inputmode="numeric" placeholder="25" value="25" aria-label="पढ़ाई का समय (मिनट)" />
+              <span class="s2-unit">min</span>
+            </label>
+            <button type="button" class="s2-step-btn" id="incMin" aria-label="1 मिनट बढ़ाएँ (दबाए रखें)">+</button>
+          </div>
+          <div class="s2-divider" aria-hidden="true"></div>
+          <div class="s2-presets" role="group" aria-label="Quick presets">
+            <button type="button" class="s2-pill" data-min="15">15</button>
+            <button type="button" class="s2-pill active" data-min="25">25</button>
+            <button type="button" class="s2-pill" data-min="45">45</button>
+            <button type="button" class="s2-pill" data-min="60">60</button>
+          </div>
+          <div class="s2-progress-track" aria-hidden="true"><div class="s2-progress-bar" id="s2Bar"></div></div>
         </div>
 
-        <label class="field-label">DIFFICULTY LEVEL</label>
+        <div class="rv-lh"><label class="field-label">LEARNING STATUS</label><button type="button" class="rv-i" data-info="status" aria-label="Learning Status का अर्थ">i</button></div>
         <div class="tg diff-tg">
           <div class="tb diff-btn" data-val="Easy" onclick="setDiff('Easy')">
-            <span class="diff-main">Easy</span>
-            <span class="diff-sub">आसान</span>
+            <span class="diff-main">Clear</span>
           </div>
           <div class="tb diff-btn active" data-val="Medium" onclick="setDiff('Medium')">
-            <span class="diff-main">Medium</span>
-            <span class="diff-sub">ठीक-ठाक</span>
+            <span class="diff-main">Practice</span>
           </div>
           <div class="tb diff-btn" data-val="Hard" onclick="setDiff('Hard')">
-            <span class="diff-main">Hard</span>
-            <span class="diff-sub">दोहराना है</span>
+            <span class="diff-main">Relearn</span>
           </div>
         </div>
 
@@ -4778,19 +4806,16 @@ sb.addEventListener('touchend',fin,{passive:true});sb.addEventListener('touchcan
         </div>
       </div>
 
-      <label class="field-label" style="margin-top:4px;">DIFFICULTY LEVEL</label>
+      <div class="rv-lh" style="margin-top:4px;"><label class="field-label">LEARNING STATUS</label><button type="button" class="rv-i" data-info="status" aria-label="Learning Status का अर्थ">i</button></div>
       <div class="tg diff-tg" style="margin-bottom:10px;">
         <div class="tb diff-btn" data-val="Easy" onclick="setDiff('Easy')">
-          <span class="diff-main">Easy</span>
-          <span class="diff-sub">आसान</span>
+          <span class="diff-main">Clear</span>
         </div>
         <div class="tb diff-btn active" data-val="Medium" onclick="setDiff('Medium')">
-          <span class="diff-main">Medium</span>
-          <span class="diff-sub">ठीक-ठाक</span>
+          <span class="diff-main">Practice</span>
         </div>
         <div class="tb diff-btn" data-val="Hard" onclick="setDiff('Hard')">
-          <span class="diff-main">Hard</span>
-          <span class="diff-sub">दोहराना है</span>
+          <span class="diff-main">Relearn</span>
         </div>
       </div>
 
@@ -4976,29 +5001,6 @@ function updateSelectionSummary() {
     txt.textContent = 'Select Subject, Chapter & Lecture';
   }
 }
-
-function setManualPreset(mins, btn) {
-  const inp = g('manualTime');
-  if (inp) inp.value = mins;
-  document.querySelectorAll('#manualPresets .preset-chip').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  clearFlowError();
-  haptic('light');
-  persistSession();
-}
-
-(function manualPresetSync() {
-  const inp = g('manualTime');
-  if (!inp) return;
-  inp.addEventListener('input', () => {
-    const v = inp.value.trim();
-    document.querySelectorAll('#manualPresets .preset-chip').forEach(b => {
-      const m = /setManualPreset\(\s*(\d+)/.exec(b.getAttribute('onclick') || '');
-      const n = m ? +m[1] : parseInt(b.textContent, 10);
-      b.classList.toggle('active', v !== '' && /^\d+$/.test(v) && +v === n);
-    });
-  });
-})();
 
 function updateTimerLockState() {
   spFabPaint();
@@ -6028,7 +6030,7 @@ function rowToRecord(r) {
   const date = normImpDate(r[0]), sub = clean(r[1]), chap = clean(r[2]), lec = clean(r[3]);
   const t = Math.round(parseFloat(r[4]));
   const rawDiff = clean(r[5]);
-  const diffMap = { 'आसान': 'Easy', 'ठीक-ठाक': 'Medium', 'दोहराना है': 'Hard' };
+  const diffMap = { 'Clear': 'Easy', 'Practice': 'Medium', 'Relearn': 'Hard', 'आसान': 'Easy', 'ठीक-ठाक': 'Medium', 'दोहराना है': 'Hard' };
   const df = diffMap[rawDiff] || (['Easy', 'Medium', 'Hard'].includes(rawDiff) ? rawDiff : 'Medium');
   if (!date || !sub || !chap || !lec || !(t > 0)) return null;
   return { id: newId(), date, sub, chap, lec, diff: df, time: t, notes: clean(r[6]) };
@@ -6250,7 +6252,7 @@ function setMode(m) {
 function setDiff(v) {
   state.diff = v;
   persistSession();
-  document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-val') === v));
+  document.querySelectorAll('.diff-btn').forEach(b => { const on = b.getAttribute('data-val') === v; b.classList.toggle('active', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
 }
 
 function totalT() {
@@ -6430,7 +6432,6 @@ function saveManualSession() {
   logs.unshift(payload);
   jset(HISTORY_KEY, logs);
   g('manualTime').value = '';
-  document.querySelectorAll('#manualPresets .preset-chip').forEach(b => b.classList.remove('active'));
   resetNoteField('Manual');
   setDiff(window.tlDefDiff ? tlDefDiff() : 'Medium');
   if (window.tlApplyDefMode) tlApplyDefMode();
@@ -6611,8 +6612,10 @@ function ntLinkAdd(suf) {
   if (r.err) { showIsland(r.err); return; }
   i.value = ''; haptic('light'); ntSyncOut(suf); showIsland('Link added: ' + r.n);
 }
-function ntRemoveCard(suf, idx) { NT[suf].cards.splice(idx, 1); ntSyncOut(suf); }
-function ntRemoveLink(suf, id) {
+function ntRemoveCard(suf, idx) { askConfirm('यह कार्ड हटाएँ?', () => ntRemoveCardNow(suf, idx)); }
+function ntRemoveCardNow(suf, idx) { NT[suf].cards.splice(idx, 1); ntSyncOut(suf); }
+function ntRemoveLink(suf, id) { askConfirm('यह लिंक हटाएँ?', () => ntRemoveLinkNow(suf, id)); }
+function ntRemoveLinkNow(suf, id) {
   const cs = NT[suf].cards;
   for (let i = cs.length - 1; i >= 0; i--) {
     const d = document.createElement('div'); d.innerHTML = cs[i].h || '';
@@ -6661,12 +6664,12 @@ function clearSearchInput() {
 // ---- FILTER & SORT ----
 // History का Filter & Sort अब history-filter-demo वाला है (HF मॉड्यूल नीचे)।
 // पुरानी Filter sheet (#fx) सिर्फ़ Subjects टैब के चैप्टर / रिकॉर्ड फ़िल्टर के लिए बची है।
-const FS_SORT = [['newest','नया पहले'],['oldest','पुराना पहले'],['most','ज़्यादा समय'],['least','कम समय'],['subject','विषय A–Z'],['hard','दोहराना है पहले']];
+const FS_SORT = [['newest','नया पहले'],['oldest','पुराना पहले'],['most','ज़्यादा समय'],['least','कम समय'],['subject','विषय A–Z'],['hard','Relearn पहले']];
 let fsPop = null;
 let dMode = null;
 let fsOpen = false;
 
-function diffHi(d) { return d === 'Easy' ? 'आसान' : d === 'Hard' ? 'दोहराना है' : d === 'Medium' ? 'ठीक-ठाक' : (d || ''); }
+function diffHi(d) { return d === 'Easy' ? 'Clear' : d === 'Hard' ? 'Relearn' : d === 'Medium' ? 'Practice' : (d || ''); }
 function chipHtml(label, on, call) {
   return '<button type="button" class="chip' + (on ? ' active' : '') + '" onclick="' + call + '">' + label + '</button>';
 }
@@ -6725,9 +6728,9 @@ const HF = (function () {
     return toYMD(d);
   }
 
-  const DLBL = { Hard: "दोहराना है", Medium: "ठीक-ठाक", Easy: "आसान" };
+  const DLBL = { Hard: "Relearn", Medium: "Practice", Easy: "Clear" };
   const TLBL = { Revision: "रिवीजन", New: "नया" };
-  const SORT_LABELS = { newest: "नया पहले", oldest: "पुराना पहले", most: "ज़्यादा समय", least: "कम समय", subject: "विषय A–Z", hard: "दोहराना है पहले" };
+  const SORT_LABELS = { newest: "नया पहले", oldest: "पुराना पहले", most: "ज़्यादा समय", least: "कम समय", subject: "विषय A–Z", hard: "Relearn पहले" };
   const TIME_DEFAULT_LABELS = { month: "Month", year: "Year", range: "Date Range", exact: "Date", relative: "Past Days" };
 
   const SVG_SORT    = '<svg viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M10 18h4"/></svg>';
@@ -7745,7 +7748,7 @@ function chLecHTML(o, lec) {
   const first = all.reduce((a, r) => Math.min(a, chTs(r.date) || a), Infinity), last = all.reduce((a, r) => Math.max(a, chTs(r.date)), 0);
   const w = k => (dc[k] / all.length * 100) + '%';
   return '<div class="chd-stats">' + chStat(all.length, 'रिवीजन') + chStat(chMin(tot), 'कुल समय') + chStat(chMin(tot / all.length), 'औसत') + chStat(chDate(last), 'आख़िरी') + '</div>' +
-    '<div class="ch-sh"><span>कठिनाई</span><small>पहला: ' + chDate(first) + '</small></div><div class="dsp"><i style="width:' + w('Easy') + ';background:var(--d-easy)"></i><i style="width:' + w('Medium') + ';background:var(--d-med)"></i><i style="width:' + w('Hard') + ';background:var(--d-hard)"></i></div><div class="dl"><span>आसान <b>' + dc.Easy + '</b></span><span>ठीक-ठाक <b>' + dc.Medium + '</b></span><span>दोहराना है <b>' + dc.Hard + '</b></span></div>' +
+    '<div class="ch-sh"><span>कठिनाई</span><small>पहला: ' + chDate(first) + '</small></div><div class="dsp"><i style="width:' + w('Easy') + ';background:var(--d-easy)"></i><i style="width:' + w('Medium') + ';background:var(--d-med)"></i><i style="width:' + w('Hard') + ';background:var(--d-hard)"></i></div><div class="dl"><span>Clear <b>' + dc.Easy + '</b></span><span>Practice <b>' + dc.Medium + '</b></span><span>Relearn <b>' + dc.Hard + '</b></span></div>' +
     '<div class="ws-dv"></div><div class="ch-sh"><span>इस लेक्चर के रिकॉर्ड</span><small>' + all.length + '</small></div><div class="chr-list">' + all.map((r, k) => chRec(r, 'रिवीजन #' + (all.length - k))).join('') + '</div>';
 }
 // ---------- चैप्टर पेज: सिर्फ़ लेक्चर सूची (आंकड़े/रिकॉर्ड तीन-डॉट शीट में) ----------
@@ -8142,6 +8145,18 @@ function chJump(k) {
   if (wsDepth > k) history.go(-k); else for (let i = 0; i < k; i++) chBackDo(); }
 
 // ---------- हेडर अब हर पेज की लिस्ट के अंदर रहता है और लिस्ट के साथ अपने-आप (बिना देरी) चलता है ----------
+function rbInner(lvl) {   // रिबन: विषय › चैप्टर › (लेक्चर)
+  const n = lvl === 3 ? [[chSt.sub, 2], [chSt.chap, 1], [chSt.lec, 0]] : [[chSt.sub, 1], [chSt.chap, 0]];
+  return '<div class="rb">' + n.map(x => '<span class="rb-st"' + (x[1] ? ' role="button" onclick="chJump(' + x[1] + ')"' : ' aria-current="page"') + '><b>' + esc(x[0]) + '</b></span>').join('') + '</div>';
+}
+var rbRaf = 0;
+function rbSync() {   // लिस्ट रिबन के नीचे पहुँची हो तभी पट्टी (हेडर जैसी सतह) आए
+  const r = document.getElementById('wsRb'), sc = document.getElementById('wsScreen');
+  if (!r || !sc || !sc.classList.contains('rbm')) { if (r) r.classList.remove('stk'); return; }
+  const w = document.getElementById('wsPane2').querySelector(':scope > .ws-bounce-wrap'); if (!w) return;
+  r.classList.toggle('stk', w.getBoundingClientRect().top < r.getBoundingClientRect().bottom - 1);
+}
+document.addEventListener('scroll', e => { const p = e.target; if (p && p.classList && p.classList.contains('ws-pane')) { cancelAnimationFrame(rbRaf); rbRaf = requestAnimationFrame(rbSync); } }, true);
 function wsSetPane(id, html) {   // लिस्ट बदलो पर हेडर को मत मिटाओ
   const pn = g(id), ch = g('wsChrome'), had = pn.contains(ch);
   if (had) g('wsScreen').insertBefore(ch, g('wsVp'));
@@ -8243,6 +8258,7 @@ function wsRenderCore() {
   else { subs = subItems(); const ns = subs.length || subList().length, nc = chData().length;
     wsSetPane('wsPane2', '<div class="ws-sum-w"><div class="ws-sum"><span><svg viewBox="0 0 24 24"><path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2z"/><path d="M22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/></svg><b>' + ns + '</b> विषय</span><i></i><span><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><b>' + nc + '</b> चैप्टर</span></div></div>' + wsBuild(subs, 1, WS_H_SUBS)); }
   wsPlaceChrome();
+  requestAnimationFrame(rbSync);
   const lvl = wsTab === 2 ? plvl : 0;
   const SB0 = (k, s) => '<span onclick="chJump(' + k + ')">' + esc(s) + '</span>', SB = (k, s) => SVG_SEP + '<span onclick="chJump(' + k + ')">' + esc(s) + '</span>';
   let title = WS_TABS[wsTab], subHTML = '';
@@ -8252,7 +8268,7 @@ function wsRenderCore() {
   else if (lvl === 2) { title = chSt.chap; subHTML = SB0(1, chSt.sub); }
   else { title = chSt.lec; subHTML = SB0(2, chSt.sub) + SB(1, chSt.chap); }
   g('wsTitle').textContent = title;
-  { const crumb = wsTab === 2 && lvl >= 2; g('wsSub').innerHTML = crumb ? subHTML : ''; g('wsSub').parentNode.classList.toggle('crumb', crumb); }
+  { const crumb = false; /* ब्रेडक्रम्ब अब रिबन में */ g('wsSub').innerHTML = crumb ? subHTML : ''; g('wsSub').parentNode.classList.toggle('crumb', crumb); }
   g('wsBack').style.display = ''; g('wsTop').classList.remove('no-back');
   g('wsBack').innerHTML = lvl === 0 ? SVG_BURGER : SVG_BACK; g('wsBack').setAttribute('aria-label', lvl === 0 ? 'Menu' : 'Back'); g('wsBack').dataset.holdLabel = lvl === 0 ? 'Menu' : 'Back';
   g('wsVw').style.display = (lvl >= 2 || wsTab === 0) ? 'none' : '';
@@ -8273,9 +8289,11 @@ function wsRenderCore() {
   const wsDeep = wsTab === 2 && plvl >= 1;
   document.body.classList.toggle('ws-deep', wsOpen && wsDeep);   // chapter / lecture pages: no tab bar, header stays open
   g('wsScreen').classList.toggle('deep', wsDeep);
+  const rbm = wsTab === 2 && plvl >= 2;   // चैप्टर / लेक्चर पेज: रिबन
+  g('wsScreen').classList.toggle('rbm', rbm); g('wsRb').innerHTML = rbm ? rbInner(plvl) : '';
   g('wsScreen').classList.toggle('sel', selMode && wsTab === 1);
   document.body.classList.toggle('ws-sel', wsOpen && selMode && wsTab === 1);
-  g('wsScreen').style.setProperty('--chrome-h', ((wsDeep || (selMode && wsTab === 1)) ? 52 : 96) + 'px');
+  g('wsScreen').style.setProperty('--chrome-h', (((wsDeep && !rbm) || (selMode && wsTab === 1)) ? 52 : 96) + 'px');
   g('wsSelCount').textContent = selIds.size + ' Selected';
   document.querySelectorAll('#wsTabs .ws-tab').forEach((b, i) => b.classList.toggle('active', i === wsTab));
   g('wsTrack').style.transform = 'translate3d(' + (-wsTab * 33.3333) + '%,0,0)';
@@ -8351,7 +8369,7 @@ function wsGhostMake(back) {   // पुराना पेज = उसकी �
 // ---------- collapsing header engine (Play Store style) ----------
 const WS_TOPH = 52;
 let wsHdrOff = 0, wsLastY = [0, 0, 0], wsIgnore = false, wsSnapT = null, wsTouching = false;
-function wsCollapsible() { return !(selMode && wsTab === 1) && !(wsTab === 2 && !!chSt.sub); }
+function wsCollapsible() { return !(selMode && wsTab === 1) && !(wsTab === 2 && !!chSt.sub && !chSt.chap); }
 function wsLine() {
   const pin = g('wsPane' + wsTab).scrollTop > 4;
   g('wsChrome').classList.toggle('pinned', pin);
@@ -8685,7 +8703,7 @@ function chRecSync() {
   const d = chRD, o = chData().find(x => x.sub === chSt.sub && x.chap === chSt.chap);
   if (!d || !o || !g('fxSort')) return; fxLayout('rec');
   const chip = (k, v, label, on) => '<button type="button" class="fchip' + (on ? ' sel' : '') + '" data-k="' + k + '" data-v="' + esc(v) + '" onclick="chRecD(this.dataset.k,this.dataset.v)">' + I_CK + esc(label) + '</button>';
-  g('fxTime').innerHTML = [['Easy', 'आसान'], ['Medium', 'ठीक-ठाक'], ['Hard', 'दोहराना है']].map(x => chip('d', x[0], x[1], d.d.includes(x[0]))).join('');
+  g('fxTime').innerHTML = [['Easy', 'Clear'], ['Medium', 'Practice'], ['Hard', 'Relearn']].map(x => chip('d', x[0], x[1], d.d.includes(x[0]))).join('');
   g('fxDiff').innerHTML = [['revision', 'रिवीजन'], ['add', 'नया']].map(x => chip('m', x[0], x[1], d.m.includes(x[0]))).join('');
   g('fxSub').innerHTML = o.all.length ? o.all.map(l => chip('l', l, l, d.l.includes(l))).join('') : '<span class="fs-empty">कोई लेक्चर नहीं</span>';
   const c = chRF_n(d), tag = g('fxSel'); tag.textContent = c + ' Selected'; tag.classList.toggle('show', c > 0);
@@ -8708,8 +8726,8 @@ function chD(k, v) { if (!chDraft) return; if (k === 'sort') chDraft.sort = v; e
 const CR = (function () {
   const $ = id => document.getElementById(id);
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const SORTS = [['newest', 'नया पहले'], ['oldest', 'पुराना पहले'], ['lec', 'लेक्चर क्रम से (Lec 1, Lec 2...)'], ['most', 'ज़्यादा समय'], ['least', 'कम समय'], ['hard', 'दोहराना है पहले']];
-  const DL = { Hard: 'दोहराना है', Medium: 'ठीक-ठाक', Easy: 'आसान' }, TL = { Revision: 'रिवीजन', New: 'नया' };
+  const SORTS = [['newest', 'नया पहले'], ['oldest', 'पुराना पहले'], ['lec', 'लेक्चर क्रम से (Lec 1, Lec 2...)'], ['most', 'ज़्यादा समय'], ['least', 'कम समय'], ['hard', 'Relearn पहले']];
+  const DL = { Hard: 'Relearn', Medium: 'Practice', Easy: 'Clear' }, TL = { Revision: 'रिवीजन', New: 'नया' };
   const TIME_LBL = { month: 'Month', year: 'Year', range: 'Date Range', exact: 'Date', relative: 'Past Days' };
   const CHEV = '<svg class="hf-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
   const CK = '<svg class="hf-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>';
@@ -8837,7 +8855,7 @@ const CR = (function () {
           '<div><div class="hf-sub-head"><span class="hf-sub-label">Time</span><button type="button" class="hf-sec-clear' + (timeOn(d) ? ' show' : '') + '" data-cr-clr="time">Clear</button></div><div class="hf-chip-scroll">' + strip + '</div>' + timePanel(d, o) + '</div>' +
           '<div><div class="hf-sub-head"><span class="hf-sub-label">Lectures</span><button type="button" class="hf-sec-clear' + (d.lecs.length ? ' show' : '') + '" data-cr-clr="lecs">Clear</button></div><div class="hf-chip-group">' + lecs + '</div></div>' +
           '<div><div class="hf-sub-head"><span class="hf-sub-label">Type</span></div><div class="hf-chip-group">' + chip('data-cr-st', 'Revision', 'रिवीजन', d.status === 'Revision') + chip('data-cr-st', 'New', 'नया', d.status === 'New') + '</div></div>' +
-          '<div><div class="hf-sub-head"><span class="hf-sub-label">Difficulty</span></div><div class="hf-chip-group">' + chip('data-cr-pr', 'Hard', 'दोहराना है', d.priority === 'Hard') + chip('data-cr-pr', 'Medium', 'ठीक-ठाक', d.priority === 'Medium') + chip('data-cr-pr', 'Easy', 'आसान', d.priority === 'Easy') + '</div></div>' +
+          '<div><div class="hf-sub-head"><span class="hf-sub-label">Difficulty</span></div><div class="hf-chip-group">' + chip('data-cr-pr', 'Hard', 'Relearn', d.priority === 'Hard') + chip('data-cr-pr', 'Medium', 'Practice', d.priority === 'Medium') + chip('data-cr-pr', 'Easy', 'Clear', d.priority === 'Easy') + '</div></div>' +
         '</div></div>';
     body.scrollTop = st;
     $('crCount').textContent = list.length === 1 ? '1 Result' : list.length + ' Results';
@@ -8906,7 +8924,7 @@ try { dsRecent = JSON.parse(localStorage.getItem('ru_ws_recent') || '[]'); } cat
 const DS_MOD = ['Today', 'Last 7 days', 'Last 30 days', 'This year'];
 function dsCfg() {
   return wsTab === 1
-    ? { c2: { label: 'Difficulty', opts: [['Easy', 'आसान'], ['Medium', 'ठीक-ठाक'], ['Hard', 'दोहराना है']] }, c3: { label: 'Type', opts: [['revision', 'रिवीजन'], ['add', 'नया']] } }
+    ? { c2: { label: 'Difficulty', opts: [['Easy', 'Clear'], ['Medium', 'Practice'], ['Hard', 'Relearn']] }, c3: { label: 'Type', opts: [['revision', 'रिवीजन'], ['add', 'नया']] } }
     : { c2: { label: 'Status', opts: [['started', 'शुरू हो चुके'], ['idle', 'अभी शुरू नहीं']] }, c3: { label: 'Progress', opts: [['none', '0 लेक्चर'], ['part', 'कुछ लेक्चर'], ['all', 'सारे लेक्चर']] } };
 }
 function dsSubjects() { return wsTab === 1 ? [...new Set(getLogs().map(l => l.sub).filter(Boolean))] : [...new Set(chData().map(o => o.sub))]; }
@@ -9349,11 +9367,7 @@ function deleteSelected() {
   if (!n) return showIsland('Select records to delete', 'error');
   const done = new Set(jget(CSV_KEY, []));
   const pending = [...selIds].filter(id => !done.has(id)).length;
-  if (n > 1 && pending > 0) {
-    askConfirm(pending + ' रिकॉर्ड अभी export नहीं हुए। फिर भी delete करें?', doDeleteSelected);
-    return;
-  }
-  doDeleteSelected();
+  askConfirm((pending > 0 ? pending + ' रिकॉर्ड अभी export नहीं हुए। ' : '') + n + (n > 1 ? ' रिकॉर्ड' : ' रिकॉर्ड') + ' delete करें?', doDeleteSelected);
 }
 
 function doDeleteSelected() {
@@ -11112,16 +11126,19 @@ function tagMenu(b) {
   const canL = idx > 0;
   const canR = idx >= 0 && idx < types.length - 1;
   pop(b, `
-    <button type="button" class="pi" data-a="edit">${I('edit')}Edit tag</button>
     ${canL ? `<button type="button" class="pi" data-a="left">${I('left')}Move left</button>` : ''}
     ${canR ? `<button type="button" class="pi" data-a="right">${I('right')}Move right</button>` : ''}
-    ${types.length > 1 && id !== 'n' ? `<div class="sep"></div><button type="button" class="pi d" data-a="del">${I('trash')}Delete tag</button>` : ''}
+    <button type="button" class="pi" data-a="edit">${I('edit')}Edit Label</button>
+    ${window.rvPM ? rvPM(types[idx] && types[idx].n) : ''}
+    ${types.length > 1 && id !== 'n' ? `<div class="sep"></div><button type="button" class="pi d" data-a="del">${I('trash')}Delete Label</button>` : ''}
   `, e => {
     const a = e.target.closest('[data-a]');
     if (!a) return;
     const actName = a.dataset.a;
     closePop(true);
-    if (actName === 'edit') {
+    if (actName === 'info') {
+      if (window.rvInfo) rvInfo((types.find(x => x.id === id) || {}).n);
+    } else if (actName === 'edit') {
       openTagModal(id);
     } else if (actName === 'left' || actName === 'right') {
       act(() => {
@@ -11142,8 +11159,38 @@ function tagMenu(b) {
   });
 }
 
-function deleteTagById(id) {
-  if (types.length <= 1) return toast('At least one tag is required');
+function ncAsk(title, msg, yes) {   // नोट्स पेज में हर डिलीट से पहले पुष्टि
+  openModal(`
+    <div class="md-title">${title}</div>
+    <div style="font-size:13.5px;line-height:1.6;padding:0 2px 16px;opacity:.85">${msg}</div>
+    <div class="md-act">
+      <button type="button" class="md-btn" id="nc_mdCancel">Cancel</button>
+      <button type="button" class="md-btn" id="nc_mdDel" style="color:var(--d-hard,#ef4444)">Delete</button>
+    </div>
+  `);
+  $('nc_mdCancel').onclick = () => closeModal(false);
+  $('nc_mdDel').onclick = () => { closeModal(false); yes(); };
+  setTimeout(() => $('nc_mdCancel').focus(), 30);
+}
+function deleteTagById(id) {   // हटाने से पहले पुष्टि
+  if (types.length <= 1) return toast('At least one Label is required');
+  const t = typeOf(id) || {n: ''};
+  const fb = types.find(x => x.id === 'n' && x.id !== id) || types.find(x => x.id !== id);
+  const n = cards.filter(c => c.t === id).length;
+  openModal(`
+    <div class="md-title">Delete Label?</div>
+    <div style="font-size:13.5px;line-height:1.6;padding:0 2px 16px;opacity:.85">“${esc(t.n)}” Label हटाया जाएगा।${n ? ` इसके ${n} कार्ड “${esc(fb.n)}” Label में चले जाएँगे।` : ''}</div>
+    <div class="md-act">
+      <button type="button" class="md-btn" id="nc_mdCancel">Cancel</button>
+      <button type="button" class="md-btn" id="nc_mdDel" style="color:var(--d-hard,#ef4444)">Delete</button>
+    </div>
+  `);
+  $('nc_mdCancel').onclick = () => closeModal(false);
+  $('nc_mdDel').onclick = () => { closeModal(false); deleteTagNow(id); };
+  setTimeout(() => $('nc_mdCancel').focus(), 30);
+}
+function deleteTagNow(id) {
+  if (types.length <= 1) return toast('At least one Label is required');
   const fallback = types.find(x => x.id === 'n' && x.id !== id) || types.find(x => x.id !== id);
   const n = cards.filter(c => c.t === id).length;
   act(() => {
@@ -11152,7 +11199,7 @@ function deleteTagById(id) {
     if (flt === id) flt = 'all';
     drawAll();
   });
-  toast('Tag deleted' + (n ? ` · ${n} moved to ${fallback.n}` : ''), undo);
+  toast('Label deleted' + (n ? ` · ${n} moved to ${fallback.n}` : ''), undo);
 }
 
 // ---- Centered Material Dialog Engine ('Insert link' & 'New / Edit tag') ----
@@ -11309,10 +11356,10 @@ function openTagModal(editingTagId) {
   let curCol = t.c;
 
   openModal(`
-    <div class="md-title">${editingTagId ? 'Edit tag' : 'New tag'}</div>
+    <div class="md-title">${editingTagId ? 'Edit Label' : 'New Label'}</div>
     <div class="md-fld">
       <input id="nc_mdPn" type="text" maxlength="18" placeholder=" " value="${esc(t.n)}" autocomplete="off">
-      <label for="nc_mdPn">Tag name</label>
+      <label for="nc_mdPn">Label name</label>
     </div>
     <div class="cols" id="nc_mdCols">
       ${PAL.map(c => `<button type="button" data-c="${c}" style="--c:${c}" class="${c === curCol ? 'on' : ''}" aria-label="Color"></button>`).join('')}
@@ -11327,7 +11374,7 @@ function openTagModal(editingTagId) {
 
   const submitTag = () => {
     const n = inp.value.trim();
-    if (!n) { inp.focus(); return toast('Enter a tag name'); }
+    if (!n) { inp.focus(); return toast('Enter a Label name'); }
     closeModal(false);
     act(() => {
       if (editingTagId) {
@@ -11341,7 +11388,7 @@ function openTagModal(editingTagId) {
       }
       drawAll();
     });
-    toast(editingTagId ? 'Tag updated' : 'Tag added');
+    toast(editingTagId ? 'Label updated' : 'Label added');
   };
 
   $('nc_mdCols').onclick = e => {
@@ -11398,7 +11445,7 @@ function openPlusMenu(anchor, mode) {
           <span>Note</span>
           ${needSub ? `<svg class="chev-r"><use href="#nci-right"/></svg>` : ''}
         </button>
-        <button type="button" class="pm-item" data-act="tag"><span>Tag</span></button>
+        <button type="button" class="pm-item" data-act="tag"><span>Label</span></button>
       `;
     }
     placePop();
@@ -11484,8 +11531,10 @@ $('nc_cards').addEventListener('click', e => {
           openLinkModal(+lc.dataset.id, false, lc.textContent, lc);
         } else {
           // Remove link: टेक्स्ट को सामान्य अक्षरों में बदलकर केवल लिंक हटाएँ या पूरा हटाएँ
-          act(() => { lc.replaceWith(...lc.childNodes); });
-          updSaveBtn();
+          ncAsk('Remove Link?', 'लिंक हट जाएगा, टेक्स्ट वैसा ही रहेगा।', () => {
+            act(() => { lc.replaceWith(...lc.childNodes); });
+            updSaveBtn();
+          });
         }
       });
     } else {
@@ -11521,8 +11570,10 @@ $('nc_cards').addEventListener('click', e => {
           });
           updSaveBtn();
         } else if (a.dataset.a === 'rm') {
-          act(() => { brk.remove(); });
-          updSaveBtn();
+          ncAsk('Remove Line?', 'यह डिवाइडर लाइन हटा दी जाएगी।', () => {
+            act(() => { brk.remove(); });
+            updSaveBtn();
+          });
         }
       });
       return;
@@ -11585,6 +11636,7 @@ $('nc_cards').addEventListener('click', e => {
       if (dupEl) dupEl.scrollIntoView({block: 'nearest', behavior: 'smooth'});
       toast('Note duplicated', undo);
     } else if (actType === 'del') {
+      const doDelCard = () => {
       const wasNewUnsaved = (editId === id && editIsNew);
       if (editId === id) {
         editId = null;
@@ -11600,6 +11652,9 @@ $('nc_cards').addEventListener('click', e => {
         if (linkFlt !== null) updateSubHeaderInfo();
         toast('Note deleted', undo);
       }
+      };
+      if (editId === id && editIsNew) doDelCard();
+      else ncAsk('Delete Note?', 'यह नोट हटा दिया जाएगा। हटाने के बाद कुछ सेकंड तक Undo मिलेगा।', doDelCard);
     } else if (actType === 'up' || actType === 'dn') {
       act(() => {
         const sameGroup = getVisibleCards().filter(x => !!x.p === !!c.p);
@@ -12258,6 +12313,7 @@ $('nc_ldb').addEventListener('click', e => {
       } else if (a.dataset.a === 'ed') {
         openLinkModal(id, false);
       } else {
+        ncAsk('Delete Link?', '\u201c' + esc(l.n || '') + '\u201d लिंक हटाया जाएगा। हटाने के बाद कुछ सेकंड तक Undo मिलेगा।', () => {
         act(() => {
           links.splice(links.findIndex(x => x.id === id), 1);
           if (linkFlt === id) {
@@ -12267,6 +12323,7 @@ $('nc_ldb').addEventListener('click', e => {
           drawAll();
         });
         toast('Link deleted', undo);
+        });
       }
     });
     return;
@@ -13065,7 +13122,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
     flame: P('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>')
   };
   const FMT = [['xlsx', 'Excel (.xlsx)'], ['csv', 'CSV (.csv)'], ['share', 'Share'], ['copy', 'Copy']];
-  const DIFF = [['Easy', 'आसान'], ['Medium', 'ठीक-ठाक'], ['Hard', 'दोहराना है']];
+  const DIFF = [['Easy', 'Clear'], ['Medium', 'Practice'], ['Hard', 'Relearn']];
   const MODES = [['revision', 'Revision'], ['first_study', 'First Study']];
   const hap = t => { try { haptic(t || 'light'); } catch (e) {} };
   const toast = m => { try { showIsland(m); } catch (e) {} };
@@ -13576,7 +13633,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
         const step = d => { const v = parseFloat(inp.value) || 0; inp.value = String(Math.min(24, Math.max(0.5, Math.round((v + d) * 2) / 2))); sync(); hap(); };
         b.querySelector('#tlGMinus').onclick = () => step(-0.5); b.querySelector('#tlGPlus').onclick = () => step(0.5);
         b.querySelector('#tlGoalSave').onclick = () => { const v = parseFloat(inp.value); if (!(v >= 0.5 && v <= 24)) { shake(inp); return; } lsSet(K.goal, String(Math.round(v * 60))); sheetClose(); toast('Daily goal saved'); };
-        b.querySelector('#tlGoalClr').onclick = () => { try { localStorage.removeItem(K.goal); } catch (e) {} sheetClose(); toast('Goal removed'); };
+        b.querySelector('#tlGoalClr').onclick = () => modal('Remove goal?', 'आपका Goal हट जाएगा।', 'Remove', () => { try { localStorage.removeItem(K.goal); } catch (e) {} sheetClose(); toast('Goal removed'); });
       }, IC.target);
   }
   function openSess() {
@@ -13753,7 +13810,6 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
 .btn:active,.tb:active,.chip:active,.preset-chip:active,.exp-tile:active,.cx-btn:active,.mini-tag:active,.hf-mini-tag:active,.sw-pill:active,.one-btn:active,.bg-opt:active,.tl-row:active,.tl-goal:active,.tl-chip:active,.tl-btn:active,.tl-pi:active,.ws-ps:active,.ui-empty-btn:active{transform:scale(.96)}
 .wv-item:active,.wv-gc:active,.wv-cr:active{background-color:var(--surface-hover)}
 .btn:disabled,.btn[disabled],.btn.disabled,.cx-btn:disabled{opacity:.45;filter:saturate(.6);cursor:not-allowed}
-.preset-chip.active,.tb.active,.chip.active{border-color:var(--primary)}
 .ui-shake{animation:uiShake .38s cubic-bezier(.36,.07,.19,.97);border-color:var(--d-hard)!important}
 @keyframes uiShake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(3px)}30%,50%,70%{transform:translateX(-5px)}40%,60%{transform:translateX(5px)}}
 /* ===== UI-5: 40x40 hit area (visual size unchanged) ===== */
@@ -13902,6 +13958,163 @@ function anRender(){const goal=document.getElementById('anGoal'),sub=document.ge
   if((dy>0&&q<1&&top)||(dy<0&&q>0&&top)){q=Math.max(0,Math.min(1,q+dy/(T*2)));paint(false);e.preventDefault();clearTimeout(wheelT);wheelT=setTimeout(settle,160)}},{passive:false});
  p.addEventListener('scroll',function(){if(p.scrollTop>0&&q<1&&!own&&!raf){q=1;paint(false)}},{passive:true});
  window.__sumQ=function(v){q=v;paint(false)};
+})();
+</script>
+<style id="rvStyle">
+.mw{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:12px}
+.mw-s{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:32px;margin:0;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;touch-action:pan-y}
+.mw-s::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--border)}
+.mw-s::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-11px;border-radius:50%;background:var(--primary);border:3px solid var(--surface-elevated)}
+.mw-s::-moz-range-track{height:6px;border-radius:3px;background:var(--border)}
+.mw-s::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--primary);border:3px solid var(--surface-elevated)}
+.mw-s:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:8px}
+.mw.pend .mw-s{opacity:.5}
+.mw-f{flex:none;display:flex;align-items:center;gap:6px;height:48px;padding:0 12px;border-radius:14px;border:1px solid var(--border);background:var(--surface-elevated)}
+.mw-f:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-dim)}
+.mw-f input#manualTime{flex:none;width:3.6ch;min-width:0;border:0!important;background:transparent!important;box-shadow:none!important;outline:0!important;padding:0!important;margin:0!important;text-align:center;font-size:24px!important;font-weight:800!important;appearance:textfield;-moz-appearance:textfield}
+.mw-f input#manualTime::-webkit-inner-spin-button,.mw-f input#manualTime::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.mw-f span{font-size:12.5px;font-weight:700;color:var(--muted)}
+.mw-cap{flex-basis:100%;margin-top:-4px;text-align:center;font-size:12.5px;font-weight:600;color:var(--muted)}
+.mw-cap:empty{display:none}
+.rv-lh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.rv-lh .field-label{margin:0}
+.rv-i{position:relative;width:22px;height:22px;border-radius:50%;border:1px solid var(--border,rgba(128,128,128,.45));background:transparent;color:var(--muted,#9ca3af);font:italic 700 13px/1 Georgia,serif;padding:0;cursor:pointer;flex:none}.rv-i::after{content:"";position:absolute;inset:-11px}
+.diff-btn,.ntb-pl{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.rv-i:focus-visible,.diff-btn:focus-visible{outline:2px solid var(--primary,#34d399);outline-offset:2px}
+#rvSheet{position:fixed;inset:0;z-index:100000;display:none}#rvSheet.on{display:block}
+#rvSheet .bk{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+#rvSheet .pn,#rvTip{background:var(--hf-sheet,var(--bg,#111));color:var(--hf-text,var(--text,inherit));border:1px solid var(--hf-border,rgba(128,128,128,.3))}
+#rvSheet .pn{position:absolute;left:0;right:0;bottom:0;width:min(100%,520px);margin:0 auto;max-height:84vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(18px + var(--sab,0px))}
+#rvSheet h3{margin:0 0 4px;font-size:16px}#rvSheet .sb{margin:0 0 12px;font-size:12px;opacity:.7}
+.rv-it{--c:var(--d-med);padding:10px 12px;border-radius:14px;border:1px solid var(--hf-border,rgba(128,128,128,.3));margin-bottom:8px;font-size:13px;line-height:1.5}
+.rv-it[data-k=Clear]{--c:var(--d-easy)}.rv-it[data-k=Relearn]{--c:var(--d-hard)}
+.rv-it[data-k=Easy]{--c:var(--d-easy)}.rv-it[data-k=Hard]{--c:var(--d-hard)}.rv-it[data-k=Complex]{--c:#a78bfa}.rv-it[data-k=Expert]{--c:#38bdf8}[data-theme=light] .rv-it[data-k=Complex]{--c:#6d28d9}[data-theme=light] .rv-it[data-k=Expert]{--c:#0369a1}
+.rv-it.sel{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.rv-it b{color:var(--c);font-size:14px}.rv-it small{opacity:.7;margin-left:6px}.rv-it div{opacity:.9}
+#rvSheet .cl{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--hf-border,rgba(128,128,128,.35));background:transparent;color:inherit;font:700 14px var(--font,inherit);cursor:pointer}
+#rvTip{position:fixed;z-index:100001;display:none;max-width:min(280px,calc(100vw - 16px));padding:10px 12px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:12.5px;line-height:1.45;pointer-events:none}
+#rvTip b{display:block;font-size:13.5px;margin-bottom:2px}
+.rv-pm{padding:8px 12px 10px;max-width:250px;font-size:12px;line-height:1.5;white-space:normal;border-bottom:1px solid var(--hf-border,rgba(128,128,128,.3));margin-bottom:4px}.rv-pm b{display:block;font-size:13px}
+</style>
+<script id="rvScript">
+(function(){
+var ST=[{k:'Easy',n:'Clear',i:'🟢',h:'आता है',m:'मुझे यह Concept अच्छी तरह समझ आ गया है।',w:'जब बिना मदद के समझा सकूँ और सवाल हल कर सकूँ।'},
+{k:'Medium',n:'Practice',i:'🟡',h:'अभ्यास चाहिए',m:'Concept समझ आ गया है, लेकिन अभ्यास की जरूरत है।',w:'जब तरीका पता हो, लेकिन सवाल हल करने में गलती या देरी होती हो।'},
+{k:'Hard',n:'Relearn',i:'🔴',h:'फिर से सीखना है',m:'मुझे यह Concept दोबारा सीखना या समझना है।',w:'जब समझ स्पष्ट न हो या Concept भूल गया हूँ।'}];
+var RT={easy:{n:'Easy',h:'आसान',w:'सीधे तरीके से और सामान्य समझ के साथ हल होने वाला।'},
+medium:{n:'Medium',h:'मध्यम कठिनाई',w:'थोड़ा सोचने और कुछ चरणों में हल करने वाला।'},
+hard:{n:'Hard',h:'कठिन',w:'अच्छी समझ, अधिक सोच और मेहनत की जरूरत वाला।',d:'सवाल कठिन है।'},
+complex:{n:'Complex',h:'जटिल',w:'कई Concepts, नियमों या शर्तों का एक साथ इस्तेमाल करने वाला।',d:'सवाल में कई Concepts या शर्तें जुड़ी हैं।'},
+expert:{n:'Expert',h:'विशेषज्ञ स्तर',w:'बहुत उच्च स्तर की समझ, गहरी जानकारी और उन्नत कौशल मांगने वाला।',d:'उच्च स्तर की विशेषज्ञता आवश्यक है।'}};
+function $(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
+function nm(el){return(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();}
+function body(o,st){return st?'<b>'+o.i+' '+o.n+' · '+o.h+'</b>'+o.m+'<br><span style="opacity:.75">'+o.w+'</span>':'<b>'+o.n+' · '+o.h+'</b>पहचान: '+o.w+(o.d?'<br><span style="opacity:.75">अंतर: '+o.d+'</span>':'');}
+window.rvPM=function(name){return RT[String(name||'').trim().toLowerCase()]?'<button type="button" class="pi" data-a="info"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>Label info</button>':'';};
+window.rvInfo=function(name){var k=String(name||'').trim().toLowerCase(),o=RT[k];if(!o)return;back=null;
+pn.innerHTML='<h3 id="rvT">'+o.n+' · '+o.h+'</h3><p class="sb">Notes · Difficulty Rating</p><div class="rv-it" data-k="'+o.n+'"><div>पहचान: '+o.w+'</div>'+(o.d?'<div>अंतर: '+o.d+'</div>':'')+'</div><button type="button" class="cl">बंद करें</button>';
+pn.querySelector('.cl').addEventListener('click',closeSheet);sh.classList.add('on');pn.querySelector('.cl').focus();};
+function find(e){var t=e.target;if(!t||!t.closest)return null;var d=t.closest('.diff-btn');
+ if(d)return null;
+ if(t.closest('#nc_chips,#rvSheet,[contenteditable],input,textarea,select'))return null;
+ var el=t;for(var n=0;el&&n<4;n++,el=el.parentElement){if(el.children.length<=2&&el.textContent.length<12&&RT[nm(el)])return{el:el,o:RT[nm(el)],st:0};}
+ return null;}
+$('.diff-btn').forEach(function(b){var o=find({target:b});b.setAttribute('role','radio');b.tabIndex=0;b.setAttribute('aria-checked',b.classList.contains('active')?'true':'false');if(o)b.title=o.o.n+' — '+(o.o.m||'');});
+$('.diff-tg').forEach(function(g){g.setAttribute('role','radiogroup');g.setAttribute('aria-label','Learning Status');});
+document.addEventListener('mouseover',function(e){var m=find(e);if(m&&!m.el.title)m.el.title=m.o.n+' — '+(m.o.m||m.o.w);});
+var tip=document.createElement('div');tip.id='rvTip';tip.setAttribute('role','tooltip');document.body.appendChild(tip);var tipT=null;
+function hideTip(){tip.style.display='none';clearTimeout(tipT);}
+function showTip(m){tip.innerHTML=body(m.o,m.st);tip.style.display='block';tip.style.left='0px';tip.style.top='0px';var r=m.el.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight,vw=document.documentElement.clientWidth;
+var x=Math.min(Math.max(8,r.left+r.width/2-w/2),vw-w-8),y=r.top-h-8;if(y<8)y=Math.min(r.bottom+8,window.innerHeight-h-8);tip.style.left=x+'px';tip.style.top=y+'px';clearTimeout(tipT);tipT=setTimeout(hideTip,6000);}
+var lp=null,sx=0,sy=0,sup=0;function cancel(){clearTimeout(lp);lp=null;}
+document.addEventListener('pointerdown',function(e){sup=0;hideTip();var m=find(e);if(!m)return;if(e.pointerType==='mouse'&&e.button!==0)return;sx=e.clientX;sy=e.clientY;cancel();lp=setTimeout(function(){lp=null;sup=Date.now();showTip(m);try{navigator.vibrate&&navigator.vibrate(15);}catch(_){}},550);},true);
+document.addEventListener('pointermove',function(e){if(lp&&Math.hypot(e.clientX-sx,e.clientY-sy)>10)cancel();},true);
+['pointerup','pointercancel'].forEach(function(t){document.addEventListener(t,cancel,true);});
+document.addEventListener('scroll',function(){cancel();hideTip();},true);
+document.addEventListener('contextmenu',function(e){if(find(e))e.preventDefault();},true);
+document.addEventListener('click',function(e){if(sup&&Date.now()-sup<1500&&find(e)){e.stopPropagation();e.preventDefault();sup=0;}},true);
+document.addEventListener('click',function(e){var i=e.target.closest&&e.target.closest('.rv-i');if(i)openSheet(i);});
+document.addEventListener('keydown',function(e){var db=e.target.closest&&e.target.closest('.diff-btn');if(db&&(e.key==='Enter'||e.key===' ')){e.preventDefault();db.click();return;}var m=find(e);if(m){if(m.st&&(e.key==='Enter'||e.key===' ')){e.preventDefault();m.el.click();}else if(e.key==='i'||e.key==='?'){e.preventDefault();showTip(m);}}
+if(e.key==='Escape'){hideTip();closeSheet();}});
+var sh=document.createElement('div');sh.id='rvSheet';sh.innerHTML='<div class="bk"></div><div class="pn" role="dialog" aria-modal="true" aria-labelledby="rvT"></div>';document.body.appendChild(sh);var pn=sh.querySelector('.pn'),back=null;
+sh.querySelector('.bk').addEventListener('click',closeSheet);
+function closeSheet(){if(!sh.classList.contains('on'))return;sh.classList.remove('on');if(back&&back.focus)back.focus();}
+function openSheet(from){back=from;var cur=typeof state==='object'?state.diff:'',h='<h3 id="rvT">Learning Status</h3><p class="sb">यह Concept अभी आपको कितना आता है</p>';
+ST.forEach(function(o){h+='<div class="rv-it'+(o.k===cur?' sel':'')+'" data-k="'+o.n+'"><b>'+o.i+' '+o.n+'</b><small>'+o.h+'</small><div>अर्थ: '+o.m+'</div><div>कब चुनें: '+o.w+'</div>'+(o.k===cur?'<div style="font-weight:700">✓ अभी चुना हुआ</div>':'')+'</div>';});
+pn.innerHTML=h+'<button type="button" class="cl">बंद करें</button>';pn.querySelector('.cl').addEventListener('click',closeSheet);sh.classList.add('on');pn.querySelector('.cl').focus();}
+var mi=document.getElementById('manualTime'),sl=document.getElementById('mwS');
+if(mi&&sl){
+var ds=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value'),cap=document.getElementById('mwCap'),box=document.getElementById('mwBox'),self=false,empty=true;
+var hmt=function(m){return m>=60?Math.floor(m/60)+' घंटा'+(m%60?' '+m%60+' मिनट':''):'';};
+var near=function(v){return Math.min(240,Math.max(5,Math.round(v/5)*5));};
+var paint=function(v){box.classList.toggle('pend',empty);cap.textContent=empty?'स्लाइडर खिसकाएँ या यहाँ लिखें':hmt(v);};
+var fromValue=function(){var v=parseInt(ds.get.call(mi),10);if(!v||v<1){empty=true;sl.value=45;paint(0);}else{empty=false;sl.value=near(v);paint(v);}};
+Object.defineProperty(mi,'value',{configurable:true,get:function(){return ds.get.call(this);},set:function(v){ds.set.call(this,v);fromValue();}});
+sl.addEventListener('input',function(){var v=+sl.value;empty=false;ds.set.call(mi,String(v));self=true;mi.dispatchEvent(new Event('input',{bubbles:true}));self=false;try{clearFlowError();persistSession();}catch(_){}paint(v);});
+mi.addEventListener('input',function(){if(self)return;var v=parseInt(ds.get.call(mi),10);if(v>0){empty=false;sl.value=near(v);paint(v);}else{empty=true;sl.value=45;paint(0);}try{clearFlowError();persistSession();}catch(_){}});
+fromValue();}
+})();
+</script>
+<style>
+.s2-capsule{position:relative;height:50px;width:100%;margin:0 0 14px;padding:0 8px;display:flex;align-items:center;justify-content:space-between;gap:7px;overflow:hidden;box-sizing:border-box;background:var(--input-bg,var(--surface-elevated));border:1px solid var(--border);border-radius:25px;transition:border-color .2s,box-shadow .2s}
+.s2-capsule:focus-within{border-color:var(--primary);box-shadow:0 0 14px var(--primary-dim)}
+.s2-stepper{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.s2-step-btn{width:32px;height:32px;padding:0;margin:0;border-radius:50%;border:1px solid var(--border);background:var(--tg-track,rgba(255,255,255,.04));color:var(--muted);font-size:16px;font-weight:600;line-height:1;display:grid;place-items:center;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:all .15s}
+.s2-step-btn:hover{background:var(--primary-dim);border-color:var(--primary);color:var(--text)}
+.s2-step-btn:active{transform:scale(.92);background:var(--primary-dim)}
+.s2-num-box{display:inline-flex;align-items:baseline;justify-content:center;padding:2px 3px;min-width:48px;margin:0;cursor:text}
+.s2-capsule input.s2-input{width:30px;min-width:0;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;color:var(--text);font-size:16px!important;font-weight:700!important;text-align:right;font-variant-numeric:tabular-nums;padding:0!important;margin:0!important;appearance:textfield;-moz-appearance:textfield}
+.s2-capsule input.s2-input::-webkit-inner-spin-button,.s2-capsule input.s2-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.s2-unit{font-size:10px;font-weight:600;color:var(--muted-dim,var(--muted));margin-left:2px;user-select:none}
+.s2-divider{width:1px;height:24px;background:var(--border);flex-shrink:0}
+.s2-presets{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:var(--tg-track,rgba(255,255,255,.025));border-radius:20px;padding:3px}
+.s2-pill{border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:600;height:28px;padding:0;margin:0;border-radius:16px;cursor:pointer;font-variant-numeric:tabular-nums;transition:all .18s}
+.s2-pill:hover{color:var(--text);background:var(--border)}
+.s2-pill.active{background:linear-gradient(135deg,var(--primary),var(--accent));color:#06121b;font-weight:700;box-shadow:0 0 12px var(--primary-dim)}
+.s2-progress-track{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--border);pointer-events:none}
+.s2-progress-bar{height:100%;width:21%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .22s cubic-bezier(.22,1,.36,1)}
+</style>
+<script>
+(function(){
+var mi=document.getElementById('manualTime'),box=document.getElementById('mwBox');
+if(!mi||!box)return;
+var dec=document.getElementById('decMin'),inc=document.getElementById('incMin'),bar=document.getElementById('s2Bar');
+var pills=box.querySelectorAll('.s2-pill'),MIN=1,MAX=1440;
+var ds=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+function cur(){var v=parseInt(ds.get.call(mi),10);return isNaN(v)?0:v;}
+function paint(){
+  var v=cur();
+  pills.forEach(function(p){p.classList.toggle('active',+p.dataset.min===v);});
+  bar.style.width=Math.min(100,Math.max(v?3:0,v/120*100))+'%';
+  mi.style.width=(String(v||'').length>=4?44:String(v||'').length>=3?34:26)+'px';
+}
+Object.defineProperty(mi,'value',{configurable:true,get:function(){return ds.get.call(this);},set:function(v){ds.set.call(this,v);paint();}});
+function set(n){
+  n=Math.min(MAX,Math.max(MIN,Math.round(n)));
+  ds.set.call(mi,String(n));paint();
+  mi.dispatchEvent(new Event('input',{bubbles:true}));
+  try{clearFlowError();persistSession();}catch(_){}
+}
+/* typing */
+mi.addEventListener('focus',function(){setTimeout(function(){try{mi.select();}catch(_){}},0);});
+mi.addEventListener('input',function(){paint();});
+mi.addEventListener('blur',function(){var v=parseInt(ds.get.call(mi),10);if(!isNaN(v)&&v>=MIN)set(v);else if(!isNaN(v))set(MIN);});
+mi.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();mi.blur();}});
+/* presets */
+pills.forEach(function(p){p.addEventListener('click',function(){set(+p.dataset.min);});});
+/* tap = 1 min, hold = fast repeat (after 12 steps jumps by 5) */
+function hold(btn,delta){
+  var t=null,iv=null,n=0;
+  function stop(){clearTimeout(t);clearInterval(iv);t=iv=null;n=0;}
+  btn.addEventListener('pointerdown',function(e){
+    e.preventDefault();stop();
+    set((cur()||25)+delta);
+    t=setTimeout(function(){iv=setInterval(function(){n++;set(cur()+(n>12?delta*5:delta));},85);},340);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){btn.addEventListener(ev,stop);});
+  btn.addEventListener('contextmenu',function(e){e.preventDefault();});
+  btn.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();set((cur()||25)+delta);}});
+}
+hold(dec,-1);hold(inc,1);
+paint();
 })();
 </script>
 </body>
