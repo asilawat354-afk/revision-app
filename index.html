@@ -4632,220 +4632,423 @@ sb.addEventListener('touchend',fin,{passive:true});sb.addEventListener('touchcan
 
 
 <!-- ===== STUDY SESSION पेज (Home के + बटन से खुलता है): Select Lecture · Focus Timer · Session Review ===== -->
-<section class="sp" id="studyPage" role="dialog" aria-modal="true" aria-label="Study Session" aria-hidden="true">
-  <div class="sp-bar">
-    <button type="button" class="sp-back" onclick="closeStudyPage()" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-    <div class="sp-ttl">Study Session</div>
-  </div>
-  <div class="sp-body" id="spBody">
-    <!-- STEP 1 -->
-    <div class="card" id="selectorCard">
-      <div class="card-head">
-        <div class="step-badge-wrap">
-          <span class="step-num">1</span>
-          <h2 class="card-title">Select Lecture</h2>
-        </div>
-        <div class="tg tg-micro" id="studyModeToggle">
-          <button type="button" class="tb active" id="modeRev" onclick="setMode('revision')">Revision</button>
-          <button type="button" class="tb" id="modeNew" onclick="setMode('first_study')">First Study</button>
-        </div>
-      </div>
+<!-- ===== STUDY SESSION पेज: Calm Matte Cockpit (CSS+JS </body> के पास) ===== -->
+<section class="sp" id="studyPage" data-diff="Medium" role="dialog" aria-modal="true" aria-label="Study Session" aria-hidden="true">
 
-      <div class="form-group">
-        <label class="field-label">SUBJECT</label>
-        <select id="mSub" onchange="populateChapters('mSub', 'mChap', 'mLec'); updateSelectionSummary(); clearFlowError();">
-          <option value="">Select Subject...</option>
+  <!-- 1) TOP BAR (.sp-bar, 54px matte) -->
+  <header class="sp-bar">
+    <button type="button" class="sp-back" onclick="closeStudyPage()" aria-label="Back">
+      <svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="sp-ttl">Study Session</div>
+    <div class="sx-tg sx-tg-micro" id="studyModeToggle" role="tablist" aria-label="Study Mode">
+      <button type="button" class="sx-tb active" id="modeRev" onclick="setMode('revision')" role="tab" aria-selected="true">Revision</button>
+      <button type="button" class="sx-tb" id="modeNew" onclick="setMode('first_study')" role="tab" aria-selected="false">First Study</button>
+    </div>
+  </header>
+
+  <!-- SCROLLABLE MIDDLE BODY -->
+  <div class="sp-body" id="spBody">
+
+    <!-- 2) CARD 1 (#selectorCard) — LOCKED STYLE B1 · CONNECTED THREAD -->
+    <div class="sx-card" id="selectorCard">
+      <!-- Row 1: Subject -->
+      <div class="b1-row" data-b1-row="sub">
+        <span class="b1-thread-col" aria-hidden="true">
+          <span class="b1-node">
+            <svg class="b1-node-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            <span class="b1-node-dot"></span>
+          </span>
+          <span class="b1-seg-bot" data-b1-seg="sub-bot"></span>
+        </span>
+        <span class="b1-label">Subject</span>
+        <span class="b1-value" data-b1-val="sub">Select Subject</span>
+        <svg class="v-ic b1-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        <select id="mSub" class="b1-select" aria-label="Subject" onchange="this.blur(); populateChapters('mSub', 'mChap', 'mLec'); updateSelectionSummary(); clearFlowError();">
+          <option value="">Select Subject</option>
         </select>
       </div>
 
-      <div class="fr">
-        <div class="form-group" style="margin-bottom:0;">
-          <label class="field-label">CHAPTER</label>
-          <select id="mChap" onchange="populateLectures('mSub', 'mChap', 'mLec'); updateSelectionSummary(); clearFlowError();" disabled>
-            <option value="">Select Chapter...</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label class="field-label">LECTURE</label>
-          <select id="mLec" disabled onchange="updateSelectionSummary(); clearFlowError();">
-            <option value="">Select Lecture...</option>
-          </select>
-        </div>
+      <!-- Row 2: Chapter -->
+      <div class="b1-row" data-b1-row="chap">
+        <span class="b1-thread-col" aria-hidden="true">
+          <span class="b1-seg-top" data-b1-seg="chap-top"></span>
+          <span class="b1-node">
+            <svg class="b1-node-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            <span class="b1-node-dot"></span>
+          </span>
+          <span class="b1-seg-bot" data-b1-seg="chap-bot"></span>
+        </span>
+        <span class="b1-label">Chapter</span>
+        <span class="b1-value" data-b1-val="chap">Select Chapter</span>
+        <svg class="v-ic b1-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        <select id="mChap" class="b1-select" aria-label="Chapter" onchange="this.blur(); populateLectures('mSub', 'mChap', 'mLec'); updateSelectionSummary(); clearFlowError();" disabled>
+          <option value="">Select Chapter</option>
+        </select>
       </div>
 
-      <div id="selSummary" class="selection-summary">
-        <span class="sel-dot" id="selDot"></span>
-        <span id="selSummaryTxt">Select Subject, Chapter & Lecture</span>
+      <!-- Row 3: Lecture -->
+      <div class="b1-row" data-b1-row="lec">
+        <span class="b1-thread-col" aria-hidden="true">
+          <span class="b1-seg-top" data-b1-seg="lec-top"></span>
+          <span class="b1-node">
+            <svg class="b1-node-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            <span class="b1-node-dot"></span>
+          </span>
+        </span>
+        <span class="b1-label">Lecture</span>
+        <span class="b1-value" data-b1-val="lec">Select Lecture</span>
+        <svg class="v-ic b1-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        <select id="mLec" class="b1-select" aria-label="Lecture" onchange="this.blur(); updateSelectionSummary(); clearFlowError();" disabled>
+          <option value="">Select Lecture</option>
+        </select>
+      </div>
+
+      <!-- Hidden Real-App Summary Contract inside #selectorCard -->
+      <div id="selSummary" hidden aria-hidden="true">
+        <span id="selDot"></span>
+        <span id="selSummaryTxt">Select Subject, Chapter &amp; Lecture</span>
       </div>
     </div>
 
-    <!-- STEP 2 -->
-    <div class="card timer-card" id="timerPanelCard">
-      <div class="card-head" style="margin-bottom:8px;">
-        <div class="step-badge-wrap">
-          <span class="step-num">2</span>
-          <h2 class="card-title">Focus Timer</h2>
-        </div>
-        <div class="timer-mode-segment" id="flowModeToggle">
-          <button type="button" class="segment-btn active" id="btnModeStopwatch" onclick="setFlowMode('stopwatch')">Timer</button>
-          <button type="button" class="segment-btn" id="btnModeManual" onclick="setFlowMode('manual')">Manual</button>
-        </div>
-      </div>
+    <!-- 3) CARD 2 (#timerPanelCard) — LOCKED 2B TACTILE DIAL & BUTTONLESS TIMER (148px fixed, 0px jump) -->
+    <div class="sx-card timer-card" id="timerPanelCard">
 
-      <!-- STOPWATCH VIEW -->
-      <div id="stopwatchPane">
-        <div class="zen-indicator" id="zenIndicator">
-          <span class="status-dot" style="width:5px;height:5px;"></span>
-          <span id="zenTopicTxt">Focus Flow Study</span>
-        </div>
+      <!-- MANUAL VIEW (#manualPane, default) -->
+      <div id="manualPane" class="dial-pane">
+        <!-- Top Row (42px) -->
+        <div class="dial-top">
+          <div class="dial-manual-left">
+            <button type="button" class="step-circle" id="decMin" aria-label="1 मिनट कम करें">
+              <svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg>
+            </button>
 
-        <div class="ring">
-          <svg viewBox="0 0 280 280">
-            <circle class="track" cx="140" cy="140" r="130"/>
-            <g class="ticks-group" id="ticksGroup"></g>
-            <circle class="arc" id="arc" cx="140" cy="140" r="130"/>
-          </svg>
-          <div class="ro">
-            <div class="clock" id="clock">00:00</div>
-            <div class="cs" id="clockState">Ready</div>
-          </div>
-        </div>
-
-        <button class="btn btn-primary btn-start" id="startBtn" onclick="toggleTimer()">
-          <svg class="ic"><use href="#i-play"/></svg>
-          <span>Start</span>
-        </button>
-
-        <div class="timer-secondary-row">
-          <button class="btn btn-secondary" id="endBtn" onclick="stopTimer()">
-            <svg class="ic"><use href="#i-stop"/></svg>
-            <span>End Session</span>
-          </button>
-          <button class="btn btn-secondary" id="resetBtn" onclick="resetTimer()">
-            <svg class="ic"><use href="#i-reload"/></svg>
-            <span>Reset</span>
-          </button>
-        </div>
-
-        <p id="stopwatchInlineError" class="form-error" style="display:none;"></p>
-        <div class="timer-quote">"गति से ज़्यादा ज़रूरी है, चलते रहना।"</div>
-      </div>
-
-      <!-- MANUAL ENTRY VIEW -->
-      <div id="manualPane" style="display:none; padding-top:4px;">
-        <label class="field-label">STUDY TIME (MINUTES)</label>
-        <!-- Style 2: Single-Line Smart Capsule -->
-        <div class="s2-capsule" id="mwBox">
-          <div class="s2-stepper">
-            <button type="button" class="s2-step-btn" id="decMin" aria-label="1 मिनट कम करें (दबाए रखें)">&minus;</button>
-            <label class="s2-num-box" for="manualTime">
-              <input type="number" id="manualTime" class="s2-input" min="1" max="1440" inputmode="numeric" placeholder="25" value="25" aria-label="पढ़ाई का समय (मिनट)" />
-              <span class="s2-unit">min</span>
+            <label class="num-readout" for="manualTime">
+              <input type="number" id="manualTime" min="1" max="1440" inputmode="numeric" placeholder="25" value="25" aria-label="पढ़ाई का समय (मिनट)" />
+              <span class="num-unit">min</span>
             </label>
-            <button type="button" class="s2-step-btn" id="incMin" aria-label="1 मिनट बढ़ाएँ (दबाए रखें)">+</button>
+
+            <button type="button" class="step-circle" id="incMin" aria-label="1 मिनट बढ़ाएँ">
+              <svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>
+            </button>
           </div>
-          <div class="s2-divider" aria-hidden="true"></div>
-          <div class="s2-presets" role="group" aria-label="Quick presets">
-            <button type="button" class="s2-pill" data-min="15">15</button>
-            <button type="button" class="s2-pill active" data-min="25">25</button>
-            <button type="button" class="s2-pill" data-min="45">45</button>
-            <button type="button" class="s2-pill" data-min="60">60</button>
-          </div>
-          <div class="s2-progress-track" aria-hidden="true"><div class="s2-progress-bar" id="s2Bar"></div></div>
+
+          <!-- 38px Pure Circular Solid Matte Play Button (Seamless Switch to Timer) -->
+          <button type="button" class="ctrl-circle primary" id="dialStartBtn" aria-label="Start Live Timer" title="Start Live Timer">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8.5 6.4c0-.9.98-1.45 1.75-.98l8.1 4.9c.73.44.73 1.52 0 1.96l-8.1 4.9c-.77.47-1.75-.08-1.75-.98V6.4z" fill="currentColor" stroke="none"/>
+            </svg>
+          </button>
         </div>
 
-        <div class="rv-lh"><label class="field-label">LEARNING STATUS</label><button type="button" class="rv-i" data-info="status" aria-label="Learning Status का अर्थ">i</button></div>
-        <div class="tg diff-tg">
-          <div class="tb diff-btn" data-val="Easy" onclick="setDiff('Easy')">
+        <!-- Middle (44px): Draggable + Wheel-Scrubbable Tactile Ruler Dial (5m–180m) inside #mwBox -->
+        <div class="dial-mid">
+          <div class="ruler-needle-box">
+            <div class="ruler-frame" id="mwBox" role="slider" aria-label="Study time ruler (5 to 180 minutes)" aria-valuemin="5" aria-valuemax="180" aria-valuenow="25">
+              <div class="ruler-strip" id="rulerStrip"></div>
+            </div>
+            <div class="ruler-needle" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <!-- Bottom (34px): 4 Calm Matte Preset Pills -->
+        <div class="dial-foot">
+          <div class="s2-presets" id="s2Presets" role="group" aria-label="Quick presets">
+            <button type="button" class="s2-pill" data-min="15">15m</button>
+            <button type="button" class="s2-pill active" data-min="25">25m</button>
+            <button type="button" class="s2-pill" data-min="45">45m</button>
+            <button type="button" class="s2-pill" data-min="60">60m</button>
+          </div>
+        </div>
+
+        <!-- Subtle 2px Bottom Progress Line (#s2Bar) -->
+        <div class="s2-progress-track" aria-hidden="true">
+          <div class="s2-progress-bar" id="s2Bar"></div>
+        </div>
+      </div>
+
+      <!-- TIMER VIEW (#stopwatchPane, identical 148px height = 0px jump) -->
+      <div id="stopwatchPane" class="dial-pane" style="display:none;">
+        <!-- Top Row (42px): Clock + State & 3 Pure Circular 38px Transport Buttons -->
+        <div class="dial-top">
+          <div class="dial-timer-left">
+            <div class="sx-clock" id="clock">00:00</div>
+            <div class="sx-cs" id="clockState">Focusing</div>
+          </div>
+
+          <div class="circle-controls">
+            <!-- 1. Solid Matte Circle: Pause / Resume (Zero Width Jitter) -->
+            <button type="button" class="ctrl-circle primary" id="startBtn" onclick="toggleTimer()" aria-label="Pause or Resume Timer" title="Pause / Resume">
+              <svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8.5 6.4c0-.9.98-1.45 1.75-.98l8.1 4.9c.73.44.73 1.52 0 1.96l-8.1 4.9c-.77.47-1.75-.08-1.75-.98V6.4z" fill="currentColor" stroke="none"/>
+              </svg>
+              <svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="7.5" y="6" width="3" height="12" rx="1.2" fill="currentColor" stroke="none"/>
+                <rect x="13.5" y="6" width="3" height="12" rx="1.2" fill="currentColor" stroke="none"/>
+              </svg>
+              <span class="sr-only">Start</span>
+            </button>
+
+            <!-- 2. Soft Rose-Tinted Matte Circle: Rounded Stop Square -->
+            <button type="button" class="ctrl-circle stop" id="endBtn" onclick="stopTimer()" aria-label="End Session" title="End Session">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="7" y="7" width="10" height="10" rx="2.2" fill="currentColor" stroke="none"/>
+              </svg>
+              <span class="sr-only">End Session</span>
+            </button>
+
+            <!-- 3. Quiet Matte Circle: Perfected 270° rotate-ccw Reset SVG (Zero Gaps) -->
+            <button type="button" class="ctrl-circle" id="resetBtn" onclick="resetTimer()" aria-label="Reset Timer" title="Reset">
+              <svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              <span class="sr-only">Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Middle (44px): 60-Tick Swiss Linear Chronograph -->
+        <div class="dial-mid">
+          <div class="chrono-wrap">
+            <div class="chrono-ticks" id="chronoTicks" aria-hidden="true"></div>
+            <div class="chrono-scale" aria-hidden="true">
+              <span>0m</span><span>15m</span><span>30m</span><span>45m</span><span>60m</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom (34px): Elapsed Track + Quiet Single-Line Hindi Hint -->
+        <div class="dial-foot">
+          <div class="sw-foot-row">
+            <div class="sw-elapsed-track" aria-hidden="true">
+              <div class="sw-elapsed-fill" id="swElapsedFill"></div>
+            </div>
+            <span class="sw-hint-txt" id="swHintTxt">लाइव सेशन चल रहा है</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 4) CARD 3 — UNIFIED LEARNING STATUS + STYLE 1 PRO NOTES TELEMETRY CAPSULE -->
+    <div class="sx-card" id="statusNotesCard">
+      <!-- Top Section: Learning Status -->
+      <div class="status-sec">
+        <div class="sx-lh">
+          <label class="sx-flabel">LEARNING STATUS</label>
+          <div class="rv-lh-right">
+            <span class="status-hint" id="statusHint">अभ्यास ज़रूरी है</span>
+            <!-- Real 24x24 Vector Info SVG Button (.rv-i) -->
+            <button type="button" class="sx-info" data-info="status" aria-label="Learning Status का अर्थ" aria-expanded="false" aria-controls="statusInfoDrawer">
+              <svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9.5"/>
+                <path d="M12 16v-4.5"/>
+                <circle cx="12" cy="8.2" r="0.9" fill="currentColor" stroke="none"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sx-tg sx-diff-tg" role="radiogroup" aria-label="Learning Status">
+          <div class="sx-tb sx-diff-btn" data-val="Easy" onclick="setDiff('Easy')" role="radio" aria-checked="false" tabindex="0">
             <span class="diff-main">Clear</span>
           </div>
-          <div class="tb diff-btn active" data-val="Medium" onclick="setDiff('Medium')">
+          <div class="sx-tb sx-diff-btn active" data-val="Medium" onclick="setDiff('Medium')" role="radio" aria-checked="true" tabindex="0">
             <span class="diff-main">Practice</span>
           </div>
-          <div class="tb diff-btn" data-val="Hard" onclick="setDiff('Hard')">
+          <div class="sx-tb sx-diff-btn" data-val="Hard" onclick="setDiff('Hard')" role="radio" aria-checked="false" tabindex="0">
             <span class="diff-main">Relearn</span>
           </div>
         </div>
+      </div>
 
-        <div class="note-toggle-wrap nt-wrap">
-          <div class="ntb">
-            <div class="ntb-h" role="button" tabindex="0" onclick="ntOpen('Manual',1)"><span class="ntb-ic"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><div class="ntb-t"><b>Notes</b><span id="ntMetaManual">Quick add below, or open the full page</span></div><span class="ntb-go">Open<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></div>
-            <div class="ntb-pills" id="ntPillsManual"></div>
-            <div class="ntb-np" id="ntNpManual"><input id="ntNnManual" type="text" maxlength="14" autocomplete="off" placeholder="Pill name" onkeydown="if(event.key==='Enter'){event.preventDefault();ntPillSave('Manual')}"><div class="ntb-cols" id="ntNcManual"></div><div class="ntb-npr"><button type="button" class="ntb-qb" onclick="ntPillClose('Manual')">Cancel</button><button type="button" class="ntb-qb" onclick="ntPillSave('Manual')">Add</button></div></div>
-            <div class="ntb-qi" id="ntQiManual"><i id="ntQdManual"></i><input id="ntQtManual" type="text" autocomplete="off" placeholder="Write here" onkeydown="if(event.key==='Enter'){event.preventDefault();ntQuickAdd('Manual')}"><button type="button" class="ntb-qb" onclick="ntQuickAdd('Manual')">Add</button></div>
-            <div id="ntMiniManual"></div>
-            <div class="ntb-sep"></div>
-            <div class="ntb-lr"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><input id="ntLuManual" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="Paste a link" onkeydown="if(event.key==='Enter'){event.preventDefault();ntLinkAdd('Manual')}"><button type="button" class="ntb-qb" onclick="ntLinkAdd('Manual')">Add</button></div>
-            <div class="ntb-lk" id="ntLkManual"></div>
+      <div class="card-divider" aria-hidden="true"></div>
+
+      <!-- Bottom Section: 50px Style 1 Pro Notes Telemetry Capsule (Heavy Bead +N Spec) -->
+      <div class="notes-sec">
+        <div
+          class="nt-capsule"
+          id="ntCapsuleBtn"
+          role="button"
+          tabindex="0"
+          aria-label="Notes और Links खोलें"
+        >
+          <div class="nt-left">
+            <span class="nt-icon-well" aria-hidden="true">
+              <svg class="v-ic" viewBox="0 0 24 24">
+                <path d="M6 3h9l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+                <path d="M9 12h6"/>
+                <path d="M9 16h4"/>
+              </svg>
+            </span>
+            <span class="nt-title">Notes</span>
           </div>
-          <textarea id="notesManual" aria-hidden="true" tabindex="-1" style="display:none"></textarea>
+
+          <span class="nt-vdiv" aria-hidden="true"></span>
+
+          <!-- Center Recessed Track: Empty Hindi prompt OR max 3 beads + '+N' overflow pill -->
+          <div class="nt-track" id="ntTrack" aria-live="polite"></div>
+
+          <!-- Right 32x32 Circular Launch Button ('+' empty -> '↗' filled) -->
+          <span class="nt-launch" aria-hidden="true">
+            <svg class="v-ic ic-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            <svg class="v-ic ic-open" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </span>
+
+          <!-- 2px Proportional Multi-Color Bottom Progress Bar -->
+          <div class="nt-bar-track" id="ntBarTrack" aria-hidden="true"></div>
         </div>
-
-        <button class="btn btn-primary" onclick="saveManualSession()" style="margin-top:8px;">
-          <svg class="ic"><use href="#i-save"/></svg>
-          <span>Save Locally</span>
-        </button>
-
-        <p id="manualInlineError" class="form-error" style="display:none;"></p>
-        <div class="timer-quote">"गति से ज़्यादा ज़रूरी है, चलते रहना।"</div>
       </div>
     </div>
 
-    <!-- SESSION REVIEW -->
-    <div class="card session-review-card" id="saveCard" style="display:none;">
-      <div class="card-head" style="margin-bottom:4px;">
-        <div>
-          <h2 class="card-title"><svg class="ic" style="color:var(--primary);"><use href="#i-save"/></svg> Session Review</h2>
-          <p class="card-subtitle">अपनी सीख और कठिनाई सहेजें</p>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span id="finalTimeTxt" class="final-time-badge">0 Min</span>
-          <button class="icon-btn-dismiss" onclick="closeSaveCard()" title="Dismiss">
-            <svg class="ic"><use href="#i-close"/></svg>
-          </button>
-        </div>
+    <!-- 5A) INLINE ERROR SLOTS + QUIET QUOTE SPACER (margin-top:auto) -->
+    <div class="body-spacer">
+      <p id="stopwatchInlineError" class="sx-err" style="display:none;"></p>
+      <p id="manualInlineError" class="sx-err" style="display:none;"></p>
+      <p id="saveCardInlineError" class="sx-err" style="display:none;"></p>
+
+      <div class="quote-row" aria-hidden="true">
+        <span class="quote-flank"></span>
+        <p class="sx-quote">"गति से ज़्यादा ज़रूरी है, चलते रहना।"</p>
+        <span class="quote-flank"></span>
       </div>
-
-      <div class="rv-lh" style="margin-top:4px;"><label class="field-label">LEARNING STATUS</label><button type="button" class="rv-i" data-info="status" aria-label="Learning Status का अर्थ">i</button></div>
-      <div class="tg diff-tg" style="margin-bottom:10px;">
-        <div class="tb diff-btn" data-val="Easy" onclick="setDiff('Easy')">
-          <span class="diff-main">Clear</span>
-        </div>
-        <div class="tb diff-btn active" data-val="Medium" onclick="setDiff('Medium')">
-          <span class="diff-main">Practice</span>
-        </div>
-        <div class="tb diff-btn" data-val="Hard" onclick="setDiff('Hard')">
-          <span class="diff-main">Relearn</span>
-        </div>
-      </div>
-
-      <div class="note-toggle-wrap nt-wrap">
-          <div class="ntb">
-            <div class="ntb-h" role="button" tabindex="0" onclick="ntOpen('',1)"><span class="ntb-ic"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span><div class="ntb-t"><b>Notes</b><span id="ntMeta">Quick add below, or open the full page</span></div><span class="ntb-go">Open<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></div>
-            <div class="ntb-pills" id="ntPills"></div>
-            <div class="ntb-np" id="ntNp"><input id="ntNn" type="text" maxlength="14" autocomplete="off" placeholder="Pill name" onkeydown="if(event.key==='Enter'){event.preventDefault();ntPillSave('')}"><div class="ntb-cols" id="ntNc"></div><div class="ntb-npr"><button type="button" class="ntb-qb" onclick="ntPillClose('')">Cancel</button><button type="button" class="ntb-qb" onclick="ntPillSave('')">Add</button></div></div>
-            <div class="ntb-qi" id="ntQi"><i id="ntQd"></i><input id="ntQt" type="text" autocomplete="off" placeholder="Write here" onkeydown="if(event.key==='Enter'){event.preventDefault();ntQuickAdd('')}"><button type="button" class="ntb-qb" onclick="ntQuickAdd('')">Add</button></div>
-            <div id="ntMini"></div>
-            <div class="ntb-sep"></div>
-            <div class="ntb-lr"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><input id="ntLu" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="Paste a link" onkeydown="if(event.key==='Enter'){event.preventDefault();ntLinkAdd('')}"><button type="button" class="ntb-qb" onclick="ntLinkAdd('')">Add</button></div>
-            <div class="ntb-lk" id="ntLk"></div>
-          </div>
-          <textarea id="notes" aria-hidden="true" tabindex="-1" style="display:none"></textarea>
-        </div>
-
-      <button class="btn btn-primary" onclick="saveSession()" style="margin-top:8px;">
-        <svg class="ic"><use href="#i-save"/></svg>
-        <span>Save Locally</span>
-      </button>
-
-      <button class="btn btn-secondary btn-full" onclick="continueStudying()" style="margin-top:6px; height:34px; font-size:11.5px;">
-        <svg class="ic" style="width:12px;height:12px;"><use href="#i-play"/></svg>
-        <span>Keep Studying (Resume)</span>
-      </button>
-
-      <p id="saveCardInlineError" class="form-error" style="display:none;"></p>
     </div>
+
   </div>
+
+  <!-- 5B) BOTTOM-ANCHORED STYLE 2 MATTE SAVE DOCK (.sp-foot, 52px capsule) -->
+  <footer class="sp-foot" id="actionDock">
+    <div class="save-slot">
+
+      <!-- MANUAL SAVE CAPSULE -->
+      <div class="sv-capsule" id="dockManual" data-dock-pane="manual">
+        <div class="sv-left">
+          <span class="sv-dot" aria-hidden="true"></span>
+          <div class="sv-text">
+            <strong data-sv-manual-dur>25 min</strong> &middot; <span data-sv-status>Practice</span>
+          </div>
+        </div>
+        <span class="sv-vdiv" aria-hidden="true"></span>
+        <button type="button" class="sv-cta" id="svManualBtn" onclick="saveManualSession()">
+          <svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          <span data-sv-lbl>Save</span>
+        </button>
+        <div class="sv-accent-line" aria-hidden="true"></div>
+      </div>
+
+      <!-- TIMER RUNNING / PAUSED CAPSULE -->
+      <div class="sv-capsule" id="dockTimer" data-dock-pane="timer" style="display:none;">
+        <div class="sv-left">
+          <span class="sv-dot live" id="svTimerDot" aria-hidden="true"></span>
+          <div class="sv-text">
+            <span id="svTimerState">Focusing</span> &middot; <strong id="svTimerClock">00:00</strong> &middot; <span data-sv-status>Practice</span>
+          </div>
+        </div>
+        <span class="sv-vdiv" aria-hidden="true"></span>
+        <button type="button" class="sv-cta end-btn" id="svTimerEndBtn" onclick="stopTimer()">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;" aria-hidden="true">
+            <rect x="7" y="7" width="10" height="10" rx="2.2" fill="currentColor" stroke="none"/>
+          </svg>
+          <span>End</span>
+        </button>
+        <div class="sv-accent-line" aria-hidden="true"></div>
+      </div>
+
+      <!-- SESSION REVIEW (#saveCard — Morphs In-Place in exact 52px slot = 0px jump) -->
+      <div class="sx-review" id="saveCard" style="display:none;">
+        <div class="sv-capsule review-shell" id="svReviewShell">
+          <button type="button" class="sv-circle-btn" onclick="continueStudying()" aria-label="Resume Studying" title="Resume">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8.5 6.4c0-.9.98-1.45 1.75-.98l8.1 4.9c.73.44.73 1.52 0 1.96l-8.1 4.9c-.77.47-1.75-.08-1.75-.98V6.4z" fill="currentColor" stroke="none"/>
+            </svg>
+          </button>
+
+          <div class="sv-left center">
+            <span class="sv-dot" aria-hidden="true"></span>
+            <div class="sv-text">
+              <span id="finalTimeTxt" class="sx-final">0 Min</span> &middot; <span data-sv-status>Practice</span>
+            </div>
+          </div>
+
+          <div class="sv-review-right">
+            <button type="button" class="sv-cta review-save" id="svReviewBtn" onclick="saveSession()">
+              <svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span data-sv-lbl>Save</span>
+            </button>
+            <button type="button" class="sv-circle-btn" onclick="closeSaveCard()" aria-label="Dismiss Review" title="Dismiss">
+              <svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="sv-accent-line" aria-hidden="true"></div>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       100% REAL-APP HIDDEN COMPATIBILITY SHELL
+       Preserves #flowModeToggle, #zenIndicator, SVG r=130 #arc & #ticksGroup,
+       and all legacy nt* / nt*Manual IDs with zero visible clutter.
+  ========================================================================= -->
+  <div hidden aria-hidden="true">
+    <div id="flowModeToggle">
+      <button type="button" id="btnModeStopwatch" onclick="setFlowMode('stopwatch')">Timer</button>
+      <button type="button" id="btnModeManual" class="active" onclick="setFlowMode('manual')">Manual</button>
+    </div>
+
+    <div id="zenIndicator"><span id="zenTopicTxt">Focus Flow Study</span></div>
+
+    <!-- Real-App SVG Ring Contract: viewBox="0 0 280 280" & circle#arc r="130" -->
+    <svg viewBox="0 0 280 280" width="0" height="0">
+      <circle class="track" cx="140" cy="140" r="130"/>
+      <g class="ticks-group" id="ticksGroup"></g>
+      <circle class="arc" id="arc" cx="140" cy="140" r="130"/>
+    </svg>
+
+    <!-- Legacy Manual Notes IDs -->
+    <span id="ntMetaManual"></span>
+    <div id="ntPillsManual"></div>
+    <div id="ntNpManual">
+      <input id="ntNnManual" type="text" tabindex="-1" onkeydown="if(event.key==='Enter'){event.preventDefault();ntPillSave('Manual')}" />
+      <div id="ntNcManual"></div>
+      <button type="button" onclick="ntPillClose('Manual')" tabindex="-1"></button>
+      <button type="button" onclick="ntPillSave('Manual')" tabindex="-1"></button>
+    </div>
+    <div id="ntQiManual">
+      <i id="ntQdManual"></i>
+      <input id="ntQtManual" type="text" tabindex="-1" onkeydown="if(event.key==='Enter'){event.preventDefault();ntQuickAdd('Manual')}" />
+      <button type="button" onclick="ntQuickAdd('Manual')" tabindex="-1"></button>
+    </div>
+    <div id="ntMiniManual"></div>
+    <input id="ntLuManual" type="url" tabindex="-1" onkeydown="if(event.key==='Enter'){event.preventDefault();ntLinkAdd('Manual')}" />
+    <button type="button" onclick="ntLinkAdd('Manual')" tabindex="-1"></button>
+    <div id="ntLkManual"></div>
+    <textarea id="notesManual" tabindex="-1"></textarea>
+
+    <!-- Legacy Session Review Notes IDs -->
+    <span id="ntMeta"></span>
+    <div id="ntPills"></div>
+    <div id="ntNp">
+      <input id="ntNn" type="text" tabindex="-1" onkeydown="if(event.key==='Enter'){event.preventDefault();ntPillSave('')}" />
+      <div id="ntNc"></div>
+      <button type="button" onclick="ntPillClose('')" tabindex="-1"></button>
+      <button type="button" onclick="ntPillSave('')" tabindex="-1"></button>
+    </div>
+    <div id="ntQi">
+      <i id="ntQd"></i>
+      <input id="ntQt" type="text" tabindex="-1" onkeydown="if(event.key==='Enter'){event.preventDefault();ntQuickAdd('')}" />
+      <button type="button" onclick="ntQuickAdd('')" tabindex="-1"></button>
+    </div>
+    <div id="ntMini"></div>
+    <input id="ntLu" type="url" tabindex="-1" onkeydown="if(event.key==='Enter'){event.preventDefault();ntLinkAdd('')}" />
+    <button type="button" onclick="ntLinkAdd('')" tabindex="-1"></button>
+    <div id="ntLk"></div>
+    <textarea id="notes" tabindex="-1"></textarea>
+  </div>
+
 </section>
 
 <button type="button" class="sp-fab hide" id="spFab" onclick="openStudyPage()" aria-label="Study Session शुरू करें">
@@ -4863,7 +5066,7 @@ const VER_KEY = 'ru_data_ver';
 const DATA_VER = '2';
 const RADIUS = 816;
 
-let currentFlowMode = 'stopwatch';
+let currentFlowMode = 'manual';
 let masterData = {};
 let state = { mode: 'revision', diff: 'Medium', run: false, elapsed: 0, start: 0 };
 let tick = null;
@@ -4980,6 +5183,7 @@ function clearFlowError() {
 }
 
 function updateSelectionSummary() {
+  if (window.__studyBridge) setTimeout(window.__studyBridge.syncThread, 0);
   const sub = g('mSub') ? g('mSub').value : '';
   const chap = g('mChap') ? g('mChap').value : '';
   const lec = g('mLec') ? g('mLec').value : '';
@@ -5034,8 +5238,8 @@ function setFlowMode(mode) {
   if (btnMan) btnMan.classList.toggle('active', !isStopwatch);
   const swPane = g('stopwatchPane');
   const manPane = g('manualPane');
-  if (swPane) swPane.style.display = isStopwatch ? 'block' : 'none';
-  if (manPane) manPane.style.display = isStopwatch ? 'none' : 'block';
+  if (swPane) swPane.style.display = isStopwatch ? '' : 'none';
+  if (manPane) manPane.style.display = isStopwatch ? 'none' : '';
   if (!isStopwatch) {
     const saveCard = g('saveCard');
     if (saveCard) saveCard.style.display = 'none';
@@ -6141,6 +6345,7 @@ function applySelection(sub, chap, lec) {
   g('mChap').value = chap;
   populateLectures('mSub', 'mChap', 'mLec');
   if (lec && masterData[sub][chap].includes(lec)) g('mLec').value = lec;
+  if (window.__studyBridge) window.__studyBridge.syncThread();
 }
 
 function restoreSession() {
@@ -6151,7 +6356,7 @@ function restoreSession() {
     setMode(s.mode === 'first_study' ? 'first_study' : 'revision');
     setDiff(s.diff || 'Medium');
     applySelection(s.sub, s.chap, s.lec);
-    setFlowMode(s.flowMode || 'stopwatch');
+    setFlowMode(s.flowMode || 'manual');
     state.elapsed = Math.max(0, Number(s.elapsed) || 0);
     state.start = Number(s.start) || 0;
     state.run = !!s.run && state.start > 0;
@@ -6160,13 +6365,9 @@ function restoreSession() {
       if (state.run) {
         clearInterval(tick);
         tick = setInterval(paintT, 500);
-        sb.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg><span>Pause</span>';
-        g('clockState').textContent = 'Deep Work';
-        sb.className = 'btn btn-secondary btn-start';
+        g('clockState').textContent = 'Focusing';
       } else if (state.elapsed > 0) {
-        sb.innerHTML = '<svg class="ic"><use href="#i-play"/></svg><span>Resume</span>';
         g('clockState').textContent = 'Paused';
-        sb.className = 'btn btn-primary btn-start';
       }
     }
     paintT();
@@ -6252,7 +6453,8 @@ function setMode(m) {
 function setDiff(v) {
   state.diff = v;
   persistSession();
-  document.querySelectorAll('.diff-btn').forEach(b => { const on = b.getAttribute('data-val') === v; b.classList.toggle('active', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+  document.querySelectorAll('.diff-btn, .sx-diff-btn').forEach(b => { const on = b.getAttribute('data-val') === v; b.classList.toggle('active', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+  if (window.__studyBridge) window.__studyBridge.syncStatus();
 }
 
 function totalT() {
@@ -6272,9 +6474,7 @@ function toggleTimer() {
     state.elapsed = totalT();
     state.run = false;
     clearInterval(tick);
-    sb.innerHTML = '<svg class="ic"><use href="#i-play"/></svg><span>Resume</span>';
     g('clockState').textContent = 'Paused';
-    sb.className = 'btn btn-primary btn-start';
     document.body.classList.remove('flow-active');
     haptic('light');
     updateTimerLockState();
@@ -6291,9 +6491,7 @@ function toggleTimer() {
     clearInterval(tick);
     tick = setInterval(paintT, 500);
     g('saveCard').style.display = 'none';
-    sb.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg><span>Pause</span>';
-    g('clockState').textContent = 'Deep Work';
-    sb.className = 'btn btn-secondary btn-start';
+    g('clockState').textContent = 'Focusing';
     document.body.classList.add('flow-active');
     haptic('medium');
     updateTimerLockState();
@@ -6314,8 +6512,6 @@ function resetTimer() {
   state.start = 0;
   const sb = g('startBtn');
   if (sb) {
-    sb.innerHTML = '<svg class="ic"><use href="#i-play"/></svg><span>Start</span>';
-    sb.className = 'btn btn-primary btn-start';
   }
   g('clock').textContent = '00:00';
   g('arc').style.strokeDashoffset = '816';
@@ -6338,8 +6534,6 @@ function stopTimer() {
     clearInterval(tick);
     const sb = g('startBtn');
     if (sb) {
-      sb.innerHTML = '<svg class="ic"><use href="#i-play"/></svg><span>Resume</span>';
-      sb.className = 'btn btn-primary btn-start';
     }
     g('clockState').textContent = 'Paused';
   }
@@ -6353,7 +6547,6 @@ function stopTimer() {
   g('saveCard').style.display = 'block';
   updateTimerLockState();
   persistSession();
-  g('saveCard').scrollIntoView({ behavior: 'smooth' });
 }
 
 function saveSession() {
@@ -6386,11 +6579,10 @@ function saveSession() {
   state.start = 0;
   const sb = g('startBtn');
   if (sb) {
-    sb.innerHTML = '<svg class="ic"><use href="#i-play"/></svg><span>Start</span>';
-    sb.className = 'btn btn-primary btn-start';
   }
   g('clockState').textContent = 'Ready';
   g('saveCard').style.display = 'none';
+  setFlowMode('manual');
   g('mSub').value = '';
   populateChapters('mSub', 'mChap', 'mLec');
   resetNoteField('');
@@ -6431,7 +6623,7 @@ function saveManualSession() {
   const logs = getLogs();
   logs.unshift(payload);
   jset(HISTORY_KEY, logs);
-  g('manualTime').value = '';
+  g('manualTime').value = '25';
   resetNoteField('Manual');
   setDiff(window.tlDefDiff ? tlDefDiff() : 'Medium');
   if (window.tlApplyDefMode) tlApplyDefMode();
@@ -6556,6 +6748,7 @@ function ncLinksIn(cards) {   // सारे कार्डों के ल�
   return out;
 }
 function ntPaint(suf) {
+  try { if (window.__ntTele) window.__ntTele(suf); } catch (e) {}
   const pills = g('ntPills' + suf), mini = g('ntMini' + suf), lk = g('ntLk' + suf), meta = g('ntMeta' + suf), qi = g('ntQi' + suf);
   if (!pills || !mini || !lk) return;
   const cs = (NT[suf] && NT[suf].cards) || [], types = window.ncTypes ? window.ncTypes() : [];
@@ -13961,6 +14154,17 @@ function anRender(){const goal=document.getElementById('anGoal'),sub=document.ge
 })();
 </script>
 <style id="rvStyle">
+.rv-hd{flex:none;display:flex;align-items:flex-start;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--hf-border,rgba(128,128,128,.25))}
+.rv-hd>div{flex:1;min-width:0}.rv-hd h3{margin:0 0 2px;font-size:16px;line-height:1.35;overflow-wrap:anywhere}.rv-hd .sb{margin:0;font-size:12px;line-height:1.4}
+.rv-bd{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 16px calc(18px + var(--sab,0px))}
+.rv-x{flex:none;width:38px;height:38px;border-radius:50%;padding:0;font-size:16px;border:1px solid var(--hf-border,rgba(128,128,128,.35));background:transparent;color:inherit;cursor:pointer}
+.rv-intro{font-size:12.5px;line-height:1.65;padding:10px 12px;border-radius:12px;background:var(--primary-dim);margin-bottom:10px}
+#rvSheet .nt{font-size:12.5px;line-height:1.6;opacity:.85;margin:0 0 12px}
+.rv-t{margin-bottom:4px}
+.rv-p{margin:8px 0 0;line-height:1.65;font-size:13px;opacity:1!important}
+.rv-p strong{display:block;font-size:12px;font-weight:700;margin-bottom:1px}
+.rv-f{margin:8px 0 0;font-size:12.5px;line-height:1.6;font-style:italic;opacity:.85}
+.rv-s{margin-top:10px;font-weight:700}
 .mw{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:12px}
 .mw-s{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:32px;margin:0;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;touch-action:pan-y}
 .mw-s::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--border)}
@@ -13983,7 +14187,7 @@ function anRender(){const goal=document.getElementById('anGoal'),sub=document.ge
 #rvSheet{position:fixed;inset:0;z-index:100000;display:none}#rvSheet.on{display:block}
 #rvSheet .bk{position:absolute;inset:0;background:rgba(0,0,0,.55)}
 #rvSheet .pn,#rvTip{background:var(--hf-sheet,var(--bg,#111));color:var(--hf-text,var(--text,inherit));border:1px solid var(--hf-border,rgba(128,128,128,.3))}
-#rvSheet .pn{position:absolute;left:0;right:0;bottom:0;width:min(100%,520px);margin:0 auto;max-height:84vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(18px + var(--sab,0px))}
+#rvSheet .pn{position:absolute;left:0;right:0;bottom:0;width:min(100%,520px);margin:0 auto;max-height:84vh;display:flex;flex-direction:column;overflow:hidden;border-radius:20px 20px 0 0;padding:0}
 #rvSheet h3{margin:0 0 4px;font-size:16px}#rvSheet .sb{margin:0 0 12px;font-size:12px;opacity:.7}
 .rv-it{--c:var(--d-med);padding:10px 12px;border-radius:14px;border:1px solid var(--hf-border,rgba(128,128,128,.3));margin-bottom:8px;font-size:13px;line-height:1.5}
 .rv-it[data-k=Clear]{--c:var(--d-easy)}.rv-it[data-k=Relearn]{--c:var(--d-hard)}
@@ -13997,21 +14201,29 @@ function anRender(){const goal=document.getElementById('anGoal'),sub=document.ge
 </style>
 <script id="rvScript">
 (function(){
-var ST=[{k:'Easy',n:'Clear',i:'🟢',h:'आता है',m:'मुझे यह Concept अच्छी तरह समझ आ गया है।',w:'जब बिना मदद के समझा सकूँ और सवाल हल कर सकूँ।'},
-{k:'Medium',n:'Practice',i:'🟡',h:'अभ्यास चाहिए',m:'Concept समझ आ गया है, लेकिन अभ्यास की जरूरत है।',w:'जब तरीका पता हो, लेकिन सवाल हल करने में गलती या देरी होती हो।'},
-{k:'Hard',n:'Relearn',i:'🔴',h:'फिर से सीखना है',m:'मुझे यह Concept दोबारा सीखना या समझना है।',w:'जब समझ स्पष्ट न हो या Concept भूल गया हूँ।'}];
-var RT={easy:{n:'Easy',h:'आसान',w:'सीधे तरीके से और सामान्य समझ के साथ हल होने वाला।'},
-medium:{n:'Medium',h:'मध्यम कठिनाई',w:'थोड़ा सोचने और कुछ चरणों में हल करने वाला।'},
-hard:{n:'Hard',h:'कठिन',w:'अच्छी समझ, अधिक सोच और मेहनत की जरूरत वाला।',d:'सवाल कठिन है।'},
-complex:{n:'Complex',h:'जटिल',w:'कई Concepts, नियमों या शर्तों का एक साथ इस्तेमाल करने वाला।',d:'सवाल में कई Concepts या शर्तें जुड़ी हैं।'},
-expert:{n:'Expert',h:'विशेषज्ञ स्तर',w:'बहुत उच्च स्तर की समझ, गहरी जानकारी और उन्नत कौशल मांगने वाला।',d:'उच्च स्तर की विशेषज्ञता आवश्यक है।'}};
+var ST=[
+{k:'Easy',n:'Clear',i:'🟢',t:'पक्का / दिमाग में बैठ गया',a:'यह उन लेक्चर्स को "सुरक्षित ज़ोन" में डालता है जिनका लॉजिक आपको पूरी तरह समझ आ चुका है और अब उन्हें तुरंत दोहराने की ज़रूरत नहीं है।',e:'जैसे साइकिल का बैलेंस एक बार बन गया — अब रोज़ सीखना नहीं पड़ता, बस लंबे समय बाद कभी-कभार चलाने से याद रहता है। पढ़ाई में: सवाल देखते ही तरीका खुद दिमाग में आ जाए।',y:'यह आपका कीमती समय बचाता है ताकि आप तैयार चीज़ों को बार-बार न पढ़ते रहें।',z:'आप उन्हीं पक्के या आसान टॉपिक्स को दोबारा पढ़कर अपना समय गँवा देंगे।'},
+{k:'Medium',n:'Practice',i:'🟡',t:'अभ्यास चाहिए / हाथ साफ़ करना है',a:'यह बताता है कि कॉन्सेप्ट समझ तो आ गया है, लेकिन स्पीड, सटीकता (Accuracy) या आत्मविश्वास अभी कम है। यहाँ दोबारा लेक्चर नहीं देखना है, सिर्फ़ सवाल लगाने हैं।',e:'जैसे कार चलाने के नियम और गियर समझ आ गए, पर भीड़ वाली सड़क पर स्मूद चलाने के लिए अभी और ड्राइविंग करनी बाकी है। पढ़ाई में: तरीका पता है, पर हल करते समय समय ज़्यादा लगता है या छोटी गलती हो जाती है।',y:'यह आपको बार-बार थ्योरी पढ़ने के जाल से निकालकर सीधे प्रैक्टिस की तरफ़ मोड़ता है।',z:'आप समझे हुए टॉपिक का भी पूरा वीडियो या नोट्स फिर से पढ़ने लगेंगे, जबकि ज़रूरत सिर्फ़ सवाल हल करने की थी।'},
+{k:'Hard',n:'Relearn',i:'🔴',t:'फिर से सीखना है / जड़ से समझना है',a:'यह एक अलार्म की तरह काम करता है जो बताता है कि कॉन्सेप्ट की नींव कच्ची है या पूरा भूल चुके हैं — इसे दोबारा शुरुआत से सीखना पड़ेगा।',e:'जैसे किसी रास्ते का नक्शा ही दिमाग से निकल गया हो, तो अंदाज़े से चलने की बजाय दोबारा मैप खोलकर पूरा रास्ता देखना पड़ता है। पढ़ाई में: सवाल पढ़कर ही समझ न आए कि शुरू कहाँ से करें।',y:'यह आपकी सबसे कमज़ोर कड़ियों को तुरंत पकड़कर ऊपर लाता है।',z:'आप बिना बेसिक समझे सीधे सवाल लगाने बैठेंगे, बार-बार अटकेंगे और बेवजह तनाव होगा।'}];
+var RT={
+easy:{n:'Easy',t:'आसान — सीधा और 1-स्टेप',a:'ऐसे बेसिक नियम या सीधे सवाल अलग रखता है जो बिना किसी घुमाव के एक ही स्टेप में हल हो जाते हैं।',e:'सीधी खाली सड़क पर चलना। (पढ़ाई में: जैसे 200 का 10% कितना होगा?)',y:'किसी भी टॉपिक की नींव (Foundation) की जाँच और तुरंत याद दिलाने के लिए।',z:'बेसिक बातें और शुरुआती नियम कठिन नोट्स के बीच दब जाएँगे।'},
+medium:{n:'Medium',t:'मध्यम — सामान्य परीक्षा स्तर',a:'ऐसे स्टैंडर्ड सवालों को चिह्नित करता है जिनमें 2–3 स्टेप लगते हैं या सवाल की भाषा थोड़ी घुमाकर दी होती है।',e:'हल्के मोड़ वाली शहर की सड़क। (पढ़ाई में: जैसे कीमत पहले 10% बढ़ी फिर 10% घटी, तो कुल असर क्या हुआ?)',y:'परीक्षा का सबसे बड़ा हिस्सा इसी स्तर का होता है, इसलिए रोज़ के मुख्य अभ्यास का स्तर तय रहता है।',z:'आपको पता नहीं चलेगा कि सामान्य परीक्षा के लिए मुख्य अभ्यास किन सवालों पर करना है।'},
+hard:{n:'Hard',t:'कठिन — एक ही कॉन्सेप्ट, पर भारी',a:'उन सवालों को अलग करता है जिनमें विषय तो एक ही है, लेकिन गहराई, लंबी गणना (Calculation) या गहरा लॉजिक ज़्यादा लगता है।',e:'सीधी लेकिन बहुत खड़ी पहाड़ी चढ़ाई — रास्ता एक ही है, पर दम ज़्यादा लगता है। (पढ़ाई में: किसी एक ही चैप्टर का बहुत लंबा या गहरा सवाल।)',y:'यह दिमाग की क्षमता (Stamina) और गहराई से सोचने की ताकत बढ़ाता है।',z:'परीक्षा में थोड़ा भी भारी सवाल आते ही स्पीड टूट जाएगी और समय कम पड़ जाएगा।'},
+complex:{n:'Complex',t:'जटिल / पेचीदा — कई चीज़ों का मेल',a:'ऐसे सवालों को पहचानता है जो सिर्फ़ भारी नहीं, बल्कि आपस में उलझे हुए हैं — जहाँ 2 या उससे ज़्यादा अलग-अलग कॉन्सेप्ट या शर्तें एक साथ जुड़ जाती हैं।',f:'फर्क: Hard में एक ही चीज़ भारी होती है; Complex में कई हिस्से आपस में जुड़े होते हैं जिन्हें टुकड़ों में तोड़ना पड़ता है।',e:'बड़ा ट्रैफ़िक चौराहा जहाँ सिग्नल, मोड़, पैदल लोग और रफ़्तार सब एक साथ संभालने हों। (पढ़ाई में: एक ही सवाल में Ratio, Percentage और Mixture तीनों का नियम एक साथ लग जाए।)',y:'यह दिमाग को बड़े और उलझे सवाल को छोटे हिस्सों में तोड़कर हल करने की ट्रेनिंग देता है।',z:'मिक्स्ड कॉन्सेप्ट वाला सवाल देखते ही दिमाग उलझ जाएगा और समझ नहीं आएगा कि कौन-सी शर्त पहले लगाएँ।'},
+expert:{n:'Expert',t:'विशेषज्ञ स्तर — सबसे ऊँचा / आउट-ऑफ-द-बॉक्स',a:'उन चुनिंदा टॉप-लेवल या नए पैटर्न वाले सवालों को अलग सहेजता है जहाँ रटा हुआ फॉर्मूला फेल हो जाता है और कॉन्सेप्ट की सबसे गहरी समझ या स्मार्ट दृष्टिकोण चाहिए होता है।',e:'शतरंज के ग्रैंडमास्टर की चाल या रेसिंग ट्रैक पर ड्राइविंग। (पढ़ाई में: ऐसा सवाल जिसे ज़्यादातर लोग छोड़ देते हैं, पर असली लॉजिक पकड़ में आते ही 30 सेकंड में हल हो जाता है।)',y:'यह आपको टॉप रैंक और सबसे कठिन पेपर के लिए मानसिक रूप से तैयार रखता है।',z:'परीक्षा से पहले रिवीज़न के लिए सबसे कीमती "ट्रिकी सवाल" सामान्य नोट्स की भीड़ में खो जाएँगे।'}};
+var INTRO='<strong>सड़क और ड्राइवर का फर्क:</strong> सड़क कैसी है (सीधी, पहाड़ी या जटिल चौराहा) यह <strong>Notes के 5 स्तर</strong> बताते हैं, और उस सड़क पर आपकी ड्राइविंग कितनी पक्की है यह <strong>Session Status के 3 बटन</strong> बताते हैं। इससे आपकी खुद की तैयारी (Next Action) और सवाल का असली स्तर (Content Level) आपस में उलझते नहीं हैं।';
+var NOTE1='ये तीनों शब्द यह नहीं बताते कि टॉपिक कठिन है या आसान — ये बताते हैं कि इस लेक्चर के साथ अब आगे क्या करना है।';
+var NOTE2='इन्हें जिम के वज़न की तरह समझें — ये सामने रखे सवाल या कॉन्सेप्ट का असली वज़न बताते हैं।';
+function rw(l,t){return '<div class="rv-p"><strong>'+l+'</strong>'+t+'</div>';}
+function card(o,sel,ic){return '<div class="rv-it'+(sel?' sel':'')+'" data-k="'+o.n+'"><div class="rv-t">'+(ic?o.i+' ':'')+'<b>'+o.n+'</b><small>'+o.t+'</small></div>'+rw('यह क्या करता है?',o.a)+(o.f?'<div class="rv-f">'+o.f+'</div>':'')+rw('उदाहरण',o.e)+rw('क्यों ज़रूरी है?',o.y)+rw('अगर ये न हो तो क्या होगा?',o.z)+(sel?'<div class="rv-s">✓ अभी चुना हुआ</div>':'')+'</div>';}
+function hd(t,s){return '<div class="rv-hd"><div><h3 id="rvT">'+t+'</h3><p class="sb">'+s+'</p></div><button type="button" class="rv-x" aria-label="बंद करें">✕</button></div>';}
 function $(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
 function nm(el){return(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();}
 function body(o,st){return st?'<b>'+o.i+' '+o.n+' · '+o.h+'</b>'+o.m+'<br><span style="opacity:.75">'+o.w+'</span>':'<b>'+o.n+' · '+o.h+'</b>पहचान: '+o.w+(o.d?'<br><span style="opacity:.75">अंतर: '+o.d+'</span>':'');}
 window.rvPM=function(name){return RT[String(name||'').trim().toLowerCase()]?'<button type="button" class="pi" data-a="info"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>Label info</button>':'';};
-window.rvInfo=function(name){var k=String(name||'').trim().toLowerCase(),o=RT[k];if(!o)return;back=null;
-pn.innerHTML='<h3 id="rvT">'+o.n+' · '+o.h+'</h3><p class="sb">Notes · Difficulty Rating</p><div class="rv-it" data-k="'+o.n+'"><div>पहचान: '+o.w+'</div>'+(o.d?'<div>अंतर: '+o.d+'</div>':'')+'</div><button type="button" class="cl">बंद करें</button>';
-pn.querySelector('.cl').addEventListener('click',closeSheet);sh.classList.add('on');pn.querySelector('.cl').focus();};
+window.rvInfo=function(name){var o=RT[String(name||'').trim().toLowerCase()];if(!o)return;back=null;opened=Date.now();
+pn.innerHTML=hd(o.n+' · Notes का स्तर','भाग 2: सवाल का असली स्तर क्या है?')+'<div class="rv-bd"><div class="rv-intro">'+INTRO+'</div><p class="nt">'+NOTE2+'</p>'+card(o,false,false)+'<button type="button" class="cl">बंद करें</button></div>';
+wireSheet();};
 function find(e){var t=e.target;if(!t||!t.closest)return null;var d=t.closest('.diff-btn');
  if(d)return null;
  if(t.closest('#nc_chips,#rvSheet,[contenteditable],input,textarea,select'))return null;
@@ -14019,11 +14231,10 @@ function find(e){var t=e.target;if(!t||!t.closest)return null;var d=t.closest('.
  return null;}
 $('.diff-btn').forEach(function(b){var o=find({target:b});b.setAttribute('role','radio');b.tabIndex=0;b.setAttribute('aria-checked',b.classList.contains('active')?'true':'false');if(o)b.title=o.o.n+' — '+(o.o.m||'');});
 $('.diff-tg').forEach(function(g){g.setAttribute('role','radiogroup');g.setAttribute('aria-label','Learning Status');});
-document.addEventListener('mouseover',function(e){var m=find(e);if(m&&!m.el.title)m.el.title=m.o.n+' — '+(m.o.m||m.o.w);});
+document.addEventListener('mouseover',function(e){var m=find(e);if(m&&!m.el.title)m.el.title=m.o.n+' — '+(m.o.t||'');});
 var tip=document.createElement('div');tip.id='rvTip';tip.setAttribute('role','tooltip');document.body.appendChild(tip);var tipT=null;
 function hideTip(){tip.style.display='none';clearTimeout(tipT);}
-function showTip(m){tip.innerHTML=body(m.o,m.st);tip.style.display='block';tip.style.left='0px';tip.style.top='0px';var r=m.el.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight,vw=document.documentElement.clientWidth;
-var x=Math.min(Math.max(8,r.left+r.width/2-w/2),vw-w-8),y=r.top-h-8;if(y<8)y=Math.min(r.bottom+8,window.innerHeight-h-8);tip.style.left=x+'px';tip.style.top=y+'px';clearTimeout(tipT);tipT=setTimeout(hideTip,6000);}
+function showTip(m){if(!m.st&&window.rvInfo)window.rvInfo(m.o.n);}
 var lp=null,sx=0,sy=0,sup=0;function cancel(){clearTimeout(lp);lp=null;}
 document.addEventListener('pointerdown',function(e){sup=0;hideTip();var m=find(e);if(!m)return;if(e.pointerType==='mouse'&&e.button!==0)return;sx=e.clientX;sy=e.clientY;cancel();lp=setTimeout(function(){lp=null;sup=Date.now();showTip(m);try{navigator.vibrate&&navigator.vibrate(15);}catch(_){}},550);},true);
 document.addEventListener('pointermove',function(e){if(lp&&Math.hypot(e.clientX-sx,e.clientY-sy)>10)cancel();},true);
@@ -14031,15 +14242,17 @@ document.addEventListener('pointermove',function(e){if(lp&&Math.hypot(e.clientX-
 document.addEventListener('scroll',function(){cancel();hideTip();},true);
 document.addEventListener('contextmenu',function(e){if(find(e))e.preventDefault();},true);
 document.addEventListener('click',function(e){if(sup&&Date.now()-sup<1500&&find(e)){e.stopPropagation();e.preventDefault();sup=0;}},true);
-document.addEventListener('click',function(e){var i=e.target.closest&&e.target.closest('.rv-i');if(i)openSheet(i);});
+document.addEventListener('click',function(e){var i=e.target.closest&&e.target.closest('.rv-i,.sx-info');if(i)openSheet(i);});
 document.addEventListener('keydown',function(e){var db=e.target.closest&&e.target.closest('.diff-btn');if(db&&(e.key==='Enter'||e.key===' ')){e.preventDefault();db.click();return;}var m=find(e);if(m){if(m.st&&(e.key==='Enter'||e.key===' ')){e.preventDefault();m.el.click();}else if(e.key==='i'||e.key==='?'){e.preventDefault();showTip(m);}}
 if(e.key==='Escape'){hideTip();closeSheet();}});
-var sh=document.createElement('div');sh.id='rvSheet';sh.innerHTML='<div class="bk"></div><div class="pn" role="dialog" aria-modal="true" aria-labelledby="rvT"></div>';document.body.appendChild(sh);var pn=sh.querySelector('.pn'),back=null;
-sh.querySelector('.bk').addEventListener('click',closeSheet);
+var sh=document.createElement('div');sh.id='rvSheet';sh.innerHTML='<div class="bk"></div><div class="pn" role="dialog" aria-modal="true" aria-labelledby="rvT"></div>';document.body.appendChild(sh);var pn=sh.querySelector('.pn'),back=null,opened=0;
+sh.querySelector('.bk').addEventListener('click',function(){if(Date.now()-opened>450)closeSheet();});
 function closeSheet(){if(!sh.classList.contains('on'))return;sh.classList.remove('on');if(back&&back.focus)back.focus();}
-function openSheet(from){back=from;var cur=typeof state==='object'?state.diff:'',h='<h3 id="rvT">Learning Status</h3><p class="sb">यह Concept अभी आपको कितना आता है</p>';
-ST.forEach(function(o){h+='<div class="rv-it'+(o.k===cur?' sel':'')+'" data-k="'+o.n+'"><b>'+o.i+' '+o.n+'</b><small>'+o.h+'</small><div>अर्थ: '+o.m+'</div><div>कब चुनें: '+o.w+'</div>'+(o.k===cur?'<div style="font-weight:700">✓ अभी चुना हुआ</div>':'')+'</div>';});
-pn.innerHTML=h+'<button type="button" class="cl">बंद करें</button>';pn.querySelector('.cl').addEventListener('click',closeSheet);sh.classList.add('on');pn.querySelector('.cl').focus();}
+function wireSheet(){Array.prototype.forEach.call(pn.querySelectorAll('.cl,.rv-x'),function(b){b.addEventListener('click',closeSheet);});sh.classList.add('on');var bd=pn.querySelector('.rv-bd');if(bd)bd.scrollTop=0;var x=pn.querySelector('.rv-x');if(x)x.focus();}
+function openSheet(from){back=from;opened=Date.now();var cur=typeof state==='object'?state.diff:'';
+var h=hd('Session Status','भाग 1: आपका अगला कदम क्या है?')+'<div class="rv-bd"><div class="rv-intro">'+INTRO+'</div><p class="nt">'+NOTE1+'</p>';
+ST.forEach(function(o){h+=card(o,o.k===cur,true);});
+pn.innerHTML=h+'<button type="button" class="cl">बंद करें</button></div>';wireSheet();}
 var mi=document.getElementById('manualTime'),sl=document.getElementById('mwS');
 if(mi&&sl){
 var ds=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value'),cap=document.getElementById('mwCap'),box=document.getElementById('mwBox'),self=false,empty=true;
@@ -14053,69 +14266,1970 @@ mi.addEventListener('input',function(){if(self)return;var v=parseInt(ds.get.call
 fromValue();}
 })();
 </script>
-<style>
-.s2-capsule{position:relative;height:50px;width:100%;margin:0 0 14px;padding:0 8px;display:flex;align-items:center;justify-content:space-between;gap:7px;overflow:hidden;box-sizing:border-box;background:var(--input-bg,var(--surface-elevated));border:1px solid var(--border);border-radius:25px;transition:border-color .2s,box-shadow .2s}
-.s2-capsule:focus-within{border-color:var(--primary);box-shadow:0 0 14px var(--primary-dim)}
-.s2-stepper{display:flex;align-items:center;gap:3px;flex-shrink:0}
-.s2-step-btn{width:32px;height:32px;padding:0;margin:0;border-radius:50%;border:1px solid var(--border);background:var(--tg-track,rgba(255,255,255,.04));color:var(--muted);font-size:16px;font-weight:600;line-height:1;display:grid;place-items:center;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:all .15s}
-.s2-step-btn:hover{background:var(--primary-dim);border-color:var(--primary);color:var(--text)}
-.s2-step-btn:active{transform:scale(.92);background:var(--primary-dim)}
-.s2-num-box{display:inline-flex;align-items:baseline;justify-content:center;padding:2px 3px;min-width:48px;margin:0;cursor:text}
-.s2-capsule input.s2-input{width:30px;min-width:0;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;color:var(--text);font-size:16px!important;font-weight:700!important;text-align:right;font-variant-numeric:tabular-nums;padding:0!important;margin:0!important;appearance:textfield;-moz-appearance:textfield}
-.s2-capsule input.s2-input::-webkit-inner-spin-button,.s2-capsule input.s2-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-.s2-unit{font-size:10px;font-weight:600;color:var(--muted-dim,var(--muted));margin-left:2px;user-select:none}
-.s2-divider{width:1px;height:24px;background:var(--border);flex-shrink:0}
-.s2-presets{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:var(--tg-track,rgba(255,255,255,.025));border-radius:20px;padding:3px}
-.s2-pill{border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:600;height:28px;padding:0;margin:0;border-radius:16px;cursor:pointer;font-variant-numeric:tabular-nums;transition:all .18s}
-.s2-pill:hover{color:var(--text);background:var(--border)}
-.s2-pill.active{background:linear-gradient(135deg,var(--primary),var(--accent));color:#06121b;font-weight:700;box-shadow:0 0 12px var(--primary-dim)}
-.s2-progress-track{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--border);pointer-events:none}
-.s2-progress-bar{height:100%;width:21%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .22s cubic-bezier(.22,1,.36,1)}
-</style>
-<script>
+<script id="sheet-drag">
+/* Study पेज की sheet: handle/header पकड़कर ऊपर खींचें -> status bar तक फैलती है, नीचे खींचें -> छोटी / बंद */
 (function(){
-var mi=document.getElementById('manualTime'),box=document.getElementById('mwBox');
-if(!mi||!box)return;
-var dec=document.getElementById('decMin'),inc=document.getElementById('incMin'),bar=document.getElementById('s2Bar');
-var pills=box.querySelectorAll('.s2-pill'),MIN=1,MAX=1440;
-var ds=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
-function cur(){var v=parseInt(ds.get.call(mi),10);return isNaN(v)?0:v;}
-function paint(){
-  var v=cur();
-  pills.forEach(function(p){p.classList.toggle('active',+p.dataset.min===v);});
-  bar.style.width=Math.min(100,Math.max(v?3:0,v/120*100))+'%';
-  mi.style.width=(String(v||'').length>=4?44:String(v||'').length>=3?34:26)+'px';
-}
-Object.defineProperty(mi,'value',{configurable:true,get:function(){return ds.get.call(this);},set:function(v){ds.set.call(this,v);paint();}});
-function set(n){
-  n=Math.min(MAX,Math.max(MIN,Math.round(n)));
-  ds.set.call(mi,String(n));paint();
-  mi.dispatchEvent(new Event('input',{bubbles:true}));
-  try{clearFlowError();persistSession();}catch(_){}
-}
-/* typing */
-mi.addEventListener('focus',function(){setTimeout(function(){try{mi.select();}catch(_){}},0);});
-mi.addEventListener('input',function(){paint();});
-mi.addEventListener('blur',function(){var v=parseInt(ds.get.call(mi),10);if(!isNaN(v)&&v>=MIN)set(v);else if(!isNaN(v))set(MIN);});
-mi.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();mi.blur();}});
-/* presets */
-pills.forEach(function(p){p.addEventListener('click',function(){set(+p.dataset.min);});});
-/* tap = 1 min, hold = fast repeat (after 12 steps jumps by 5) */
-function hold(btn,delta){
-  var t=null,iv=null,n=0;
-  function stop(){clearTimeout(t);clearInterval(iv);t=iv=null;n=0;}
-  btn.addEventListener('pointerdown',function(e){
-    e.preventDefault();stop();
-    set((cur()||25)+delta);
-    t=setTimeout(function(){iv=setInterval(function(){n++;set(cur()+(n>12?delta*5:delta));},85);},340);
+  var sh=document.getElementById('rvSheet'); if(!sh) return;
+  var pn=sh.querySelector('.pn'); if(!pn) return;
+  var vh=function(){return window.innerHeight;};
+  var topGap=function(){var d=document.createElement('div');d.style.cssText='position:fixed;top:0;height:env(safe-area-inset-top,0px);visibility:hidden';document.body.appendChild(d);var h=d.getBoundingClientRect().height;d.remove();return h;};
+  var fullH=function(){return vh()-topGap()-6;};
+  var baseH=function(){return Math.min(vh()*0.84,fullH());};
+  var drag=null,isFull=false;
+  function reset(){isFull=false;pn.classList.remove('full','snap');pn.style.height='';pn.style.maxHeight='';}
+  function setH(h){pn.style.maxHeight='none';pn.style.height=h+'px';}
+  function closeIt(){var x=pn.querySelector('.rv-x,.cl');if(x)x.click();}
+  new MutationObserver(function(){if(!sh.classList.contains('on'))reset();}).observe(sh,{attributes:true,attributeFilter:['class']});
+  pn.addEventListener('pointerdown',function(e){
+    if(!document.body.classList.contains('sp-open'))return;
+    var hd=pn.querySelector('.rv-hd'); var r=pn.getBoundingClientRect();
+    var zone=hd?(hd.getBoundingClientRect().bottom-r.top):56;
+    if(e.clientY-r.top>zone||e.target.closest('.rv-x'))return;
+    drag={y:e.clientY,h:pn.getBoundingClientRect().height,t:Date.now(),moved:false};
+    pn.classList.remove('snap');
+    try{pn.setPointerCapture(e.pointerId);}catch(_){}
   });
-  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){btn.addEventListener(ev,stop);});
-  btn.addEventListener('contextmenu',function(e){e.preventDefault();});
-  btn.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();set((cur()||25)+delta);}});
-}
-hold(dec,-1);hold(inc,1);
-paint();
+  pn.addEventListener('pointermove',function(e){
+    if(!drag)return; var dy=e.clientY-drag.y; if(Math.abs(dy)>3)drag.moved=true;
+    var h=Math.max(vh()*0.3,Math.min(fullH(),drag.h-dy)); setH(h); drag.last=h; drag.dy=dy;
+  });
+  function end(e){
+    if(!drag)return; var d=drag; drag=null; if(!d.moved)return;
+    var dy=d.dy||0,dt=Math.max(1,Date.now()-d.t),v=dy/dt; pn.classList.add('snap');
+    var h=d.last||d.h;
+    if(dy<-40||v<-0.5||(h>(baseH()+fullH())/2&&dy<0)){isFull=true;pn.classList.add('full');setH(fullH());}
+    else if(isFull&&(dy>40||v>0.5||h<(baseH()+fullH())/2)){isFull=false;pn.classList.remove('full');setH(baseH());}
+    else if(!isFull&&(dy>70||v>0.6||h<baseH()*0.7)){closeIt();}
+    else{pn.classList.toggle('full',isFull);setH(isFull?fullH():baseH());}
+  }
+  pn.addEventListener('pointerup',end);pn.addEventListener('pointercancel',end);
 })();
+</script>
+
+<style id="study-page-css">
+#studyPage{
+
+
+  
+  --stage: #060709;
+  --bg: #0b0c0e;
+  --surface: #14161a;
+  --well: #1b1e24;
+  --hover: #22262e;
+  --pressed: #1f232b;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+
+  --text: #f3f4f6;
+  --text-soft: #cfd5df;
+  --muted: #8e95a2;
+  --dim: #525866;
+
+  
+  --cta-bg: #f3f4f6;
+  --cta-hover: #ffffff;
+  --cta-text: #0b0c0e;
+
+  
+  --emerald: #10b981;
+  --emerald-bg: #12241c;
+  --emerald-bd: #1f4433;
+  --emerald-fg: #6ee7b7;
+  --thread-idle: rgba(255, 255, 255, 0.11);
+  --thread-done: rgba(16, 185, 129, 0.58);
+
+  --amber: #eab308;
+  --amber-bg: #262011;
+  --amber-bd: #46381a;
+  --amber-fg: #fde047;
+
+  --rose: #ef4444;
+  --rose-bg: #281519;
+  --rose-bd: #4c232b;
+  --rose-fg: #fca5a5;
+
+  
+  --tag-sutra: #60a5fa;
+  --tag-trick: #34d399;
+  --tag-galti: #f87171;
+  --tag-sandeh: #fbbf24;
+  --tag-tathya: #fb923c;
+  --tag-udaharan: #c084fc;
+  --tag-link: #94a3b8;
+
+  
+  --status-accent: var(--amber);
+
+  color-scheme: dark;
+}
+[data-theme="light"] #studyPage{
+  --stage: #e5e7eb;
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --well: #eef0f4;
+  --hover: #e5e8ef;
+  --pressed: #e7eaf0;
+  --border: rgba(15, 23, 42, 0.09);
+  --border-strong: rgba(15, 23, 42, 0.16);
+  --border-subtle: rgba(15, 23, 42, 0.055);
+
+  --text: #111827;
+  --text-soft: #374151;
+  --muted: #64748b;
+  --dim: #94a3b8;
+
+  --cta-bg: #111827;
+  --cta-hover: #1f2937;
+  --cta-text: #ffffff;
+
+  --emerald: #059669;
+  --emerald-bg: #eaf7f0;
+  --emerald-bd: #b7e4cc;
+  --emerald-fg: #065f46;
+  --thread-idle: rgba(15, 23, 42, 0.12);
+  --thread-done: rgba(5, 150, 105, 0.56);
+
+  --amber: #d97706;
+  --amber-bg: #fdf6e4;
+  --amber-bd: #eed79e;
+  --amber-fg: #854d0e;
+
+  --rose: #dc2626;
+  --rose-bg: #fdecec;
+  --rose-bd: #f3c1c1;
+  --rose-fg: #991b1b;
+
+  --tag-sutra: #2563eb;
+  --tag-trick: #059669;
+  --tag-galti: #dc2626;
+  --tag-sandeh: #d97706;
+  --tag-tathya: #ea580c;
+  --tag-udaharan: #7c3aed;
+  --tag-link: #475569;
+
+  color-scheme: light;
+}
+#studyPage[data-diff="Easy"]{ --status-accent: var(--emerald); }
+#studyPage[data-diff="Medium"]{ --status-accent: var(--amber); }
+#studyPage[data-diff="Hard"]{ --status-accent: var(--rose); }
+#studyPage *, #studyPage *::before, #studyPage *::after, #studyPage button, #studyPage select, #studyPage input, #studyPage textarea, #studyPage [role="button"]{box-sizing:border-box;outline:none !important;-webkit-tap-highlight-color:transparent}
+#studyPage *{margin:0;padding:0}
+#studyPage button,
+#studyPage select,
+#studyPage input,
+#studyPage textarea{
+  font-family: inherit;
+  color: inherit;
+}
+#studyPage button{
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#studyPage input[type="number"]::-webkit-inner-spin-button,
+#studyPage input[type="number"]::-webkit-outer-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+#studyPage input[type="number"]{
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+#studyPage .sr-only{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+#studyPage .v-ic{
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  display: block;
+}
+#studyPage{
+  position: fixed;
+  inset: 0;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 520px;
+  height: 100%;
+  height: 100dvh;
+  z-index: 120;
+  background: var(--bg);
+  display: none;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  transform: translateY(6%) scale(0.985);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, background-color 0.18s ease, visibility 0s linear 0.28s;
+}
+#studyPage.show{ display: flex; }
+#studyPage.open{
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, background-color 0.18s ease, visibility 0s;
+}
+@media (max-width: 520px){
+#studyPage{ border-left: 0; border-right: 0; }
+}
+#studyPage .sp-bar{
+  flex: none;
+  min-height: calc(54px + var(--sat));
+  padding: calc(6px + var(--sat)) 14px 6px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#studyPage .sp-back{
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background-color 0.14s ease, transform 0.1s ease;
+}
+#studyPage .sp-back:active{ background: var(--pressed); transform: scale(0.94); }
+@media (hover: hover){
+#studyPage .sp-back:hover{ background: var(--well); }
+}
+#studyPage .sp-back svg{ width: 20px; height: 20px; }
+#studyPage .sp-ttl{
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#studyPage .sx-tg.sx-tg-micro{
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--well);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+#studyPage .sx-tg.sx-tg-micro .sx-tb{
+  height: 27px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7.5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
+}
+#studyPage .sx-tg.sx-tg-micro .sx-tb:active{ transform: scale(0.96); }
+#studyPage .sx-tg.sx-tg-micro .sx-tb.active{
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 650;
+}
+#studyPage .sp-body{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain !important;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  scrollbar-width: none;
+}
+#studyPage .sp-body::-webkit-scrollbar{ display: none; }
+#studyPage .sx-card{
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+#studyPage .b1-row{
+  position: relative;
+  height: 48px;
+  width: 100%;
+  padding: 0 14px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  transition: background-color 0.13s ease;
+}
+#studyPage .b1-row + .b1-row::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 46px;
+  right: 14px;
+  height: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+#studyPage .b1-row:not(.is-locked):active{ background: var(--pressed); }
+@media (hover: hover){
+#studyPage .b1-row:not(.is-locked):hover{ background: var(--well); }
+}
+#studyPage .b1-thread-col{
+  position: relative;
+  width: 24px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+#studyPage .b1-seg-top,
+#studyPage .b1-seg-bot{
+  position: absolute;
+  left: 50%;
+  width: 1.5px;
+  transform: translateX(-50%);
+  background: var(--thread-idle);
+  pointer-events: none;
+  transition: background-color 0.18s ease;
+}
+#studyPage .b1-seg-top{ top: 0; height: calc(50% - 8px); }
+#studyPage .b1-seg-bot{ bottom: 0; height: calc(50% - 8px); }
+#studyPage .b1-seg-top.done,
+#studyPage .b1-seg-bot.done{
+  background: var(--thread-done);
+}
+#studyPage .b1-node{
+  position: relative;
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  transition: background-color 0.16s ease, border-color 0.16s ease, opacity 0.16s ease;
+}
+#studyPage .b1-node-check{
+  width: 9.5px;
+  height: 9.5px;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform: scale(0.75);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+#studyPage .b1-node-dot{
+  position: absolute;
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 50%;
+  background: var(--text-soft);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+#studyPage .b1-row.is-filled .b1-node{
+  background: var(--emerald);
+  border-color: var(--emerald);
+}
+#studyPage .b1-row.is-filled .b1-node-check{
+  opacity: 1;
+  transform: scale(1);
+}
+#studyPage .b1-row.is-next .b1-node{
+  border-color: var(--muted);
+}
+#studyPage .b1-row.is-next .b1-node-dot{
+  opacity: 1;
+}
+#studyPage .b1-row.is-locked .b1-node{
+  opacity: 0.35;
+}
+#studyPage .b1-label{
+  width: 64px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  user-select: none;
+  transition: opacity 0.15s ease;
+}
+#studyPage .b1-row.is-locked .b1-label{ opacity: 0.52; }
+#studyPage .b1-value{
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.15s ease;
+}
+#studyPage .b1-row.is-filled .b1-value{
+  color: var(--text);
+  font-weight: 600;
+}
+#studyPage .b1-row.is-next .b1-value{
+  color: var(--muted);
+}
+#studyPage .b1-row.is-locked .b1-value{
+  opacity: 0.52;
+}
+#studyPage .b1-chev{
+  width: 14px;
+  height: 14px;
+  color: var(--dim);
+  flex-shrink: 0;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+#studyPage .b1-row.is-filled .b1-chev,
+#studyPage .b1-row.is-next .b1-chev{ color: var(--muted); }
+#studyPage .b1-row.is-locked .b1-chev{ opacity: 0.35; }
+#studyPage .b1-select{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 3;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 16px; 
+}
+#studyPage .b1-select:disabled{
+  cursor: not-allowed;
+  pointer-events: none;
+}
+#studyPage .b1-select option{
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+}
+#studyPage #timerPanelCard{
+  position: relative;
+}
+#studyPage .dial-pane{
+  height: 148px;
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#studyPage .dial-top{
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+#studyPage .dial-manual-left{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+#studyPage .step-circle{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--well);
+  color: var(--text-soft);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  transition: background-color 0.12s ease, transform 0.1s ease, color 0.12s ease;
+}
+#studyPage .step-circle:active{ background: var(--hover); transform: scale(0.93); }
+@media (hover: hover){
+#studyPage .step-circle:hover{ background: var(--hover); color: var(--text); }
+}
+#studyPage .step-circle svg{ width: 15px; height: 15px; }
+#studyPage .num-readout{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  cursor: text;
+}
+#studyPage #manualTime{
+  width: 40px;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 28px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+#studyPage .num-unit{
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  user-select: none;
+}
+#studyPage .dial-timer-left{
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+#studyPage .sx-clock{
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--text);
+  white-space: nowrap;
+}
+#studyPage .sx-cs{
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color 0.16s ease;
+}
+#studyPage.flow-active .sx-cs{ color: var(--emerald); }
+#studyPage #stopwatchPane.is-paused .sx-cs{ color: var(--amber); }
+#studyPage .circle-controls{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+#studyPage .ctrl-circle{
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--well);
+  color: var(--text-soft);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background-color 0.13s ease, border-color 0.13s ease, color 0.13s ease, transform 0.1s ease;
+}
+#studyPage .ctrl-circle:active{ transform: scale(0.93); }
+@media (hover: hover){
+#studyPage .ctrl-circle:hover{ background: var(--hover); color: var(--text); }
+}
+#studyPage .ctrl-circle svg{ width: 17px; height: 17px; }
+#studyPage .ctrl-circle.primary{
+  background: var(--cta-bg);
+  border-color: transparent;
+  color: var(--cta-text);
+}
+@media (hover: hover){
+#studyPage .ctrl-circle.primary:hover{ background: var(--cta-hover); color: var(--cta-text); }
+}
+#studyPage .ctrl-circle.stop{
+  background: var(--rose-bg);
+  border-color: var(--rose-bd);
+  color: var(--rose-fg);
+}
+@media (hover: hover){
+#studyPage .ctrl-circle.stop:hover{ opacity: 0.9; }
+}
+#studyPage #startBtn .ic-pause{ display: none; }
+#studyPage #startBtn .ic-play{ display: block; }
+#studyPage.flow-active #startBtn .ic-pause{ display: block; }
+#studyPage.flow-active #startBtn .ic-play{ display: none; }
+#studyPage #resetBtn svg{ transition: transform 0.2s ease; }
+#studyPage #resetBtn:active svg{ transform: rotate(-45deg); }
+#studyPage .dial-mid{
+  height: 44px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+#studyPage .ruler-frame{
+  position: relative;
+  width: 100%;
+  height: 44px;
+  border-radius: 11px;
+  background: var(--well);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+}
+#studyPage .ruler-strip{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  will-change: transform;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+#studyPage .ruler-strip.dragging{ transition: none; }
+#studyPage .r-tick{
+  position: absolute;
+  bottom: 6px;
+  width: 1px;
+  height: 8px;
+  background: var(--dim);
+  opacity: 0.65;
+  transform: translateX(-50%);
+}
+#studyPage .r-tick.med{
+  height: 13px;
+  background: var(--muted);
+  opacity: 0.72;
+}
+#studyPage .r-tick.maj{
+  width: 1.5px;
+  height: 19px;
+  background: var(--text-soft);
+  opacity: 0.92;
+}
+#studyPage .r-lbl{
+  position: absolute;
+  top: 4px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--muted);
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+#studyPage .ruler-needle-box{
+  position: relative;
+  width: 100%;
+  height: 44px;
+}
+#studyPage .ruler-needle{
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  bottom: 3px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--text);
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+}
+#studyPage .chrono-wrap{
+  width: 100%;
+  height: 44px;
+  padding: 2px 2px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#studyPage .chrono-ticks{
+  height: 25px;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+#studyPage .c-tick{
+  width: 1.5px;
+  height: 10px;
+  border-radius: 1px;
+  background: var(--border-strong);
+  transition: background-color 0.16s ease;
+}
+#studyPage .c-tick.fifth{ height: 16px; }
+#studyPage .c-tick.quarter{ height: 22px; width: 2px; }
+#studyPage .c-tick.lit{ background: var(--text); }
+#studyPage .chrono-scale{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1;
+}
+#studyPage .dial-foot{
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+#studyPage .s2-presets{
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+#studyPage .s2-pill{
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--well);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  transition: background-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
+}
+#studyPage .s2-pill:active{ transform: scale(0.95); }
+@media (hover: hover){
+#studyPage .s2-pill:hover:not(.active){ color: var(--text-soft); }
+}
+#studyPage .s2-pill.active{
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  font-weight: 700;
+}
+#studyPage .s2-progress-track{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--border-subtle);
+  pointer-events: none;
+}
+#studyPage .s2-progress-bar{
+  height: 100%;
+  width: 21%;
+  background: var(--text);
+  opacity: 0.34;
+  transition: width 0.2s ease;
+}
+#studyPage .sw-foot-row{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#studyPage .sw-elapsed-track{
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--well);
+  overflow: hidden;
+}
+#studyPage .sw-elapsed-fill{
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  background: var(--text);
+  transition: width 0.25s linear;
+}
+#studyPage .sw-hint-txt{
+  font-size: 11.5px;
+  font-weight: 550;
+  line-height: 1.5;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+#studyPage .status-sec{
+  padding: 13px 14px 13px;
+}
+#studyPage .sx-lh{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+#studyPage .sx-flabel{
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.3;
+  user-select: none;
+}
+#studyPage .rv-lh-right{
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+#studyPage .status-hint{
+  font-size: 11.5px;
+  font-weight: 550;
+  line-height: 1.5;
+  color: var(--muted);
+  white-space: nowrap;
+}
+#studyPage .sx-info{
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
+}
+#studyPage .sx-info::after{ content: ""; position: absolute; inset: -7px; }
+#studyPage .sx-info:active{ background: var(--pressed); transform: scale(0.92); }
+#studyPage .sx-info[aria-expanded="true"]{ background: var(--well); color: var(--text); }
+@media (hover: hover){
+#studyPage .sx-info:hover{ background: var(--well); color: var(--text); }
+}
+#studyPage .sx-info svg{ width: 17px; height: 17px; }
+#studyPage .sx-tg.sx-diff-tg{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 3.5px;
+  border-radius: 12px;
+  background: var(--well);
+}
+#studyPage .sx-tb.sx-diff-btn{
+  height: 35px;
+  padding: 0 8px;
+  border-radius: 8.5px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
+}
+#studyPage .sx-tb.sx-diff-btn:active{ transform: scale(0.97); }
+@media (hover: hover){
+#studyPage .sx-tb.sx-diff-btn:hover:not(.active){ color: var(--text-soft); }
+}
+#studyPage .sx-tb.sx-diff-btn::before{
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0.45;
+  flex-shrink: 0;
+  transition: opacity 0.14s ease;
+}
+#studyPage .sx-tb.sx-diff-btn[data-val="Easy"]::before{ background: var(--emerald); }
+#studyPage .sx-tb.sx-diff-btn[data-val="Medium"]::before{ background: var(--amber); }
+#studyPage .sx-tb.sx-diff-btn[data-val="Hard"]::before{ background: var(--rose); }
+#studyPage .sx-tb.sx-diff-btn.active::before{ opacity: 1; }
+#studyPage .sx-tb.sx-diff-btn.active[data-val="Easy"]{
+  background: var(--emerald-bg);
+  border-color: var(--emerald-bd);
+  color: var(--emerald-fg);
+}
+#studyPage .sx-tb.sx-diff-btn.active[data-val="Medium"]{
+  background: var(--amber-bg);
+  border-color: var(--amber-bd);
+  color: var(--amber-fg);
+}
+#studyPage .sx-tb.sx-diff-btn.active[data-val="Hard"]{
+  background: var(--rose-bg);
+  border-color: var(--rose-bd);
+  color: var(--rose-fg);
+}
+#studyPage .status-info-drawer{
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  margin-top: 0;
+  transition: grid-template-rows 0.2s ease, opacity 0.18s ease, margin-top 0.2s ease;
+}
+#studyPage .status-info-drawer.open{
+  grid-template-rows: 1fr;
+  opacity: 1;
+  margin-top: 9px;
+}
+#studyPage .status-info-inner{ overflow: hidden; }
+#studyPage .status-info-box{
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: var(--well);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+#studyPage .status-info-row{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+#studyPage .status-info-row i{
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+#studyPage .status-info-row b{ min-width: 54px; font-weight: 700; color: var(--text); }
+#studyPage .status-info-row span{ color: var(--muted); }
+#studyPage .card-divider{
+  height: 1px;
+  margin: 0 14px;
+  background: var(--border);
+}
+#studyPage .notes-sec{
+  padding: 11px 14px 12px;
+}
+#studyPage .nt-capsule{
+  position: relative;
+  height: 50px;
+  width: 100%;
+  padding: 0 8px;
+  border-radius: 25px;
+  background: var(--well);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.14s ease, border-color 0.14s ease, transform 0.1s ease;
+}
+#studyPage .nt-capsule:active{ background: var(--pressed); transform: scale(0.988); }
+@media (hover: hover){
+#studyPage .nt-capsule:hover{ background: var(--hover); border-color: var(--border-strong); }
+}
+#studyPage .nt-left{
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+#studyPage .nt-icon-well{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+#studyPage .nt-capsule.is-filled .nt-icon-well{
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+#studyPage .nt-icon-well svg{ width: 15px; height: 15px; }
+#studyPage .nt-title{
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--text);
+  white-space: nowrap;
+}
+#studyPage .nt-vdiv{
+  width: 1px;
+  height: 20px;
+  background: var(--border-strong);
+  flex-shrink: 0;
+}
+#studyPage .nt-track{
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  overflow: hidden;
+}
+#studyPage .nt-empty{
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#studyPage .nt-bead{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--well);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+#studyPage .nt-bead i{
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c);
+  display: block;
+}
+#studyPage .nt-bead svg{
+  width: 11px;
+  height: 11px;
+  color: var(--tag-link);
+}
+#studyPage .nt-overflow{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--well);
+  border: 1px solid var(--border-strong);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 750;
+  color: var(--text);
+  flex-shrink: 0;
+}
+#studyPage .nt-launch{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+#studyPage .nt-launch svg{ width: 15px; height: 15px; }
+#studyPage .nt-launch .ic-open{ display: none; }
+#studyPage .nt-capsule.is-filled .nt-launch{ color: var(--text); border-color: var(--border-strong); }
+#studyPage .nt-capsule.is-filled .nt-launch .ic-plus{ display: none; }
+#studyPage .nt-capsule.is-filled .nt-launch .ic-open{ display: block; }
+#studyPage .nt-bar-track{
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 0;
+  height: 2px;
+  display: flex;
+  gap: 2px;
+  border-radius: 99px;
+  overflow: hidden;
+  pointer-events: none;
+}
+#studyPage .nt-bar-seg{
+  height: 100%;
+  background: var(--c);
+  border-radius: 99px;
+}
+#studyPage .body-spacer{
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 6px;
+}
+#studyPage .sx-err{
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: var(--rose-bg);
+  border: 1px solid var(--rose-bd);
+  color: var(--rose-fg);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+#studyPage .quote-row{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px 4px 2px;
+  user-select: none;
+}
+#studyPage .quote-flank{
+  flex: 1;
+  max-width: 44px;
+  height: 1px;
+  background: var(--border);
+}
+#studyPage .sx-quote{
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--dim);
+  text-align: center;
+  white-space: nowrap;
+}
+#studyPage .sp-foot{
+  flex: none;
+  padding: 10px 14px calc(14px + var(--sab));
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+#studyPage .save-slot{
+  width: 100%;
+  min-height: 52px;
+}
+#studyPage .sv-capsule{
+  position: relative;
+  height: 52px;
+  width: 100%;
+  padding: 0 7px 0 15px;
+  border-radius: 26px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  overflow: hidden;
+  transition: border-color 0.18s ease;
+}
+#studyPage .sv-capsule.review-shell{
+  padding: 0 7px;
+  gap: 7px;
+}
+#studyPage .sv-capsule.is-saved-rim{
+  border-color: var(--emerald-bd);
+}
+#studyPage .sv-accent-line{
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--status-accent);
+  opacity: 0.45;
+  pointer-events: none;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+#studyPage .sv-capsule.is-saved-rim .sv-accent-line{
+  background: var(--emerald);
+  opacity: 0.9;
+}
+#studyPage .sv-left{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+#studyPage .sv-left.center{
+  justify-content: center;
+  gap: 6px;
+}
+#studyPage .sv-dot{
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--status-accent);
+  flex-shrink: 0;
+  transition: background-color 0.16s ease;
+}
+#studyPage .sv-dot.live{ background: var(--emerald); }
+#studyPage .sv-dot.paused{ background: var(--amber); }
+#studyPage .sv-text{
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#studyPage .sv-text strong,
+#studyPage .sx-final{
+  font-weight: 700;
+  color: var(--text);
+}
+#studyPage .sx-final{
+  font-family: var(--mono);
+  font-size: 13px;
+}
+#studyPage .sv-vdiv{
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+#studyPage .sv-cta{
+  height: 36px;
+  min-width: 94px;
+  padding: 0 15px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
+}
+#studyPage .sv-cta:active{ transform: scale(0.96); }
+@media (hover: hover){
+#studyPage .sv-cta:hover{ background: var(--cta-hover); }
+}
+#studyPage .sv-cta svg{ width: 15px; height: 15px; }
+#studyPage .sv-cta.end-btn{
+  background: var(--rose-bg);
+  border-color: var(--rose-bd);
+  color: var(--rose-fg);
+  min-width: 88px;
+}
+@media (hover: hover){
+#studyPage .sv-cta.end-btn:hover{ background: var(--rose-bg); opacity: 0.9; }
+}
+#studyPage .sv-cta.review-save{
+  min-width: 82px;
+  padding: 0 13px;
+}
+#studyPage .sv-cta.is-saved{
+  background: var(--emerald-bg) !important;
+  border-color: var(--emerald-bd) !important;
+  color: var(--emerald-fg) !important;
+}
+#studyPage .sv-circle-btn{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--well);
+  color: var(--text-soft);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background-color 0.13s ease, color 0.13s ease, transform 0.1s ease;
+}
+#studyPage .sv-circle-btn:active{ background: var(--hover); transform: scale(0.92); }
+@media (hover: hover){
+#studyPage .sv-circle-btn:hover{ background: var(--hover); color: var(--text); }
+}
+#studyPage .sv-circle-btn svg{ width: 15px; height: 15px; }
+#studyPage .sv-review-right{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+#studyPage #saveCard{
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+#studyPage #actionDock.review-active [data-dock-pane]{
+  display: none !important;
+}
+#studyPage .ui-shake{
+  animation: sxShake 0.32s ease;
+  border-color: var(--rose-bd) !important;
+}
+@keyframes sxShake{
+  20%, 60%{ transform: translateX(-3px); }
+  40%, 80%{ transform: translateX(3px); }
+}
+@media (max-width: 370px){
+#studyPage .sp-body{ padding: 11px 11px 8px; gap: 11px; }
+#studyPage .sp-foot{ padding: 9px 11px calc(12px + var(--sab)); }
+#studyPage #manualTime,
+#studyPage .sx-clock{ font-size: 24px; }
+#studyPage .ctrl-circle{ width: 35px; height: 35px; }
+#studyPage .nt-capsule{ padding: 0 6px; gap: 6px; }
+#studyPage .nt-bead{ padding: 0 6px; font-size: 10.5px; }
+#studyPage .sv-cta.review-save{ min-width: 74px; padding: 0 10px; }
+}
+@media (max-height: 700px){
+#studyPage .sp-body{ padding: 10px 12px 6px; gap: 9px; }
+#studyPage .b1-row{ height: 45px; }
+#studyPage .status-sec{ padding: 11px 12px; }
+#studyPage .notes-sec{ padding: 9px 12px 10px; }
+}
+@media (prefers-reduced-motion: reduce){
+
+}
+#studyPage{font-family:var(--font);color:var(--text);font-variant-numeric:tabular-nums;line-height:1.45;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+#studyPage [hidden]{display:none !important}
+#studyPage #selectorCard{opacity:1 !important;box-shadow:none !important}
+#studyPage #selectorCard.timer-locked{border-color:var(--border) !important}
+#studyPage #saveCard{animation:none !important;border:0 !important}
+#studyPage .sx-tb.locked-tab{opacity:.45 !important}
+
+#studyPage .sx-clock{font-family:ui-monospace,"SF Mono","JetBrains Mono","Roboto Mono",Menlo,Consolas,monospace}
+#studyPage input,#studyPage select,#studyPage textarea{height:auto;min-height:0;border-radius:0;box-shadow:none}
+</style>
+<style id="sheet-matte">
+/* Study page से खुलने वाली Session Status / Notes-स्तर sheet — Calm Matte रंग-रूप */
+body.sp-open #rvSheet{--m-bg:#1a1d23;--m-surface:#22262e;--m-well:#262a33;--m-border:rgba(255,255,255,.11);--m-border-strong:rgba(255,255,255,.22);--m-text:#f3f4f6;--m-soft:#d3d9e3;--m-muted:#9aa2b0;--m-cta:#f3f4f6;--m-cta-t:#0b0c0e;--m-shadow:0 -14px 40px rgba(0,0,0,.55);--m-scrim:rgba(0,0,0,.42);
+  --e-bg:#12241c;--e-bd:#1f4433;--e-fg:#6ee7b7;--a-bg:#262011;--a-bd:#46381a;--a-fg:#fde047;--r-bg:#281519;--r-bd:#4c232b;--r-fg:#fca5a5;--p-bg:#1e1830;--p-bd:#3b2f63;--p-fg:#c4b5fd;--s-bg:#101e2e;--s-bd:#223d5c;--s-fg:#93c5fd}
+[data-theme="light"] body.sp-open #rvSheet,body.sp-open[data-theme="light"] #rvSheet,[data-theme="light"] body.sp-open #rvSheet{--m-bg:#ffffff;--m-surface:#f5f6f9;--m-well:#eceff4;--m-border:rgba(15,23,42,.12);--m-border-strong:rgba(15,23,42,.25);--m-text:#111827;--m-soft:#374151;--m-muted:#64748b;--m-cta:#111827;--m-cta-t:#ffffff;--m-shadow:0 -14px 40px rgba(15,23,42,.22);--m-scrim:rgba(15,23,42,.28);
+  --e-bg:#eaf7f0;--e-bd:#b7e4cc;--e-fg:#065f46;--a-bg:#fdf6e4;--a-bd:#eed79e;--a-fg:#854d0e;--r-bg:#fdecec;--r-bd:#f3c1c1;--r-fg:#991b1b;--p-bg:#f1ecfd;--p-bd:#d4c5f7;--p-fg:#5b21b6;--s-bg:#e8f1fc;--s-bd:#bcd4f2;--s-fg:#1d4ed8}
+body.sp-open #rvSheet .bk{background:var(--m-scrim);-webkit-backdrop-filter:none;backdrop-filter:none}
+body.sp-open #rvSheet .pn{background:var(--m-bg);color:var(--m-text);border:1px solid var(--m-border-strong);border-bottom:0;box-shadow:var(--m-shadow);border-radius:22px 22px 0 0;position:absolute}
+body.sp-open #rvSheet .pn::before{content:"";display:block;flex:none;width:38px;height:4px;border-radius:2px;background:var(--m-border-strong);margin:8px auto 0}
+body.sp-open #rvSheet .rv-hd{border-bottom:1px solid var(--m-border);padding:16px 16px 12px}
+body.sp-open #rvSheet .rv-hd h3{color:var(--m-text);font-size:16px;font-weight:700;letter-spacing:-.01em}
+body.sp-open #rvSheet .rv-hd .sb{color:var(--m-muted);opacity:1}
+body.sp-open #rvSheet .rv-x{width:34px;height:34px;background:var(--m-well);border:1px solid var(--m-border);color:var(--m-muted);font-size:14px}
+body.sp-open #rvSheet .rv-intro{background:var(--m-well);border:1px solid var(--m-border);color:var(--m-soft);border-radius:14px}
+body.sp-open #rvSheet .rv-intro strong{color:var(--m-text)}
+body.sp-open #rvSheet .nt{color:var(--m-muted);opacity:1}
+body.sp-open #rvSheet .rv-it{--kbg:var(--a-bg);--kbd:var(--a-bd);--kfg:var(--a-fg);background:var(--m-surface);border:1px solid var(--m-border);border-radius:14px;color:var(--m-soft)}
+body.sp-open #rvSheet .rv-it[data-k=Clear],body.sp-open #rvSheet .rv-it[data-k=Easy]{--kbg:var(--e-bg);--kbd:var(--e-bd);--kfg:var(--e-fg)}
+body.sp-open #rvSheet .rv-it[data-k=Relearn],body.sp-open #rvSheet .rv-it[data-k=Hard]{--kbg:var(--r-bg);--kbd:var(--r-bd);--kfg:var(--r-fg)}
+body.sp-open #rvSheet .rv-it[data-k=Complex]{--kbg:var(--p-bg);--kbd:var(--p-bd);--kfg:var(--p-fg)}
+body.sp-open #rvSheet .rv-it[data-k=Expert]{--kbg:var(--s-bg);--kbd:var(--s-bd);--kfg:var(--s-fg)}
+body.sp-open #rvSheet .rv-it.sel{background:var(--kbg);border-color:var(--kbd)}
+body.sp-open #rvSheet .rv-it b{color:var(--kfg)}
+body.sp-open #rvSheet .rv-it small{color:var(--m-muted);opacity:1}
+body.sp-open #rvSheet .rv-it div{opacity:1}
+body.sp-open #rvSheet .rv-p{color:var(--m-soft)}
+body.sp-open #rvSheet .rv-p strong{color:var(--m-text)}
+body.sp-open #rvSheet .rv-f{color:var(--m-muted);opacity:1}
+body.sp-open #rvSheet .pn{touch-action:none}
+body.sp-open #rvSheet .pn.snap{transition:height .24s cubic-bezier(.22,1,.36,1)}
+body.sp-open #rvSheet .pn.full{border-radius:0;border-top:0}
+body.sp-open #rvSheet .rv-hd{cursor:grab}
+body.sp-open #rvSheet .cl{min-height:46px;border:0;border-radius:14px;background:var(--m-cta);color:var(--m-cta-t);font-weight:700}
+</style>
+
+<script id="study-page-js">
+
+(function(){
+  'use strict';
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  var studyPage = $('studyPage');
+  var selectorCard = $('selectorCard');
+  var mSub = $('mSub'), mChap = $('mChap'), mLec = $('mLec');
+  var manPane = $('manualPane'), swPane = $('stopwatchPane');
+  var mi = $('manualTime'), mwBox = $('mwBox'), rulerStrip = $('rulerStrip');
+  var dec = $('decMin'), inc = $('incMin'), bar = $('s2Bar');
+  var presets = document.querySelectorAll('#s2Presets .s2-pill');
+  var dialStartBtn = $('dialStartBtn');
+  var resetBtn = $('resetBtn');
+  var chronoTicksWrap = $('chronoTicks');
+  var swElapsedFill = $('swElapsedFill');
+  var swHintTxt = $('swHintTxt');
+
+  var actionDock = $('actionDock'), saveCard = $('saveCard');
+  var dockManual = $('dockManual'), dockTimer = $('dockTimer');
+  var svTimerDot = $('svTimerDot'), svTimerState = $('svTimerState'), svTimerClock = $('svTimerClock');
+  var svManualDur = document.querySelector('[data-sv-manual-dur]');
+
+  var statusHint = $('statusHint'), infoDrawer = $('statusInfoDrawer');
+  var infoBtn = document.querySelector('.sx-info[data-info="status"]');
+  var ntCapsuleBtn = $('ntCapsuleBtn');
+
+  var MIN = 1, MAX = 1440;
+  var RULER_MIN = 5, RULER_MAX = 180, PX_PER_MIN = 8;
+  var RULER_LABEL_SET = { 15: 1, 30: 1, 45: 1, 60: 1, 90: 1, 120: 1, 150: 1, 180: 1 };
+  var RING_CIRC = 2 * Math.PI * 130; // Exact r=130 contract
+  var ds = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+
+  function clamp(v, lo, hi){ return Math.min(hi, Math.max(lo, v)); }
+
+  function curMin(){
+    if(!mi) return 25;
+    var v = parseInt(ds.get.call(mi), 10);
+    return isNaN(v) ? 0 : v;
+  }
+
+  function formatDockDur(mins){
+    if(mins < 60) return mins + ' min';
+    var h = Math.floor(mins / 60), r = mins % 60;
+    return r ? (h + 'h ' + r + 'm') : (h + ' hr');
+  }
+
+  /* ------------------------------------------------------------------------
+     1. CARD 1: STYLE B1 CONNECTED THREAD SYNC
+  ------------------------------------------------------------------------ */
+  var B1_PLACEHOLDERS = {
+    sub: 'Select Subject',
+    chap: 'Select Chapter',
+    lec: 'Select Lecture'
+  };
+
+  function syncConnectedThread(){
+    if(!selectorCard) return;
+    var fields = [
+      { key: 'sub', el: mSub },
+      { key: 'chap', el: mChap },
+      { key: 'lec', el: mLec }
+    ];
+
+    fields.forEach(function(f){
+      if(!f.el) return;
+      var row = selectorCard.querySelector('[data-b1-row="' + f.key + '"]');
+      var valEl = selectorCard.querySelector('[data-b1-val="' + f.key + '"]');
+      var val = f.el.value;
+      var isFilled = Boolean(val);
+      var isLocked = Boolean(f.el.disabled);
+      var isNext = !isFilled && !isLocked;
+
+      if(row){
+        row.classList.toggle('is-filled', isFilled);
+        row.classList.toggle('is-next', isNext);
+        row.classList.toggle('is-locked', isLocked);
+      }
+      if(valEl){
+        var labelText = B1_PLACEHOLDERS[f.key];
+        if(isFilled && f.el.selectedIndex >= 0 && f.el.options[f.el.selectedIndex]){
+          labelText = f.el.options[f.el.selectedIndex].text || val;
+        }
+        valEl.textContent = labelText;
+      }
+    });
+
+    // Vertical emerald thread segments between completed steps
+    var subDone = Boolean(mSub && mSub.value);
+    var chapDone = Boolean(mChap && mChap.value);
+    var s1 = selectorCard.querySelector('[data-b1-seg="sub-bot"]');
+    var s2 = selectorCard.querySelector('[data-b1-seg="chap-top"]');
+    var s3 = selectorCard.querySelector('[data-b1-seg="chap-bot"]');
+    var s4 = selectorCard.querySelector('[data-b1-seg="lec-top"]');
+
+    if(s1) s1.classList.toggle('done', subDone);
+    if(s2) s2.classList.toggle('done', subDone);
+    if(s3) s3.classList.toggle('done', chapDone);
+    if(s4) s4.classList.toggle('done', chapDone);
+  }
+
+  [mSub, mChap, mLec].forEach(function(sel){
+    if(!sel) return;
+    sel.addEventListener('change', function(){
+      this.blur(); // Prevents Android Chrome stuck highlight immediately
+      setTimeout(syncConnectedThread, 0);
+    });
+  });
+
+  /* ------------------------------------------------------------------------
+     2. CARD 2A: BUILD TACTILE RULER (5m–180m) & 60-TICK SWISS LINEAR CHRONO
+  ------------------------------------------------------------------------ */
+  var isDraggingRuler = false;
+
+  if(rulerStrip){
+    var frag = document.createDocumentFragment();
+    for(var m = RULER_MIN; m <= RULER_MAX; m++){
+      var x = (m - RULER_MIN) * PX_PER_MIN;
+      var hasLbl = Boolean(RULER_LABEL_SET[m]);
+      var isMaj = hasLbl || m === 5;
+      var isMed = !isMaj && (m % 5 === 0);
+
+      var tick = document.createElement('span');
+      tick.className = 'r-tick' + (isMaj ? ' maj' : (isMed ? ' med' : ''));
+      tick.style.left = x + 'px';
+      frag.appendChild(tick);
+
+      if(hasLbl){
+        var lbl = document.createElement('span');
+        lbl.className = 'r-lbl';
+        lbl.style.left = x + 'px';
+        lbl.textContent = String(m);
+        frag.appendChild(lbl);
+      }
+    }
+    rulerStrip.innerHTML = '';
+    rulerStrip.appendChild(frag);
+  }
+
+  var chronoTickEls = [];
+  if(chronoTicksWrap){
+    var cFrag = document.createDocumentFragment();
+    for(var i = 0; i < 60; i++){
+      var ct = document.createElement('span');
+      var cls = 'c-tick';
+      if(i % 15 === 0) cls += ' quarter';
+      else if(i % 5 === 0) cls += ' fifth';
+      ct.className = cls;
+      cFrag.appendChild(ct);
+      chronoTickEls.push(ct);
+    }
+    chronoTicksWrap.innerHTML = '';
+    chronoTicksWrap.appendChild(cFrag);
+  }
+
+  function syncRulerVisual(exactMin){
+    if(!rulerStrip || !mwBox) return;
+    var c = clamp(exactMin, RULER_MIN, RULER_MAX);
+    var offsetPx = -(c - RULER_MIN) * PX_PER_MIN;
+    rulerStrip.style.transform = 'translate3d(' + offsetPx.toFixed(1) + 'px, 0, 0)';
+    mwBox.setAttribute('aria-valuenow', String(Math.round(c)));
+  }
+
+  /* ------------------------------------------------------------------------
+     3. CARD 2B: MANUAL DIAL PAINT, POINTER DRAG & WHEEL SCRUBBING
+  ------------------------------------------------------------------------ */
+  function paintManual(){
+    if(!mi) return;
+    var v = curMin();
+    var len = String(v || '').length;
+    mi.style.width = (len >= 4 ? 72 : len >= 3 ? 56 : 40) + 'px';
+
+    presets.forEach(function(p){ p.classList.toggle('active', +p.dataset.min === v); });
+    if(bar) bar.style.width = Math.min(100, Math.max(v ? 3 : 0, (v / 120) * 100)) + '%';
+    if(!isDraggingRuler) syncRulerVisual(v || 25);
+    if(svManualDur) svManualDur.textContent = formatDockDur(v || 25);
+  }
+
+  function setManual(n){
+    if(!mi) return;
+    n = clamp(Math.round(n), MIN, MAX);
+    ds.set.call(mi, String(n));
+    paintManual();
+    mi.dispatchEvent(new Event('input', { bubbles: true }));
+    try{ if(typeof clearFlowError === 'function') clearFlowError(); }catch(_){}
+    try{ if(typeof persistSession === 'function') persistSession(); }catch(_){}
+  }
+
+  if(mi){
+    Object.defineProperty(mi, 'value', {
+      configurable: true,
+      get: function(){ return ds.get.call(this); },
+      set: function(v){ ds.set.call(this, v); paintManual(); }
+    });
+
+    mi.addEventListener('focus', function(){ setTimeout(function(){ try{ mi.select(); }catch(_){} }, 0); });
+    mi.addEventListener('input', paintManual);
+    mi.addEventListener('blur', function(){
+      var v = parseInt(ds.get.call(mi), 10);
+      if(!isNaN(v) && v >= MIN) setManual(v);
+      else setManual(25);
+    });
+    mi.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); mi.blur(); } });
+  }
+
+  presets.forEach(function(p){
+    p.addEventListener('click', function(){
+      this.blur();
+      setManual(+p.dataset.min);
+    });
+  });
+
+  /* Tap = ±1m, Press-and-Hold = smooth accelerated repeat */
+  function bindHold(btn, delta){
+    if(!btn) return;
+    var t = null, iv = null, n = 0;
+    function stop(){ clearTimeout(t); clearInterval(iv); t = iv = null; n = 0; }
+    btn.addEventListener('pointerdown', function(e){
+      e.preventDefault(); stop();
+      setManual((curMin() || 25) + delta);
+      t = setTimeout(function(){
+        iv = setInterval(function(){
+          n++;
+          setManual(curMin() + (n > 12 ? delta * 5 : delta));
+        }, 80);
+      }, 330);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function(ev){ btn.addEventListener(ev, stop); });
+    btn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  }
+  bindHold(dec, -1);
+  bindHold(inc, 1);
+
+  /* Smooth Pointer/Touch Drag + Mouse Wheel Scrubbing on #mwBox Ruler */
+  if(mwBox && rulerStrip){
+    var dragStartX = 0, dragStartVal = 25, dragLiveVal = 25;
+
+    mwBox.addEventListener('pointerdown', function(e){
+      isDraggingRuler = true;
+      dragStartX = e.clientX;
+      dragStartVal = clamp(curMin() || 25, RULER_MIN, RULER_MAX);
+      dragLiveVal = dragStartVal;
+      rulerStrip.classList.add('dragging');
+      try{ mwBox.setPointerCapture(e.pointerId); }catch(_){}
+    });
+
+    mwBox.addEventListener('pointermove', function(e){
+      if(!isDraggingRuler) return;
+      var dx = e.clientX - dragStartX;
+      var raw = clamp(dragStartVal - (dx / PX_PER_MIN), RULER_MIN, RULER_MAX);
+      dragLiveVal = raw;
+      syncRulerVisual(raw);
+      var rounded = Math.round(raw);
+      if(rounded !== curMin()){
+        setManual(rounded);
+      }
+    });
+
+    function endRulerDrag(e){
+      if(!isDraggingRuler) return;
+      isDraggingRuler = false;
+      rulerStrip.classList.remove('dragging');
+      try{ if(e && e.pointerId !== undefined) mwBox.releasePointerCapture(e.pointerId); }catch(_){}
+      setManual(clamp(Math.round(dragLiveVal), RULER_MIN, RULER_MAX));
+    }
+    mwBox.addEventListener('pointerup', endRulerDrag);
+    mwBox.addEventListener('pointercancel', endRulerDrag);
+
+    // Mouse wheel / trackpad horizontal or vertical scrub
+    mwBox.addEventListener('wheel', function(e){
+      e.preventDefault();
+      var rawDelta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      var step = rawDelta > 0 ? 1 : -1;
+      setManual(clamp((curMin() || 25) + step, RULER_MIN, RULER_MAX));
+    }, { passive: false });
+  }
+
+  /* Buttonless Flow Transitions:
+     - Tapping Play in Manual switches directly into Timer & starts counting.
+     - Tapping Reset in Timer zeroes the clock and cleanly returns to Manual Dial. */
+  if(dialStartBtn){
+    dialStartBtn.addEventListener('click', function(){
+      this.blur();
+      try{
+        if(!(mSub.value && mChap.value && mLec.value)){
+          if(typeof showFlowError === 'function') showFlowError('Select Subject, Chapter & Lecture to start');
+          return;
+        }
+        if(typeof window.setFlowMode === 'function') window.setFlowMode('stopwatch');
+        if(typeof window.toggleTimer === 'function') window.toggleTimer();
+      }catch(err){ console.error('dialStartBtn error:', err); }
+    });
+  }
+
+  if(resetBtn){
+    resetBtn.addEventListener('click', function(){
+      this.blur();
+      setTimeout(function(){
+        try{
+          if(typeof window.setFlowMode === 'function') window.setFlowMode('manual');
+        }catch(_){}
+      }, 0);
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+     4. REAL-APP MUTATION OBSERVER: 60-TICK CHRONOGRAPH & SAVE DOCK SYNC
+     Automatically drives visible UI from #arc stroke-dashoffset, #clock,
+     #clockState, #manualPane, #stopwatchPane, and #saveCard.
+  ------------------------------------------------------------------------ */
+  function parseClockSeconds(str){
+    if(!str) return 0;
+    var parts = str.trim().split(':').map(function(n){ return parseInt(n, 10) || 0; });
+    if(parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    if(parts.length === 2) return parts[0] * 60 + parts[1];
+    return 0;
+  }
+
+  function getCurrentFlowMode(){
+    return (manPane && manPane.style.display !== 'none') ? 'manual' : 'stopwatch';
+  }
+
+  function appState(){
+    try{ return (typeof state !== 'undefined') ? state : null; }catch(_){ return null; }
+  }
+
+  var lastTeleMode = null;
+
+  function syncTimerAndDock(){
+    var S = appState();
+    var isManual = getCurrentFlowMode() === 'manual';
+    var isReview = Boolean(saveCard && saveCard.style.display !== 'none');
+
+    var clockEl = $('clock');
+    var clockStr = clockEl ? clockEl.textContent.trim() : '00:00';
+    var elapsedSec = (S && typeof totalT === 'function') ? totalT() : parseClockSeconds(clockStr);
+    var isRunning = S ? Boolean(S.run) : false;
+    var isPaused = !isRunning && elapsedSec > 0;
+
+    if(studyPage) studyPage.classList.toggle('flow-active', isRunning);
+    if(swPane) swPane.classList.toggle('is-paused', isPaused);
+
+    // Ring progress in the app = elapsed / 3600s, so the 60 ticks mirror it exactly
+    var ratio = clamp(elapsedSec / 3600, 0, 1);
+    var litCount = elapsedSec > 0 ? Math.max(1, Math.round(ratio * 60)) : 0;
+    for(var i = 0; i < chronoTickEls.length; i++){
+      chronoTickEls[i].classList.toggle('lit', i < litCount);
+    }
+
+    if(swElapsedFill){
+      swElapsedFill.style.width = (elapsedSec > 0 ? Math.max(2, ratio * 100) : 0).toFixed(1) + '%';
+    }
+    if(swHintTxt){
+      swHintTxt.textContent = isRunning ? 'लाइव सेशन चल रहा है' : (elapsedSec > 0 ? 'रुका हुआ है' : 'शुरू करने के लिए ▶ दबाएँ');
+    }
+
+    var sBtn = $('startBtn');
+    if(sBtn){
+      var lbl = isRunning ? 'Pause' : (elapsedSec > 0 ? 'Resume' : 'Start');
+      sBtn.setAttribute('aria-label', lbl + ' Timer');
+      var sr = sBtn.querySelector('.sr-only');
+      if(sr) sr.textContent = lbl;
+    }
+
+    if(actionDock){
+      actionDock.classList.toggle('review-active', isReview);
+      if(svTimerClock) svTimerClock.textContent = clockStr;
+      if(svTimerState) svTimerState.textContent = isRunning ? 'Focusing' : 'Paused';
+      if(svTimerDot) svTimerDot.className = 'sv-dot ' + (isRunning ? 'live' : 'paused');
+      if(!isReview){
+        if(dockManual) dockManual.style.display = isManual ? '' : 'none';
+        if(dockTimer) dockTimer.style.display = isManual ? 'none' : '';
+      }
+    }
+
+    // Notes capsule follows the active mode (timer notes vs manual notes)
+    var teleMode = isManual ? 'Manual' : '';
+    if(teleMode !== lastTeleMode){
+      lastTeleMode = teleMode;
+      try{ renderTele(teleMode); }catch(_){}
+    }
+  }
+
+  if(typeof MutationObserver !== 'undefined'){
+    var obs = new MutationObserver(syncTimerAndDock);
+    [manPane, swPane, saveCard, $('arc')].forEach(function(el){
+      if(el) obs.observe(el, { attributes: true, attributeFilter: ['style', 'class', 'stroke-dashoffset'] });
+    });
+    [$('clock'), $('clockState')].forEach(function(el){
+      if(el) obs.observe(el, { childList: true, characterData: true, subtree: true });
+    });
+
+    // Also keep B1 Connected Thread synced if host JS modifies selects programmatically
+    var selObs = new MutationObserver(syncConnectedThread);
+    [mSub, mChap, mLec].forEach(function(el){
+      if(el) selObs.observe(el, { attributes: true, attributeFilter: ['disabled'], childList: true });
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+     5. CARD 3A: LEARNING STATUS HINT, ACCENT SYNC & COLLAPSIBLE GUIDE
+  ------------------------------------------------------------------------ */
+  var STATUS_INFO = {
+    Easy:   { label: 'Clear',    hindi: 'पक्का समझ आया' },
+    Medium: { label: 'Practice', hindi: 'अभ्यास ज़रूरी है' },
+    Hard:   { label: 'Relearn',  hindi: 'दोबारा पढ़ना है' }
+  };
+
+  function syncStatusUI(){
+    var active = document.querySelector('#statusNotesCard .sx-diff-btn.active');
+    var val = active ? active.getAttribute('data-val') : 'Medium';
+    var cfg = STATUS_INFO[val] || STATUS_INFO.Medium;
+
+    if(studyPage) studyPage.setAttribute('data-diff', val);
+    if(statusHint) statusHint.textContent = cfg.hindi;
+    document.querySelectorAll('#statusNotesCard .sx-diff-btn').forEach(function(b){
+      b.setAttribute('aria-checked', String(b.classList.contains('active')));
+    });
+    document.querySelectorAll('[data-sv-status]').forEach(function(el){
+      el.textContent = cfg.label;
+    });
+  }
+
+  document.querySelectorAll('#statusNotesCard .sx-diff-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ setTimeout(syncStatusUI, 0); });
+    btn.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        if(typeof window.setDiff === 'function') window.setDiff(btn.getAttribute('data-val'));
+        setTimeout(syncStatusUI, 0);
+      }
+    });
+  });
+
+  /* ⓘ बटन: ऐप की विस्तृत Session Status sheet (rvScript) खोलता है */
+
+  /* ------------------------------------------------------------------------
+     6. CARD 3B: STYLE 1 PRO NOTES TELEMETRY CAPSULE (LOCKED BEAD +N SPEC)
+  ------------------------------------------------------------------------ */
+  var LINK_SVG =
+    '<svg class="v-ic" viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>' +
+    '<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>' +
+    '</svg>';
+
+  if(ntCapsuleBtn){
+    var openNotesAction = function(){
+      try{
+        if(typeof window.ntOpen === 'function'){
+          window.ntOpen(getCurrentFlowMode() === 'manual' ? 'Manual' : '', 1);
+        }
+      }catch(err){ console.error('ntOpen error:', err); }
+    };
+    ntCapsuleBtn.addEventListener('click', openNotesAction);
+    ntCapsuleBtn.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        openNotesAction();
+      }
+    });
+  }
+
+  function renderTele(suf){
+    var ntCap = $('ntCapsuleBtn');
+    var ntTrack = $('ntTrack');
+    var ntBar = $('ntBarTrack');
+    if(!ntCap || !ntTrack) return;
+
+    var cards = [];
+    try{ cards = (typeof NT !== 'undefined' && NT[suf] && NT[suf].cards) || []; }catch(_){ cards = []; }
+    var links = [];
+    try{ links = (typeof ncLinksIn === 'function') ? ncLinksIn(cards) : []; }catch(_){ links = []; }
+
+    var groups = [], idx = {}, total = 0;
+    cards.forEach(function(c){
+      if(c.t === 'l') return;
+      var k = c.tn || 'नोट';
+      if(idx[k] == null){ idx[k] = groups.length; groups.push({ kind: 'tag', name: k, color: c.tc || 'var(--tag-sutra)', count: 0 }); }
+      groups[idx[k]].count++;
+      total++;
+    });
+    if(links.length > 0){
+      groups.push({ kind: 'link', name: 'लिंक', color: 'var(--tag-link)', count: links.length });
+      total += links.length;
+    }
+
+    ntCap.classList.toggle('is-filled', total > 0);
+
+    if(ntBar){
+      ntBar.innerHTML = '';
+      groups.forEach(function(g){
+        var seg = document.createElement('span');
+        seg.className = 'nt-bar-seg';
+        seg.style.setProperty('--c', g.color);
+        seg.style.flexGrow = String(g.count);
+        ntBar.appendChild(seg);
+      });
+    }
+
+    ntTrack.innerHTML = '';
+    if(total === 0){
+      var empty = document.createElement('span');
+      empty.className = 'nt-empty';
+      empty.textContent = 'सूत्र, ट्रिक या लिंक जोड़ें';
+      ntTrack.appendChild(empty);
+      return;
+    }
+
+    var visible = groups.slice(0, 3);
+    var extra = groups.length - visible.length;
+
+    visible.forEach(function(g){
+      var b = document.createElement('span');
+      b.className = 'nt-bead';
+      b.style.setProperty('--c', g.color);
+      b.title = g.name + ': ' + g.count;
+      b.innerHTML = g.kind === 'link'
+        ? (LINK_SVG + '<span>' + g.count + '</span>')
+        : ('<i></i><span>' + g.count + '</span>');
+      ntTrack.appendChild(b);
+    });
+
+    if(extra > 0){
+      var ov = document.createElement('span');
+      ov.className = 'nt-overflow';
+      ov.textContent = '+' + extra;
+      ov.title = groups.slice(3).map(function(x){ return x.name + ': ' + x.count; }).join(' · ');
+      ntTrack.appendChild(ov);
+    }
+  }
+
+  // Called by the app's ntPaint(suf) after every notes/links change
+  window.__ntTele = function(suf){
+    var cur = getCurrentFlowMode() === 'manual' ? 'Manual' : '';
+    if(suf !== undefined && suf !== cur) return;
+    renderTele(cur);
+  };
+
+  /* 1.4s Matte Emerald Save Confirmation */
+  var saveTimers = new WeakMap();
+  function flashSaved(btn, shell){
+    if(!btn) return;
+    var prev = saveTimers.get(btn);
+    if(prev) clearTimeout(prev);
+    var lbl = btn.querySelector('[data-sv-lbl]');
+    btn.classList.add('is-saved');
+    if(shell) shell.classList.add('is-saved-rim');
+    if(lbl) lbl.textContent = 'Saved';
+    var t = setTimeout(function(){
+      btn.classList.remove('is-saved');
+      if(shell) shell.classList.remove('is-saved-rim');
+      if(lbl) lbl.textContent = 'Save';
+      saveTimers.delete(btn);
+    }, 1400);
+    saveTimers.set(btn, t);
+  }
+
+  window.__studyBridge = {
+    syncThread: syncConnectedThread,
+    syncTimer: syncTimerAndDock,
+    syncStatus: syncStatusUI,
+    flashSaved: flashSaved
+  };
+
+  /* Initial Render (runs after the app script, session already restored) */
+  if(mi && !curMin()){ ds.set.call(mi, '25'); }
+  paintManual();
+  syncConnectedThread();
+  syncStatusUI();
+  lastTeleMode = null;
+  syncTimerAndDock();
+})();
+
 </script>
 </body>
 </html>
