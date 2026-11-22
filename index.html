@@ -8750,6 +8750,11 @@ function wsPop() {
   if (g('wsPop').classList.contains('open')) { wsPopClose(); return true; }
   if (fsOpen) { closeFSheet(); return true; }
   if (chShOpen) { chSheetClose(); return true; }
+  if (chPopEl) {
+    const back2 = chPopEl.querySelector('.sdr-2 .sdr-bk');
+    if (back2) back2.click(); else { chPopClose(); chPopMem = null; }
+    return true;
+  }
   if (wsOpen && wsTab === 2 && chSt.sub) { chBackDo(); return true; }
   if (wsOpen && wsTab !== 0) { wsSetTab(0); return true; }
   return false;
@@ -9692,7 +9697,7 @@ function wsExitAll() {
 
 /* ===== क्लाउड सिंक (Firebase) ===== */
 const FB_PROJECT_ID = 'YOUR_FIREBASE_PROJECT_ID';
-const FB_KEYS = ['ru_local_history', 'ru_local_database', 'ru_csv_ids', 'nc_lib_v1', 'ru_ws_recent', 'ru_ws_default_view', 'ru_syl_synced', 'ru_theme', 'ru_bg', 'ru_card'];
+const FB_KEYS = ['ru_local_history', 'ru_local_database', 'ru_csv_ids', 'nc_lib_v1', 'ru_ws_recent', 'ru_ws_default_view', 'ru_syl_synced', 'ru_theme', 'ru_bg', 'ru_card', 'ru_goal_min', 'ru_def_diff', 'ru_def_mode', 'ru_exp_fmt'];
 const FB_CHUNK = 250000;
 const FB_FLAG = 'ru_fb_uid';
 const FB_LAST = 'ru_fb_last';
