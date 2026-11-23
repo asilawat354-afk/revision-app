@@ -8542,6 +8542,48 @@ function wsHeaderClone() {   // हेडर की हूबहू कॉपी
   return cg;
 }
 var wsSlideFin = null;
+// The copy of the old page is styled by the *screen's* state classes (.deep, .rbm ...). When the state changes for the new page,
+// those rules would restyle the copy too: the ribbon hides, the tabs collapse, the empty-state icon jumps. So the copy is frozen
+// with the exact computed look the original has right now.
+const LFX_FREEZE = [
+  ['.ws-chrome', ['top', 'transform', 'height', 'background-color', 'opacity', 'visibility']],
+  ['.ws-top', ['background-color', 'border-bottom-color', 'height']],
+  ['.ws-tabs', ['height', 'opacity', 'clip-path', 'border-bottom-color', 'pointer-events']],
+  ['.rb-row', ['display', 'height', 'background-color', 'border-bottom-color', 'padding-top', 'padding-bottom']],
+  ['.ws-bounce-wrap', ['min-height', 'padding-top']]
+];
+function lfxFreezeHeader(pn, pc) {
+  try {
+    LFX_FREEZE.forEach(([sel, props]) => {
+      const a = pn.querySelector(sel), b = pc.querySelector(sel);
+      if (!a || !b) return;
+      const cs = getComputedStyle(a);
+      b.style.setProperty('transition', 'none', 'important');
+      props.forEach(p => b.style.setProperty(p, cs.getPropertyValue(p), 'important'));
+    });
+  } catch (e) {}
+}
+// Going back: the leaving page is a copy, and it must carry the backdrop exactly as it looks this very frame
+// (glow with its running "aurora" animation, grain or dots, orbs), or the background visibly switches when the copy is swapped in.
+function lfxCopyBackdrop(el) {
+  try {
+    const mk = (ps, z) => {
+      const c = getComputedStyle(document.body, ps);
+      if (c.display === 'none' || !c.backgroundImage || c.backgroundImage === 'none') return;
+      const d = document.createElement('i'); d.className = 'ws-bdclone'; d.setAttribute('aria-hidden', 'true');
+      d.style.cssText = 'position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;animation:none;transition:none;z-index:' + z;
+      ['backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat', 'opacity', 'transform', 'filter', 'mixBlendMode'].forEach(p => { d.style[p] = c[p]; });
+      el.insertBefore(d, el.firstChild);
+    };
+    mk('::after', -1); mk('::before', -2);
+    const o = document.getElementById('bgOrbs');   // animated purple orbs: static copy, frozen at their current position
+    if (o && getComputedStyle(o).display !== 'none') {
+      const c = o.cloneNode(true); c.removeAttribute('id'); c.className = 'ws-orbclone'; c.style.cssText = 'position:absolute;left:0;right:0;top:0;bottom:0;z-index:-1;pointer-events:none;overflow:hidden;display:block;contain:none';
+      Array.from(o.children).forEach((src, i) => { const d = c.children[i], cs = getComputedStyle(src); d.style.animation = 'none'; d.style.transform = cs.transform; d.style.opacity = cs.opacity; });
+      el.insertBefore(c, el.firstChild);
+    }
+  } catch (e) {}
+}
 function wsGhostMake(back) {   // पुराना पेज = उसकी लिस्ट + उसका हेडर, एक साथ (back: जाता हुआ पेज पैनलों के ऊपर से सरके)
   if (wsSlideFin) wsSlideFin();
   const pn = g('wsPane2'), tr = g('wsTrack');
@@ -8551,6 +8593,8 @@ function wsGhostMake(back) {   // पुराना पेज = उसकी �
   const pc = pn.cloneNode(true);
   pc.removeAttribute('id'); pc.className = 'ws-pane'; pc.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
   pc.style.paddingTop = getComputedStyle(pn).paddingTop;
+  if (back) lfxCopyBackdrop(pc);   // going back: the leaving page carries the same backdrop (glow + grain) it had, so nothing switches when it is swapped in
+  lfxFreezeHeader(pn, pc);   // old page keeps its header (tabs bar) as it looked until the new page covers it
   wrap.appendChild(pc);
   if (back) { wrap.classList.add('top'); g('wsScreen').appendChild(wrap); } else tr.appendChild(wrap);
   pc.scrollTop = pn.scrollTop;
@@ -15741,6 +15785,50 @@ body.sp-open #rvSheet .pn.snap{transition:height .24s cubic-bezier(.22,1,.36,1)}
 body.sp-open #rvSheet .pn.full{border-radius:0;border-top:0}
 body.sp-open #rvSheet .rv-hd{cursor:grab}
 body.sp-open #rvSheet .cl{min-height:46px;border:0;border-radius:14px;background:var(--m-cta);color:var(--m-cta-t);font-weight:700}
+/* ── layer: lecture-page-reveal ──
+   Same keyframe NAMES as before (JS waits for the "lfxReveal" animationend), new soft-edged look:
+   a feathered circular mask instead of a hard clip-path edge, no scale or filter on the pages. */
+@property --lp{syntax:'<number>';inherits:false;initial-value:0}
+@supports (mask-image:none) or (-webkit-mask-image:none){
+ @keyframes lfxReveal{from{--lp:0}to{--lp:1}}
+ @keyframes lfxHide{from{--lp:1}to{--lp:0}}
+ @keyframes lfxDepth{from{transform:none}to{transform:scale(.985)}}
+ .ws-pane.ws-in.lfx,.ws-ghost.back.lfx{
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-image:radial-gradient(circle at var(--lx,50%) var(--ly,40%),#000 calc(var(--lr,1400px)*1.45*var(--lp) - var(--lr,1400px)*.45),transparent calc(var(--lr,1400px)*1.45*var(--lp)));
+  mask-image:radial-gradient(circle at var(--lx,50%) var(--ly,40%),#000 calc(var(--lr,1400px)*1.45*var(--lp) - var(--lr,1400px)*.45),transparent calc(var(--lr,1400px)*1.45*var(--lp)))}
+ .ws-pane.ws-in.lfx{animation-duration:.5s;animation-timing-function:cubic-bezier(.3,.55,.25,1)}
+ .ws-ghost.back.lfx{animation-duration:.42s;animation-timing-function:cubic-bezier(.4,0,.45,1)}
+}
+
+
+
+/* Forward reveal: the new page is transparent so the real background (glow, orbs, grain) shows through the whole time;
+   the old page is hidden by the inverse of the same soft circle, so nothing "switches" when the effect ends. */
+@supports (mask-image:none) or (-webkit-mask-image:none){
+ @keyframes lfxGhostOut{from{--lp:0}to{--lp:1}}
+ .ws-pane.ws-in.lfx{background:transparent!important}
+ .ws-ghost.fwd.lfx{
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;filter:none;transform:none;
+  -webkit-mask-image:radial-gradient(circle at var(--lx,50%) var(--ly,40%),transparent calc(var(--lr,1400px)*1.45*var(--lp) - var(--lr,1400px)*.45),#000 calc(var(--lr,1400px)*1.45*var(--lp)));
+  mask-image:radial-gradient(circle at var(--lx,50%) var(--ly,40%),transparent calc(var(--lr,1400px)*1.45*var(--lp) - var(--lr,1400px)*.45),#000 calc(var(--lr,1400px)*1.45*var(--lp)));
+  animation:lfxGhostOut .5s cubic-bezier(.3,.55,.25,1) both}
+ .ws-ghost.fwd.lfx::after{display:none}
+}
+
+.ws-ghost.back>.ws-pane{isolation:isolate}
+
+/* Back from a lecture page: the circle shrink is the only motion. Older slide/dim/scrim animations on the page underneath
+   ran on a different clock (0.2-0.34s) and made the return look busy. */
+.ws:has(.ws-ghost.back.lfx) .ws-pane.ws-under{animation:none!important;filter:none!important}
+.ws:has(.ws-ghost.back.lfx),.ws:has(.ws-ghost.back.lfx) .wv-item,.ws:has(.ws-ghost.back.lfx) .chp-i{transition:none!important}
+.ws:has(.ws-ghost.back.lfx)::before,.ws:has(.ws-ghost.back.lfx)::after{animation:none!important;transition:none!important}
+
+/* Popup: the dim layer behind it fades out on close (same 0.2s as it fades in) instead of vanishing in one frame.
+   When a lecture page opens from the popup, no dim fade is wanted (the new page would flash darker). */
+.ws:not(.sdr-on)::after{content:"";position:absolute;left:0;right:0;bottom:0;top:var(--sdr-top,0);z-index:310;background:rgba(0,0,0,.12);pointer-events:none;opacity:0;transition:opacity .2s ease,background .3s}
+.ws.sdr-on::after{opacity:1;animation:none;transition:opacity .2s ease,background .3s}
+.ws:has(.ws-ghost.fwd.lfx)::after{transition:none!important;opacity:0!important}
 </style>
 
 <script id="study-page-js">
