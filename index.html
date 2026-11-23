@@ -4524,8 +4524,8 @@ body.ws-t0 #wsPane1>.ws-bounce-wrap,body.ws-t2 #wsPane1>.ws-bounce-wrap{content-
   <div id="sbOpt" role="menu"></div>
   <div class="sb-foot" id="sbFoot">
     <div id="sbPop" role="menu">
-      <div class="sb-ph">Google Sheets</div>
-      <button type="button" data-f="sh"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>Google Sheet<span class="sb-st" id="sbShSt"></span></button>
+      <div class="sb-ph">Google</div>
+      <button type="button" data-f="sh"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>Sheet &amp; Drive<span class="sb-st" id="sbShSt"></span></button>
       <div class="sb-div on-only"></div>
       <div class="sb-ph on-only">Firebase</div>
       <button type="button" data-f="bk" class="on-only"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Backup</button>
@@ -9964,13 +9964,15 @@ function shUI() {
   g('shNote').style.display = on ? '' : 'none';
   shState(on ? 'ok' : 'off', on ? 'चालू' : 'सेट नहीं है');
 }
-function shPayload(c) {
+function shPayload(c, part) {
   let logs = [];
   try { logs = JSON.parse(localStorage.getItem('ru_local_history') || '[]'); } catch (e) {}
   const hist = [['Date', 'Subject', 'Chapter', 'Lecture', 'Time (min)', 'Difficulty', 'Notes']]
     .concat(logs.slice().reverse().map(l => [isoDate(l.date), l.sub, l.chap, l.lec, Number(l.time) || 0, l.diff, l.notes || '']));
   const syl = [['Subject', 'Chapter', 'Lecture']].concat(sylRows());
-  return { key: c.key, history: hist, syllabus: syl, full: shFull() };
+  const pl = { key: c.key, part: part || 'sheet', history: hist, syllabus: syl, full: shFull() };
+  if (pl.part === 'drive') pl.drive = shDrive();
+  return pl;
 }
 /* Full backup: ऐप का पूरा डेटा, Sheet की सीमा (50,000 अक्षर प्रति सेल) के हिसाब से टुकड़ों में */
 const SH_CHUNK = 40000;
@@ -9984,6 +9986,12 @@ function shChunks(v) {
     i = e;
   }
   return out.length ? out : [''];
+}
+/* Drive: ऐप का पूरा डेटा एक JSON फ़ाइल के रूप में */
+function shDrive() {
+  const keys = {};
+  FB_KEYS.forEach(k => { let v = null; try { v = localStorage.getItem(k); } catch (e) {} if (v !== null) keys[k] = v; });
+  return { app: 'Revision Universe', format: 1, saved: new Date().toISOString(), keys: keys };
 }
 function shFull() {
   const rows = [['Key', 'Part', 'Total parts', 'Data']];
@@ -10024,6 +10032,7 @@ async function shPush(manual) {
       throw new Error('Script का जवाब सही नहीं है (HTTP ' + res.status + '). Deploy में "कोई भी देख सकता है" चुनें और /exec वाला URL डालें');
     }
     if (!j.ok) throw new Error(j.error || 'अपडेट नहीं हुई');
+    if (j.sheet === false) throw new Error(j.sheetError || 'Sheet में सेव नहीं हुआ');
     shLastHash = h;
     try { localStorage.removeItem('ru_sh_dirty'); } catch (e) {}
     shState('ok', 'आख़िरी अपडेट ' + nowHM());
@@ -10035,6 +10044,68 @@ async function shPush(manual) {
     shBusy = false;
   }
 }
+/* Drive: Sheet से अलग भेजा जाता है। एक में गड़बड़ हो तो दूसरा चलता रहता है। */
+let drTimer = null, drBusy = false, drLastHash = null, drSt = null;
+function drState(kind, text) { drSt = { kind: kind, text: text }; if (window.tlRender) tlRender(); }
+async function drPush(manual) {
+  const c = shCfg();
+  if (!c.url) { if (manual) showIsland('पहले Sheet का Web app URL जोड़ें', 'warning'); return; }
+  if (drBusy) return;
+  drBusy = true;
+  try {
+    const p = shPayload(c, 'drive');
+    const ks = JSON.stringify(p.drive.keys);
+    const h = ks.length + ':' + ks.slice(0, 200) + ks.slice(-200);
+    if (!manual && h === drLastHash) return;
+    if (manual) showIsland('Drive में भेजा जा रहा है…', 'success');
+    const res = await fetch(c.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) });
+    let j; try { j = JSON.parse(await res.text()); } catch (e) { throw new Error('Script का जवाब सही नहीं है (HTTP ' + res.status + ')'); }
+    if (!j.ok) throw new Error(j.error || 'नहीं हो सका');
+    if (j.drive === undefined) throw new Error('Script पुरानी है। Drive के लिए नया कोड डालकर दोबारा Deploy करें');
+    if (j.drive === false) throw new Error(j.driveError || 'Drive में सेव नहीं हुआ');
+    drLastHash = h;
+    try { localStorage.removeItem('ru_dr_dirty'); localStorage.setItem('ru_dr_on', '1'); localStorage.setItem('ru_dr_last', new Date().toISOString()); } catch (e) {}
+    drState('ok', '');
+    if (manual) showIsland('Drive में सेव हो गया');
+  } catch (e) {
+    drState('err', (e && e.message) || 'नहीं हो सका');
+    if (manual) showIsland('Drive में नहीं गया: ' + ((e && e.message) || e), 'error');
+  } finally {
+    drBusy = false;
+  }
+}
+function drSchedule() {
+  let on = false; try { on = localStorage.getItem('ru_dr_on') === '1'; } catch (e) {}
+  if (fbRestoring || !on || !shCfg().url) return;
+  try { localStorage.setItem('ru_dr_dirty', '1'); } catch (e) {}
+  clearTimeout(drTimer);
+  drTimer = setTimeout(() => drPush(false), 20000);
+}
+function drApply(data) {
+  fbRestoring = true;
+  Object.keys(data.keys).forEach(k => { if (FB_KEYS.indexOf(k) >= 0) { try { localStorage.setItem(k, data.keys[k]); } catch (e) {} } });
+  showIsland('डेटा वापस आ गया, ऐप दोबारा खुल रहा है…');
+  setTimeout(() => location.reload(), 900);
+}
+async function drRestore() {
+  const c = shCfg();
+  if (!c.url) return showIsland('पहले Sheet का Web app URL जोड़ें', 'warning');
+  try {
+    showIsland('Drive से डेटा आ रहा है…', 'success');
+    const body = JSON.stringify(Object.assign(shPayload(c), { action: 'get', drive: null }));
+    const res = await fetch(c.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body });
+    let j; try { j = JSON.parse(await res.text()); } catch (e) { throw new Error('Script का जवाब सही नहीं है'); }
+    if (!j.ok) throw new Error(j.error || 'नहीं हो सका');
+    if (!j.drive) throw new Error('Script पुरानी है। Drive के लिए नया कोड डालकर दोबारा Deploy करें');
+    if (!j.data || !j.data.keys) return showIsland('Drive में अभी कोई बैकअप नहीं है', 'warning');
+    const when = j.data.saved ? new Date(j.data.saved).toLocaleString() : '';
+    const go = () => drApply(j.data);
+    if (window.__tl && window.__tl.modal) window.__tl.modal('Drive से डेटा वापस लाएं?', 'Drive बैकअप (' + when + ') इस फ़ोन का मौजूदा डेटा बदल देगा।', 'वापस लाएं', go);
+    else if (confirm('Drive बैकअप (' + when + ') इस फ़ोन का मौजूदा डेटा बदल देगा। जारी रखें?')) go();
+  } catch (e) {
+    showIsland('Drive से डेटा नहीं आया: ' + ((e && e.message) || e), 'error');
+  }
+}
 function shSchedule() {
   if (fbRestoring || !shCfg().url) return;
   try { localStorage.setItem('ru_sh_dirty', '1'); } catch (e) {}
@@ -10042,20 +10113,21 @@ function shSchedule() {
   clearTimeout(shTimer);
   shTimer = setTimeout(() => shPush(false), 15000);
 }
-setTimeout(() => { shUI(); if (localStorage.getItem('ru_sh_dirty') && shCfg().url) shSchedule(); }, 1500);
+setTimeout(() => { shUI(); if (localStorage.getItem('ru_sh_dirty') && shCfg().url) shSchedule(); if (localStorage.getItem('ru_dr_dirty') && shCfg().url) drSchedule(); }, 1500);
 
 /* हर बदलाव पर अपने-आप बैकअप */
 (function () {
   try {
     const sp = Storage.prototype, os = sp.setItem, orm = sp.removeItem;
-    sp.setItem = function (k) { const r = os.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) { fbSchedule(); shSchedule(); } return r; };
-    sp.removeItem = function (k) { const r = orm.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) { fbSchedule(); shSchedule(); } return r; };
+    sp.setItem = function (k) { const r = os.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) { fbSchedule(); shSchedule(); drSchedule(); } return r; };
+    sp.removeItem = function (k) { const r = orm.apply(this, arguments); if (this === window.localStorage && FB_KEYS.indexOf(k) >= 0) { fbSchedule(); shSchedule(); drSchedule(); } return r; };
   } catch (e) {}
 })();
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     if (fbDirty && fbAutoOn) { clearTimeout(fbTimer); fbDoBackup(true); }
     if (shCfg().url && localStorage.getItem('ru_sh_dirty')) { clearTimeout(shTimer); shPush(false); }
+    if (shCfg().url && localStorage.getItem('ru_dr_dirty')) { clearTimeout(drTimer); drPush(false); }
   } else if (fbAutoOn && fbUser && Date.now() - fbLastCheck > 60000) {
     fbLastCheck = Date.now(); fbCheckRemote();
   }
@@ -10063,6 +10135,7 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('online', () => {
   if (fbDirty) fbSchedule(1000);
   if (shCfg().url && localStorage.getItem('ru_sh_dirty')) shSchedule();
+  if (shCfg().url && localStorage.getItem('ru_dr_dirty')) drSchedule();
 });
 
 setTimeout(fbInit, 1200);
@@ -13705,19 +13778,29 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
       (on ? '<div class="tl-shc-url">' + IC.link + '<span>' + esc(host) + '</span></div>' : '') +
       '<div class="tl-btns"><button type="button" class="tl-btn" data-a="shcfg">' + IC.settings + '<span>' + (on ? 'Configure Sheet' : 'Set up') + '</span></button><button type="button" class="tl-btn pri" data-a="shnow"' + (on ? '' : ' disabled') + '>' + IC.sync + '<span>Sync Now</span></button></div></div>';
   }
-  KINDS.backup = {
+  function drCardHtml() {
+  let c = { url: '', key: '' }; try { c = shCfg(); } catch (e) {}
+  const on = !!c.url; let last = ''; try { last = localStorage.getItem('ru_dr_last') || ''; } catch (e) {}
+  const bad = typeof drSt !== 'undefined' && drSt && drSt.kind === 'err';
+  const st = !on ? 'पहले ऊपर Sheet का लिंक जोड़ें' : bad ? 'बैकअप नहीं हुआ: ' + drSt.text : (last ? 'चालू · आख़िरी बैकअप ' + new Date(last).toLocaleString() : 'Backup Now दबाकर चालू करें');
+  return '<div class="tl-card tl-shc"><div class="tl-shc-h"><span class="tl-ib" style="--ac:#60a5fa">' + IC.cloud + '</span><div class="tl-li-t"><b>Google Drive Backup</b><span class="tl-st"><i class="cx-dot ' + (bad ? 'err' : (on && last ? 'ok' : 'off')) + '"></i>' + esc(st) + '</span></div></div>' +
+    '<div class="tl-btns"><button type="button" class="tl-btn pri" data-a="drnow"' + (on ? '' : ' disabled') + '>' + IC.sync + '<span>Backup Now</span></button><button type="button" class="tl-btn" data-a="drrs"' + (on ? '' : ' disabled') + '>' + IC.fileup + '<span>Restore</span></button></div></div>';
+}
+KINDS.backup = {
     static: true,
     init: () => ({}),
-    head() { return { title: 'Google Sheet Backup', sub: '', badge: sheetOn() ? 'Connected' : '' }; },
+    head() { return { title: 'Sheet & Drive Backup', sub: '', badge: sheetOn() ? 'Connected' : '' }; },
     mount(pg) {
       const b = pg.el.querySelector('.tl-sub-body');
       b.innerHTML = '<div class="tl-shslot"></div>';
     },
     unmount(pg) {},
-    refresh(pg, body) { const sl = body.querySelector('.tl-shslot'); if (sl) sl.innerHTML = shCardHtml(); },
+    refresh(pg, body) { const sl = body.querySelector('.tl-shslot'); if (sl) sl.innerHTML = shCardHtml() + drCardHtml(); },
     act(pg, a) {
       if (a === 'shcfg') openShSheet();
-      else if (a === 'shnow') { if (!sheetOn()) openShSheet(); else { try { shPush(true); } catch (e) {} } }
+      else if (a === 'drnow') { if (!sheetOn()) openShSheet(); else { try { drPush(true); } catch (e) {} } }
+ else if (a === 'drrs') { try { drRestore(); } catch (e) {} }
+ else if (a === 'shnow') { if (!sheetOn()) openShSheet(); else { try { shPush(true); } catch (e) {} } }
     }
   };
 
@@ -13962,7 +14045,7 @@ html.tl-kb .bbw{transform:translateY(105%)!important;pointer-events:none}
   }
 
   /* ---- actions ---- */
-  window.__tl = { openEx: function (mode, scope) { try { setBakScope(scope); } catch (e) {} pushPage('eximp', { mode: mode }); }, act: function (a, el) { return act(a, el); }, K: K, sync: function () { try { return syncBadge(); } catch (e) { return ''; } }, sheetOn: function () { return sheetOn(); } };
+  window.__tl = { modal: function () { return modal.apply(null, arguments); }, openEx: function (mode, scope) { try { setBakScope(scope); } catch (e) {} pushPage('eximp', { mode: mode }); }, act: function (a, el) { return act(a, el); }, K: K, sync: function () { try { return syncBadge(); } catch (e) { return ''; } }, sheetOn: function () { return sheetOn(); } };
   function act(a, el) {
     hap();
     switch (a) {
